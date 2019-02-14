@@ -23,12 +23,15 @@
         loadedViews: View[] = [];
         loadedLogics: LogicParser[] = [];
         loadedPics: Pic[] = [];
+        loadedSounds: Sound[] = [];
         logicStack: number[] = [];
         logicNo: number = 0;
 
         gameObjects: GameObject[] = [];
+        playedSound: Sound;
         frameData: ImageData;
         framePriorityData: Bitmap;
+        soundEmulator: SoundEmulatorTiSn76496a;
         keyboardSpecialBuffer: number[] = [];
         keyboardCharBuffer: number[] = [];
         inputBuffer: string = "";
@@ -45,7 +48,7 @@
 
         screen: Screen = new Screen(this);
 
-        constructor(private context: CanvasRenderingContext2D) {
+        constructor(private context: CanvasRenderingContext2D, audioContext: AudioContext) {
             this.visualBuffer = new Bitmap();
             this.priorityBuffer = new Bitmap();
             this.framePriorityData = new Bitmap();
@@ -57,6 +60,7 @@
                 data[i * 4 + 2] = 0x00;
                 data[i * 4 + 3] = 0xFF;
             }
+            this.soundEmulator = new SoundEmulatorTiSn76496a(audioContext);
         }
 
         start(): void {
@@ -84,7 +88,7 @@
             let egoDir = this.variables[6];
             this.variables[6] = egoDir == newEgoDir ? 0 : newEgoDir;
         }
-        
+
         cycle(): void {
             this.flags[2] = false;  // The player has entered a command
             this.flags[4] = false;  // said accepted user input
@@ -337,7 +341,7 @@
 
                 if (obj.movementFlag == MovementFlags.MoveTo && obj.x == obj.moveToX && obj.y == obj.moveToY) {
                     obj.direction = Direction.Stopped;
-                    this.flags[obj.flagToSetWhenFinished] = true;
+                    this.agi_set(obj.flagToSetWhenFinished);
                     obj.movementFlag = MovementFlags.Normal;
                 }
 
@@ -420,7 +424,7 @@
                         }
                         if (endOfLoop && obj.callAtEndOfLoop) {
                             obj.celCycling = false;
-                            this.flags[obj.flagToSetWhenFinished] = true;
+                            this.agi_set(obj.flagToSetWhenFinished);
                         }
                         obj.nextCycle = obj.cycleTime;
                     } else
@@ -969,15 +973,20 @@
         }
 
         agi_load_sound(soundNo: number) {
-
+            this.loadedSounds[soundNo] = new Sound(Resources.readAgiResource(Resources.AgiResource.Sound, soundNo))
         }
 
         agi_sound(soundNo: number, flagNo: number) {
-
+            this.playedSound && this.playedSound.stop();
+            this.playedSound = this.loadedSounds[soundNo];
+            this.playedSound.play(this.soundEmulator, () => {
+                this.agi_set(flagNo);
+            });
         }
 
         agi_stop_sound() {
-
+            this.playedSound && this.playedSound.stop();
+            this.playedSound = null;
         }
 
         agi_reposition_to(objNo: number, x: number, y: number) {
@@ -1021,8 +1030,8 @@
             
         }
 
-        agi_discard_sound(n1: number) {
-
+        agi_discard_sound(soundNo: number) {
+            this.loadedSounds[soundNo] = null;
         }
 
         agi_save_game() {

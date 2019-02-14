@@ -32,9 +32,9 @@ namespace Agi {
     ];
 
     export var interpreter: Interpreter;
-    export function start(path: string, context: CanvasRenderingContext2D) {
+    export function start(path: string, context: CanvasRenderingContext2D, audioContext: AudioContext) {
         Resources.load(path, () => {
-            interpreter = new Interpreter(context);
+            interpreter = new Interpreter(context, audioContext);
             interpreter.start();
 
             window.onkeypress = function (e) {
