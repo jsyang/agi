@@ -20,7 +20,8 @@
             var canvas = document.getElementById("canvas");
             var context = canvas.getContext("2d");
             canvas.onclick = function() {
-                Agi.start("game/", context);
+                var audioContext = new (AudioContext || webkitAudioContext)();
+                Agi.start("game/", context, audioContext);
             };
         </script>
     </body>

@@ -1,6 +1,7 @@
 namespace Agi {
 
     const VOICE_END: number = 0xFFFF;
+    const TICK_MILLISECONDS: number = 16;
 
     export class Sound {
         soundEmulator: SoundEmulatorTiSn76496a;
@@ -8,13 +9,13 @@ namespace Agi {
         voicesData: Fs.ByteStream[] = [];
 
         constructor(stream: Fs.ByteStream) {
-            var prevOffset = stream.readUint16();
+            var prevOffset = stream.startPosition + stream.readUint16();
             for (var i = 0; i < 3; i++) {
-                var offset = stream.readUint16();
+                var offset = stream.startPosition + stream.readUint16();
                 this.voicesData.push(new Fs.ByteStream(stream.buffer, prevOffset, offset));
                 prevOffset = offset;
             }
-            this.voicesData.push(new Fs.ByteStream(stream.buffer, prevOffset, stream.length));
+            this.voicesData.push(new Fs.ByteStream(stream.buffer, prevOffset, stream.startPosition + stream.length));
         }
 
         play(soundEmulator: SoundEmulatorTiSn76496a, onFinished: () => void): void {
@@ -57,7 +58,7 @@ namespace Agi {
                 this.soundEmulator.updateAttenuator(voiceData.readUint8(), getLogger(voiceData.position - 1));
                 setTimeout(() => {
                     this.processNote(voiceIndex);
-                }, duration);
+                }, duration * TICK_MILLISECONDS);
             }
         }
     }

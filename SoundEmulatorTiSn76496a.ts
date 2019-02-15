@@ -46,6 +46,7 @@
 
     export class SoundEmulatorTiSn76496a {
 
+        noiseSourceNode: OscillatorNode;
         noiseGenerator: ScriptProcessorNode;
         noiseShiftRegister: number;
         noiseFeedbackType: NoiseFeedbackType;
@@ -77,15 +78,17 @@
             ) {
                 voiceNode = this.audioContext.createOscillator();
                 voiceNode.type = 'square';
+                voiceNode.start(0);
+                this.voiceNodes.push(voiceNode);
                 gain = this.audioContext.createGain();
+                gain.gain.setValueAtTime(0, this.audioContext.currentTime);
                 gain.connect(this.audioContext.destination);
+                this.gains.push(gain);
                 if (voice === NOISE_VOICE) {
                     this.noiseGenerator.connect(gain);
                 } else {
                     this.voiceNodes[voice].connect(gain);
                 }
-                this.voiceNodes.push(voiceNode);
-                this.gains.push(gain);
             }
         }
 
@@ -98,37 +101,37 @@
         }
 
         updateNoiseSource(command: number, logger: Logger = undefined): void {
-            logger && ((command & CommandMask.CommandBit) === 0) && logger(`Noise command ${command} not marked as command`);
-            var register: number = command & CommandMask.Register >> 4;
-            this.noiseFeedbackType = command & NoiseCommandMask.Feedback >> 2;
+            logger && (((command & CommandMask.CommandBit) >> 7) !== 1) && logger(`Noise command ${command} not marked as command`);
+            var register: number = (command & CommandMask.Register) >> 4;
+            this.noiseFeedbackType = (command & NoiseCommandMask.Feedback) >> 2;
             var shiftRate: NoiseShiftRate = command & NoiseCommandMask.ShiftRate;
 
-            this.voiceNodes[BORROWED_VOICE].disconnect(this.noiseGenerator);
-            this.voiceNodes[NOISE_VOICE].disconnect(this.noiseGenerator);
+            this.noiseSourceNode && this.noiseSourceNode.disconnect(this.noiseGenerator);
 
-            var node: OscillatorNode = <OscillatorNode>this.processRegister(register, false, true, logger);
+            this.noiseSourceNode = <OscillatorNode>this.processRegister(register, false, true, logger);
             if (shiftRate === NoiseShiftRate.NoiseBorrowed) {
-                node = this.voiceNodes[BORROWED_VOICE];
+                this.noiseSourceNode = this.voiceNodes[BORROWED_VOICE];
             } else {
-                this.setOscillatorFrequency(node, NOISE_FREQUENCY_DIVISOR[shiftRate]);
+                this.setOscillatorFrequency(this.noiseSourceNode, NOISE_FREQUENCY_DIVISOR[shiftRate]);
             }
-            node.connect(this.noiseGenerator);
+            this.noiseSourceNode.connect(this.noiseGenerator);
             this.noiseShiftRegister = this.noiseFeedbackType === NoiseFeedbackType.NoisePeriodic ? 0x4000 : 0x0000;
         }
 
         updateToneSource(command: number, logger: Logger = undefined): void {
             var completingByte = command & 0xFF;
             var commandByte = command >> 8;
-            logger && ((commandByte & CommandMask.CommandBit) !== 1 || (completingByte & CommandMask.CommandBit) !== 0) && logger(`Tone command ${command} not marked as command`);
+            logger && (((commandByte & CommandMask.CommandBit) >> 7) !== 1 || ((completingByte & CommandMask.CommandBit) >> 7) !== 0) && logger(`Tone command ${command} not marked as command`);
             var register: number = (commandByte & CommandMask.Register) >> 4;
             var frequencyDivisor: number = ((completingByte & ToneCommandMask.MostSignificant) << 4) | (commandByte & ToneCommandMask.LeastSignificant);
+            logger && (frequencyDivisor > 0 && frequencyDivisor < 6) && logger(`Inaudible tone (divisor=${frequencyDivisor}) given`);
 
             this.setOscillatorFrequency(<OscillatorNode>this.processRegister(register, false, false, logger), frequencyDivisor);
         }
 
         updateAttenuator(command: number, logger: Logger = undefined): void {
-            logger && ((command & CommandMask.CommandBit) === 0) && logger(`Attenuator command ${command} not marked as command`);
-            var register: number = command & CommandMask.Register >> 4;
+            logger && (((command & CommandMask.CommandBit) >> 7) !== 1) && logger(`Attenuator command ${command} not marked as command`);
+            var register: number = (command & CommandMask.Register) >> 4;
             var attenuation: number = command & CommandMask.Attenuation;
 
             this.setGain(<GainNode>this.processRegister(register, true, false, logger), attenuation);
@@ -147,7 +150,7 @@
         }
 
         private setOscillatorFrequency(node: OscillatorNode, divisor: number): void {
-            var frequency: number = BASE_FREQUENCY / divisor;
+            var frequency: number = divisor === 0 ? 0 : BASE_FREQUENCY / Math.max(divisor, 5.08);
             node.frequency.setValueAtTime(frequency, this.audioContext.currentTime);
         }
 

@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/r1sc/agi.js/issues"
   },
-  "homepage": "https://github.com/r1sc/agi.js#readme"
+  "homepage": "https://github.com/r1sc/agi.js#readme",
+  "dependencies": {
+    "typescript": "^3.3.3"
+  }
 }

@@ -2,7 +2,7 @@
     export class ByteStream {
         position: number = 0;
         length: number = 0;
-        constructor(public buffer: Uint8Array, private startPosition: number = 0, private end: number = 0) {
+        constructor(public buffer: Uint8Array, public startPosition: number = 0, private end: number = 0) {
             if (end == 0)
                 this.end = this.buffer.byteLength;
             this.length = this.end - this.startPosition;
