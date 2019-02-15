@@ -7,6 +7,7 @@ namespace Agi {
         soundEmulator: SoundEmulatorTiSn76496a;
         onFinished: () => void;
         voicesData: Fs.ByteStream[] = [];
+        nextNoteHandle: number[] = [];
 
         constructor(stream: Fs.ByteStream) {
             var prevOffset = stream.startPosition + stream.readUint16();
@@ -30,6 +31,9 @@ namespace Agi {
 
         stop() {
             this.soundEmulator.deactivate();
+            for (var i = 0; i < 4; i++) {
+                this.silenceVoice(i);
+            }
             this.onFinished && this.onFinished();
         }
 
@@ -37,12 +41,11 @@ namespace Agi {
             var voiceData: Fs.ByteStream = this.voicesData[voiceIndex];
             var duration: number = voiceData.readUint16();
             if (duration === VOICE_END) {
-                var register = (voiceIndex << 1) | 0x01;
-                this.soundEmulator.updateAttenuator(CommandMask.CommandBit | (register << 4) | COMPLETE_ATTENUATION);
+                this.silenceVoice(voiceIndex);
+                console.debug(`Voice ${voiceIndex} finished`);
                 var allVoicesFinished = true;
                 for (var i = 0; i < 4; i++) {
                     var voiceFinished = this.voicesData[i].position === this.voicesData[i].length;
-                    voiceFinished && console.debug(`Voice ${i} finished`);
                     allVoicesFinished = allVoicesFinished && voiceFinished;
                 }
                 allVoicesFinished && this.stop();
@@ -56,10 +59,16 @@ namespace Agi {
                     this.soundEmulator.updateToneSource(voiceData.readUint16(), getLogger(voiceData.position - 2));
                 }
                 this.soundEmulator.updateAttenuator(voiceData.readUint8(), getLogger(voiceData.position - 1));
-                setTimeout(() => {
+                this.nextNoteHandle[voiceIndex] = setTimeout(() => {
                     this.processNote(voiceIndex);
                 }, duration * TICK_MILLISECONDS);
             }
+        }
+
+        silenceVoice(voiceIndex: number) {
+            var register = (voiceIndex << 1) | 0x01;
+            this.soundEmulator.updateAttenuator(CommandMask.CommandBit | (register << 4) | COMPLETE_ATTENUATION);
+            this.nextNoteHandle[voiceIndex] && clearTimeout(this.nextNoteHandle[voiceIndex]);
         }
     }
 }
