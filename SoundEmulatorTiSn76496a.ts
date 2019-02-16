@@ -56,19 +56,14 @@
         noiseOutputBit: number;
 
         constructor(private audioContext) {
+            this.processNoiseSample = this.processNoiseSample.bind(this);
             this.noiseShiftRegister = 0x0000;
             this.lastInputBit = 0;
             this.noiseOutputBit = 0;
 
             // Create noise effect node
             this.noiseGenerator = this.audioContext.createScriptProcessor(4096);
-            this.noiseGenerator.addEventListener('audioprocess', (event: AudioProcessingEvent): void => {
-                var input = event.inputBuffer.getChannelData(0);
-                var output = event.outputBuffer.getChannelData(0);
-                for (var i = 0; i < input.length; i++) {
-                    output[i] = this.addNoiseToSignal(input[i] < 0 ? 0 : 1);
-                }
-            });
+            this.noiseGenerator.addEventListener('audioprocess', this.processNoiseSample);
 
             // Create 4 square wave tone voices (4th is for base noise frequency)
             for (
@@ -135,6 +130,14 @@
             var attenuation: number = command & CommandMask.Attenuation;
 
             this.setGain(<GainNode>this.processRegister(register, true, false, logger), attenuation);
+        }
+
+        private processNoiseSample(event: AudioProcessingEvent): void {
+            var input = event.inputBuffer.getChannelData(0);
+            var output = event.outputBuffer.getChannelData(0);
+            for (var i = 0; i < input.length; i++) {
+                output[i] = this.addNoiseToSignal(input[i] < 0 ? 0 : 1);
+            }
         }
 
         private addNoiseToSignal(inputBit: number): number {
