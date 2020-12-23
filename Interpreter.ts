@@ -1,18 +1,80 @@
-﻿namespace Agi {
+﻿interface Menu {
+    name: string;
+    items: MenuItem[];
+}
+
+interface MenuItem {
+    text: string;
+    ctrNo: number; // Controller key (virtual for logic control)
+}
+
+namespace Agi {
+    export const FLAG = {
+        ego_on_water:             0,
+        ego_hidden:               1,
+        input_received:           2,
+        ego_touching_signal_line: 3,
+        input_parsed:             4,
+        new_room:                 5,
+        game_restarted:           6,
+        script_buffer_blocked:    7,
+        joystick_sensitivity_set: 8,
+        sound_on:                 9,
+        trace_enabled:            10,
+        noise_enabled:            11,
+        game_restored:            12,
+        inventory_select_enabled: 13,
+        menu_enabled:             14,
+        windows_remain:           15,
+        auto_restart:             16,
+        auto_loop:                20
+    };
+
+    export const VAR = {
+        room_no:                 0,
+        prev_room_no:            1,
+        ego_edge_code:           2,
+        score:                   3,
+        object_touching_edge:    4,
+        object_edge_code:        5,
+        ego_dir:                 6,
+        max_score:               7,
+        free_memory:             8,
+        unknown_word_no:         9,
+        cycle_delay:             10,
+        clock_seconds:           11,
+        clock_minutes:           12,
+        clock_hours:             13,
+        clock_days:              14,
+        joystick_sensitivity:    15,
+        ego_view_no:             16,
+        error_code:              17,
+        error_information:       18,
+        key_pressed:             19,
+        computer_type:           20,
+        window_close_time:       21,
+        sound_channels:          22,
+        sound_volume:            23,
+        max_input_len:           24,
+        selected_inventory_item: 25,
+        video_mode:              26
+    };
+
     export class Interpreter {
         /* Interpreter vars */
         programControl: boolean;
-        newroom: number = 0;
+        newroom: number         = 0;
         visualBuffer: Bitmap;
         priorityBuffer: Bitmap;
-        scriptSize: number = 0;
-        strings: string[] = [];
-        variables: Uint8Array = new Uint8Array(255);
-        flags: boolean[] = [];
-        msgBoxText: string = null;
+        scriptSize: number      = 0;
+        strings: string[]       = [];
+        variables: Uint8Array   = new Uint8Array(255);
+        flags: boolean[]        = new Array(255);
+        controllers: Uint8Array = new Uint8Array(255);
+        msgBoxText: string      = null;
         msgBoxX: number;
         msgBoxY: number;
-        msgBoxWidth: number = 128;
+        msgBoxWidth: number     = 128;
 
         horizon: number;
         blockX1: number;
@@ -20,23 +82,23 @@
         blockX2: number;
         blockY2: number;
 
-        loadedViews: View[] = [];
+        loadedViews: View[]         = [];
         loadedLogics: LogicParser[] = [];
-        loadedPics: Pic[] = [];
-        loadedSounds: Sound[] = [];
-        logicStack: number[] = [];
-        logicNo: number = 0;
+        loadedPics: Pic[]           = [];
+        loadedSounds: Sound[]       = [];
+        logicStack: number[]        = [];
+        logicNo: number             = 0;
 
-        gameObjects: GameObject[] = [];
+        gameObjects: GameObject[]       = [];
         playedSound: Sound;
         frameData: ImageData;
         framePriorityData: Bitmap;
         soundEmulator: SoundEmulatorTiSn76496a;
         keyboardSpecialBuffer: number[] = [];
-        keyboardCharBuffer: number[] = [];
-        inputBuffer: string = "";
-        allowInput: boolean = true;
-        haveKey: boolean = false;
+        keyboardCharBuffer: number[]    = [];
+        inputBuffer: string             = "";
+        allowInput: boolean             = true;
+        haveKey: boolean                = false;
 
         dialogue: boolean;
         dialogueStrNo: number;
@@ -46,14 +108,17 @@
         dialogueStrX: number;
         dialogueMode: number;
 
+        menu: Menu[] = [];
+        private currentMenu: Menu;
+
         screen: Screen = new Screen(this);
 
-        constructor(private context: CanvasRenderingContext2D, audioContext: AudioContext) {
-            this.visualBuffer = new Bitmap();
-            this.priorityBuffer = new Bitmap();
+        constructor(private context: CanvasRenderingContext2D, audioContext: AudioContext, private menuContainerElement: HTMLElement) {
+            this.visualBuffer      = new Bitmap();
+            this.priorityBuffer    = new Bitmap();
             this.framePriorityData = new Bitmap();
-            this.frameData = this.context.createImageData(320, 200);
-            var data = this.frameData.data;
+            this.frameData         = this.context.createImageData(320, 200);
+            var data               = this.frameData.data;
             for (var i = 0; i < 320 * 200; i++) {
                 data[i * 4 + 0] = 0x00;
                 data[i * 4 + 1] = 0x00;
@@ -65,18 +130,19 @@
 
         start(): void {
             /* Reset all state */
-            for (var i = 0; i < 255; i++) {
-                this.variables[i] = 0;
-                this.flags[i] = false;
-            }
-            this.variables[0] = 0;
-            this.variables[26] = 3; // EGA
-            this.variables[8] = 255;    // Pages of free memory
-            this.variables[23] = 15;    // Sound volume
-            this.variables[24] = 41;    // Input buffer size
-            this.flags[9] = true;       // Sound enabled
-            this.flags[11] = true;      // Logic 0 executed for the first time
-            this.flags[5] = true;       // Room script executed for the first time
+            this.controllers.fill(0);
+            this.variables.fill(0);
+            this.flags.fill(false);
+
+            this.variables[VAR.room_no]       = 0;
+            this.variables[VAR.video_mode]    = 3; // EGA
+            this.variables[VAR.free_memory]   = 255;    // Pages of free memory
+            this.variables[VAR.sound_volume]  = 15;    // Sound volume
+            this.variables[VAR.max_input_len] = 41;    // Input buffer size
+
+            this.flags[FLAG.sound_on]      = true;       // Sound enabled
+            this.flags[FLAG.noise_enabled] = true;      // Logic 0 executed for the first time
+            this.flags[FLAG.new_room]      = true;       // Room script executed for the first time
 
             this.agi_unanimate_all();
             this.agi_load_logic(0);
@@ -84,14 +150,14 @@
             this.cycle();
         }
 
-        setEgoDir(newEgoDir: number){
-            let egoDir = this.variables[6];
-            this.variables[6] = egoDir == newEgoDir ? 0 : newEgoDir;
+        setEgoDir(newEgoDir: number) {
+            let egoDir                  = this.variables[VAR.ego_dir];
+            this.variables[VAR.ego_dir] = egoDir == newEgoDir ? 0 : newEgoDir;
         }
 
         cycle(): void {
-            this.flags[2] = false;  // The player has entered a command
-            this.flags[4] = false;  // said accepted user input
+            this.flags[FLAG.input_received] = false;  // The player has entered a command
+            this.flags[FLAG.input_parsed]   = false;  // said accepted user input
 
             this.haveKey = (this.keyboardCharBuffer.length + this.keyboardSpecialBuffer.length) > 0;
             if (this.allowInput) {
@@ -101,70 +167,71 @@
                         if (key == 37) // left
                             this.setEgoDir(7);
                         else if (key == 36) // left-up
-                            this.setEgoDir( 8);
+                            this.setEgoDir(8);
                         else if (key == 38) // up
-                            this.setEgoDir( 1);
+                            this.setEgoDir(1);
                         else if (key == 33) // right-up
-                            this.setEgoDir( 2);
+                            this.setEgoDir(2);
                         else if (key == 39) // right
-                            this.setEgoDir( 3);
+                            this.setEgoDir(3);
                         else if (key == 34) // right-down
-                            this.setEgoDir( 4);
+                            this.setEgoDir(4);
                         else if (key == 40) // down
-                            this.setEgoDir( 5);
+                            this.setEgoDir(5);
                         else if (key == 35) // down-left
-                            this.setEgoDir( 6);
+                            this.setEgoDir(6);
                         else if (key == 12) // stop
-                            this.setEgoDir( 0);
+                            this.setEgoDir(0);
                         else if (key == 27) { // Escape
-                            alert("Menu");
+                            // alert("Menu");
+                            // jsyang: menu is always visible in our version
                         }
                     }
                 }
 
                 while (this.keyboardCharBuffer.length > 0) {
                     var key: number = this.keyboardCharBuffer.shift();
-                    if (key >= 32 && key < 127 && this.inputBuffer.length < this.variables[24]) {
+                    if (key >= 32 && key < 127 && this.inputBuffer.length < this.variables[VAR.max_input_len]) {
                         this.inputBuffer += String.fromCharCode(key);
                     } else if (key == 8 && this.inputBuffer.length > 0) { // Backspace
                         this.inputBuffer = this.inputBuffer.substr(0, this.inputBuffer.length - 1);
                     } else if (key == 8 && this.inputBuffer.length > 0) { // Backspace
                         this.inputBuffer = this.inputBuffer.substr(0, this.inputBuffer.length - 1);
                     } else if (key == 13) {
-                        this.flags[2] = true; // The player has entered a command
-                        this.keyboardCharBuffer = [];
+                        this.flags[FLAG.input_received] = true; // The player has entered a command
+                        this.keyboardCharBuffer         = [];
                         break;
                     }
                 }
             }
-            
-            let egoDir: number = this.variables[6];
+
+            let egoDir: number = this.variables[VAR.ego_dir];
             if (this.dialogue) {
                 if (this.dialogueMode == 1) { // string input
                     this.strings[this.dialogueStrNo] = this.inputBuffer;
                     this.screen.bltText(this.dialogueStrY, this.dialogueStrX, this.dialoguePrompt + this.strings[this.dialogueStrNo]);
                 }
             }
-            this.keyboardCharBuffer = [];
+            this.keyboardCharBuffer    = [];
             this.keyboardSpecialBuffer = [];
 
             if (this.programControl) {
-                egoDir = this.variables[6];
+                egoDir = this.variables[VAR.ego_dir];
             } else {
-                this.variables[6] = egoDir;
+                this.variables[VAR.ego_dir] = egoDir;
             }
 
             // calculate direction of movement
             while (true) {
                 this.agi_call(0);
-                this.flags[11] = false;     // Logic 0 executed for the first time
+                this.flags[FLAG.noise_enabled] = false;     // Logic 0 executed for the first time
 
-                //this.gameObjects[0].direction = this.variables[6];
-                this.variables[5] = 0;
-                this.variables[4] = 0;
-                this.flags[5] = false;
-                this.flags[6] = false;
-                this.flags[12] = false;
+                this.variables[VAR.object_edge_code]     = 0;
+                this.variables[VAR.object_touching_edge] = 0;
+
+                this.flags[FLAG.new_room]       = false;
+                this.flags[FLAG.game_restarted] = false;
+                this.flags[FLAG.game_restored]  = false;
 
 
                 for (var j = 0; j < this.gameObjects.length; j++) {
@@ -186,13 +253,14 @@
                     this.agi_unblock();
                     this.agi_set_horizon(36);
 
-                    this.variables[1] = this.variables[0];
-                    this.variables[0] = this.newroom;
-                    this.variables[4] = 0;
-                    this.variables[5] = 0;
-                    this.variables[9] = 0;
-                    this.variables[16] = this.gameObjects[0].viewNo;
-                    switch (this.variables[2]) {
+                    this.variables[VAR.prev_room_no]         = this.variables[VAR.room_no];
+                    this.variables[VAR.room_no]              = this.newroom;
+                    this.variables[VAR.object_touching_edge] = 0;
+                    this.variables[VAR.object_edge_code]     = 0;
+                    this.variables[VAR.unknown_word_no]      = 0;
+                    this.variables[VAR.ego_view_no]          = this.gameObjects[0].viewNo;
+
+                    switch (this.variables[VAR.ego_edge_code]) {
                         case 0: // Touched nothing
                             break;
                         case 1: // Top edge or horizon
@@ -210,36 +278,25 @@
                         default:
                     }
 
-                    this.variables[2] = 0;
-                    this.flags[2] = false;
+                    this.variables[VAR.ego_edge_code] = 0;
+                    this.flags[FLAG.input_received]   = false;
 
                     //this.agi_load_logic_v(0);
-                    this.flags[5] = true;
-                    this.newroom = 0;
+                    this.flags[FLAG.new_room] = true;
+                    this.newroom              = 0;
                 } else {
                     break;
                 }
             }
-            //console.log("----- CYCLE ------");
-            //this.bltText(23, 0, "V68 = " + this.variables[68]);
-            //this.bltText(24, 0, this.strings[0] + this.inputBuffer);
             this.bltFrame();
+            this.resetControllers();
         }
 
-        
+        resetControllers() {
+            this.controllers.fill(0);
+        }
+
         bltFrame() {
-            /*var data = this.frameData.data;
-            for (var k = 0; k < Bitmap.width * Bitmap.height; k++) {
-                var rgb = Agi.palette[this.framePriorityData.data[k]];
-                data[k * 8 + 0] = (rgb >>> 16) & 0xFF;
-                data[k * 8 + 1] = (rgb >>> 8) & 0xFF;
-                data[k * 8 + 2] = rgb & 0xFF;
-                data[k * 8 + 3] = 255;
-                data[k * 8 + 4] = (rgb >>> 16) & 0xFF;
-                data[k * 8 + 5] = (rgb >>> 8) & 0xFF;
-                data[k * 8 + 6] = rgb & 0xFF;
-                data[k * 8 + 7] = 255;
-            }*/
             this.context.putImageData(this.frameData, 0, 0);
         }
 
@@ -249,7 +306,7 @@
 
             if (obj.draw) {
                 var view: View = this.loadedViews[obj.viewNo];
-                var cel: Cel = view.loops[obj.loop].cels[obj.cel];
+                var cel: Cel   = view.loops[obj.loop].cels[obj.cel];
 
                 var xStep: number = obj.stepSize;
                 var yStep: number = obj.stepSize;
@@ -268,8 +325,7 @@
                                 obj.direction = Direction.UpRight;
                             else
                                 obj.direction = Direction.Right;
-                        }
-                        else if (obj.moveToX < obj.x) {
+                        } else if (obj.moveToX < obj.x) {
                             if (obj.moveToY > obj.y)
                                 obj.direction = Direction.DownLeft;
                             else if (obj.moveToY < obj.y)
@@ -304,17 +360,17 @@
                     newX = obj.x - xStep;
                 else if (obj.direction == 3 || obj.direction == 2 || obj.direction == 4)
                     newX = obj.x + xStep;
-                
+
                 if (obj.ignoreBlocks == false && newY != obj.y) {
                     for (var xNumber: number = 0; xNumber < cel.width; xNumber++) {
                         var idx: number = newY * 160 + (obj.x + xNumber);
                         if (this.priorityBuffer.data[idx] == 0 || this.priorityBuffer.data[idx] == 1) {
-                            newY = obj.y;
+                            newY          = obj.y;
                             obj.direction = 0;
                             if (obj.movementFlag == MovementFlags.Wander) {
                                 obj.direction = this.randomBetween(1, 9);
                                 if (no == 0)
-                                    this.variables[6] = obj.direction;
+                                    this.variables[VAR.ego_dir] = obj.direction;
                             }
 
                             break;
@@ -324,18 +380,18 @@
                 obj.y = newY;
 
                 if (obj.ignoreBlocks == false && newX != obj.x) {
-                    var leftIdx = obj.y * 160 + newX;
+                    var leftIdx  = obj.y * 160 + newX;
                     var rightIdx = obj.y * 160 + newX + cel.width;
                     if (this.priorityBuffer.data[leftIdx] == 0 || this.priorityBuffer.data[rightIdx] == 0 || this.priorityBuffer.data[leftIdx] == 1 || this.priorityBuffer.data[rightIdx] == 1) {
-                        newX = obj.x;
+                        newX          = obj.x;
                         obj.direction = 0;
                         if (obj.movementFlag == MovementFlags.Wander) {
                             obj.direction = this.randomBetween(1, 9);
                             if (no == 0)
-                                this.variables[6] = obj.direction;
+                                this.variables[VAR.ego_dir] = obj.direction;
                         }
                     }
-                    
+
                 }
                 obj.x = newX;
 
@@ -348,31 +404,31 @@
                 if (obj.x != obj.oldX || obj.y != obj.oldY) {
                     if (obj.x <= 0) {
                         if (no == 0)
-                            this.variables[2] = 4;
+                            this.variables[VAR.ego_edge_code] = 4;
                         else {
-                            this.variables[4] = no;
-                            this.variables[5] = 4;
+                            this.variables[VAR.object_touching_edge] = no;
+                            this.variables[VAR.object_edge_code]     = 4;
                         }
                     } else if (obj.x + cel.width >= 160) {
                         if (no == 0)
-                            this.variables[2] = 2;
+                            this.variables[VAR.ego_edge_code] = 2;
                         else {
-                            this.variables[4] = no;
-                            this.variables[5] = 2;
+                            this.variables[VAR.object_touching_edge] = no;
+                            this.variables[VAR.object_edge_code]     = 2;
                         }
                     } else if (!obj.ignoreHorizon && obj.y <= this.horizon) {
                         if (no == 0)
-                            this.variables[2] = 1;
+                            this.variables[VAR.ego_edge_code] = 1;
                         else {
-                            this.variables[4] = no;
-                            this.variables[5] = 1;
+                            this.variables[VAR.object_touching_edge] = no;
+                            this.variables[VAR.object_edge_code]     = 1;
                         }
                     } else if (obj.y >= 168) {
                         if (no == 0)
-                            this.variables[2] = 3;
+                            this.variables[VAR.ego_edge_code] = 3;
                         else {
-                            this.variables[4] = no;
-                            this.variables[5] = 3;
+                            this.variables[VAR.object_touching_edge] = no;
+                            this.variables[VAR.object_edge_code]     = 3;
                         }
                     }
                 }
@@ -454,6 +510,7 @@
         agi_assignn(varNo: number, num: number): void {
             this.variables[varNo] = num;
         }
+
         agi_assignv(varNo1: number, varNo2: number): void {
             this.agi_assignn(varNo1, this.variables[varNo2]);
         }
@@ -461,6 +518,7 @@
         agi_addn(varNo: number, num: number): void {
             this.variables[varNo] += num;
         }
+
         agi_addv(varNo1: number, varNo2: number): void {
             this.agi_addn(varNo1, this.variables[varNo2]);
         }
@@ -468,6 +526,7 @@
         agi_subn(varNo: number, num: number): void {
             this.variables[varNo] -= num;
         }
+
         agi_subv(varNo1: number, varNo2: number): void {
             this.agi_subn(varNo1, this.variables[varNo2]);
         }
@@ -475,9 +534,11 @@
         agi_lindirectn(varNo: number, val: number): void {
             this.variables[this.variables[varNo]] = val;
         }
+
         agi_lindirectv(varNo1: number, varNo2: number): void {
             this.agi_lindirectn(varNo1, this.variables[varNo2]);
         }
+
         agi_rindirect(varNo1: number, varNo2: number): void {
             this.variables[varNo1] = this.variables[this.variables[varNo2]];
         }
@@ -485,18 +546,23 @@
         agi_set(flagNo: number): void {
             this.flags[flagNo] = true;
         }
+
         agi_reset(flagNo: number): void {
             this.flags[flagNo] = false;
         }
+
         agi_toggle(flagNo: number): void {
             this.flags[flagNo] = !this.flags[flagNo];
         }
+
         agi_setv(varNo: number): void {
             this.agi_set(this.variables[varNo]);
         }
+
         agi_reset_v(varNo: number): void {
             this.agi_reset(this.variables[varNo]);
         }
+
         agi_togglev(varNo: number): void {
             this.agi_toggle(this.variables[varNo]);
         }
@@ -513,6 +579,7 @@
             }
             this.logicNo = this.logicStack.pop();
         }
+
         agi_call_v(varNo: number): void {
             this.agi_call(this.variables[varNo]);
         }
@@ -520,6 +587,7 @@
         agi_print_at(msgNo: number, x: number, y: number, width: number): void {
 
         }
+
         agi_print_atv(varNo: number, x: number, y: number, width: number): void {
             this.agi_print_at(this.variables[varNo], x, y, width);
         }
@@ -527,6 +595,7 @@
         agi_muln(varNo: number, val: number): void {
             this.variables[this.variables[varNo]] *= val;
         }
+
         agi_mulv(varNo1: number, varNo2: number): void {
             this.agi_muln(varNo1, this.variables[varNo2]);
         }
@@ -534,6 +603,7 @@
         agi_divn(varNo: number, val: number): void {
             this.variables[this.variables[varNo]] /= val;
         }
+
         agi_divv(varNo1: number, varNo2: number): void {
             this.agi_divn(varNo1, this.variables[varNo2]);
         }
@@ -542,12 +612,13 @@
             console.log("NEW_ROOM " + roomNo);
             this.newroom = roomNo;
         }
+
         agi_new_room_v(varNo: number) {
             this.agi_new_room(this.variables[varNo]);
         }
 
         agi_load_pic(varNo: number) {
-            var picNo = this.variables[varNo];
+            var picNo              = this.variables[varNo];
             this.loadedPics[picNo] = new Pic(Resources.readAgiResource(Resources.AgiResource.Pic, picNo));
         }
 
@@ -570,7 +641,7 @@
         }
 
         agi_discard_pic(varNo: number): void {
-            var picNo = this.variables[varNo];
+            var picNo              = this.variables[varNo];
             this.loadedPics[picNo] = null;
         }
 
@@ -593,9 +664,9 @@
         }
 
         agi_set_view(objNo: number, viewNo: number) {
-            this.gameObjects[objNo].viewNo = viewNo;
-            this.gameObjects[objNo].loop = 0;
-            this.gameObjects[objNo].cel = 0;
+            this.gameObjects[objNo].viewNo     = viewNo;
+            this.gameObjects[objNo].loop       = 0;
+            this.gameObjects[objNo].cel        = 0;
             this.gameObjects[objNo].celCycling = true;
         }
 
@@ -654,6 +725,7 @@
             this.gameObjects[objNo].x = x;
             this.gameObjects[objNo].y = y;
         }
+
         agi_position_v(objNo: number, varNo1: number, varNo2: number) {
             this.agi_position(objNo, this.variables[varNo1], this.variables[varNo2]);
         }
@@ -671,7 +743,7 @@
         }
 
         agi_end_of_loop(objNo: number, flagNo: number) {
-            this.gameObjects[objNo].callAtEndOfLoop = true;
+            this.gameObjects[objNo].callAtEndOfLoop       = true;
             this.gameObjects[objNo].flagToSetWhenFinished = flagNo;
             //this.gameObjects[objNo].celCycling = true;
         }
@@ -691,7 +763,7 @@
         agi_stop_motion(objNo: number) {
             if (objNo == 0)
                 this.agi_program_control();
-            this.gameObjects[objNo].motion = false;
+            this.gameObjects[objNo].motion    = false;
             this.gameObjects[objNo].direction = Direction.Stopped;
         }
 
@@ -726,7 +798,7 @@
         }
 
         agi_set_priority(objNo: number, priority: number) {
-            this.gameObjects[objNo].priority = priority;
+            this.gameObjects[objNo].priority      = priority;
             this.gameObjects[objNo].fixedPriority = true;
         }
 
@@ -740,7 +812,7 @@
 
         agi_set_cel(objNo: number, celNo: number) {
             this.gameObjects[objNo].nextCycle = 1;
-            this.gameObjects[objNo].cel = celNo;
+            this.gameObjects[objNo].cel       = celNo;
         }
 
         agi_set_cel_v(objNo: number, varNo: number) {
@@ -748,7 +820,7 @@
         }
 
         agi_last_cel(objNo: number, varNo: number) {
-            var obj: GameObject = this.gameObjects[objNo];
+            var obj: GameObject   = this.gameObjects[objNo];
             this.variables[varNo] = this.loadedViews[obj.viewNo].loops[obj.loop].cels.length - 1;
         }
 
@@ -808,6 +880,7 @@
             // TODO: Add margin
             this.screen.bltView(viewNo, loopNo, celNo, x, y, priority);
         }
+
         agi_add_to_pic_v(varNo1: number, varNo2: number, varNo3: number, varNo4: number, varNo5: number, varNo6: number, varNo7: number) {
             this.agi_add_to_pic(
                 this.variables[varNo1],
@@ -817,7 +890,7 @@
                 this.variables[varNo5],
                 this.variables[varNo6],
                 this.variables[varNo7]
-                );
+            );
         }
 
         agi_random(start: number, end: number, varNo: number) {
@@ -825,11 +898,11 @@
         }
 
         agi_move_obj(objNo: number, x: number, y: number, stepSpeed: number, flagNo: number) {
-            var obj = this.gameObjects[objNo];
-            obj.moveToX = x;
-            obj.moveToY = y;
-            obj.moveToStep = stepSpeed;
-            obj.movementFlag = MovementFlags.MoveTo;
+            var obj                   = this.gameObjects[objNo];
+            obj.moveToX               = x;
+            obj.moveToY               = y;
+            obj.moveToStep            = stepSpeed;
+            obj.movementFlag          = MovementFlags.MoveTo;
             obj.flagToSetWhenFinished = flagNo;
         }
 
@@ -838,18 +911,18 @@
         }
 
         agi_follow_ego(objNo: number, stepSpeed: number, flagNo: number) {
-            var obj = this.gameObjects[objNo];
-            obj.moveToStep = stepSpeed;
+            var obj                   = this.gameObjects[objNo];
+            obj.moveToStep            = stepSpeed;
             obj.flagToSetWhenFinished = flagNo;
-            obj.movementFlag = MovementFlags.ChaseEgo;
+            obj.movementFlag          = MovementFlags.ChaseEgo;
         }
 
         agi_wander(objNo: number) {
             this.gameObjects[objNo].movementFlag = MovementFlags.Wander;
-            this.gameObjects[objNo].direction = this.randomBetween(1, 9);
+            this.gameObjects[objNo].direction    = this.randomBetween(1, 9);
 
             if (objNo == 0) {
-                this.variables[6] = this.gameObjects[objNo].direction;
+                this.variables[VAR.ego_dir] = this.gameObjects[objNo].direction;
                 this.agi_program_control();
             }
         }
@@ -887,10 +960,10 @@
 
         agi_erase(objNo: number) {
             var obj: GameObject = this.gameObjects[objNo];
-            obj.draw = false;
+            obj.draw            = false;
             this.screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
             obj.loop = 0;
-            obj.cel = 0;
+            obj.cel  = 0;
         }
 
         agi_load_logic(logNo: number) {
@@ -940,16 +1013,54 @@
 
         }
 
-        agi_set_menu(msg: number) {
-
+        // jsyang
+        private _agi_get_message(msgNo: number): string {
+            return this.loadedLogics[this.logicNo].logic.messages[msgNo];
         }
 
-        agi_set_menu_member(msg: number, ctrl: number) {
+        agi_set_menu(msg: number) {
+            this.currentMenu = {
+                name:  this._agi_get_message(msg),
+                items: [
+                    {
+                        text:  this._agi_get_message(msg),
+                        ctrNo: -1
+                    }
+                ]
+            };
 
+            this.menu.push(this.currentMenu);
+        }
+
+        agi_set_menu_member(msg: number, ctrNo: number) {
+            this.currentMenu.items.push({
+                text: this._agi_get_message(msg),
+                ctrNo
+            });
         }
 
         agi_submit_menu() {
+            for (let m of this.menu) {
+                const menuId           = 'menu-' + m.name.toLowerCase();
+                const selectEl         = document.createElement('select');
+                selectEl.id            = menuId;
+                selectEl.selectedIndex = 0;
+                selectEl.onchange      = () => {
+                    const ctrNo             = parseFloat(selectEl.value);
+                    this.controllers[ctrNo] = 1;
+                    selectEl.selectedIndex  = 0;
+                };
 
+                for (let i of m.items) {
+                    const optionEl     = document.createElement('option');
+                    optionEl.value     = i.ctrNo.toString();
+                    optionEl.innerHTML = i.text;
+
+                    selectEl.appendChild(optionEl);
+                }
+
+                this.menuContainerElement.appendChild(selectEl);
+            }
         }
 
         agi_enable_member(ctrl: number) {
@@ -1003,11 +1114,11 @@
         }
 
         agi_status() {
-            
+
         }
 
         agi_clear_text_rect(n1: number, n2: number, n3: number, n4: number, n5: number) {
-            
+
         }
 
         agi_menu_input() {
@@ -1023,11 +1134,11 @@
         }
 
         agi_show_obj_v(varNo: number) {
-            
+
         }
 
         agi_get(itemNo: number) {
-            
+
         }
 
         agi_discard_sound(soundNo: number) {
@@ -1035,7 +1146,7 @@
         }
 
         agi_save_game() {
-            
+
         }
 
         agi_restore_game() {
@@ -1067,7 +1178,7 @@
         }
 
         agi_echo_line() {
-            
+
         }
 
         agi_cancel_line() {
@@ -1083,12 +1194,12 @@
         }
 
         agi_get_string(strNo: number, msg: string, x: number, y: number, maxLen: number) {
-            this.dialogueStrNo = strNo;
+            this.dialogueStrNo  = strNo;
             this.dialoguePrompt = msg;
-            this.dialogueStrX = x;
-            this.dialogueStrY = y;
+            this.dialogueStrX   = x;
+            this.dialogueStrY   = y;
             this.dialogueStrLen = maxLen;
-            this.dialogueMode = 1;
+            this.dialogueMode   = 1;
         }
 
         agi_parse(strNo: number) {
@@ -1114,15 +1225,16 @@
         agi_reset_scan_start() {
             this.loadedLogics[this.logicNo].scanStart = 0;
         }
-        
+
         agi_close_window() {
-            
+
         }
 
         /* Tests */
         agi_test_equaln(varNo: number, val: number): boolean {
             return this.variables[varNo] == val;
         }
+
         agi_test_equalv(varNo1: number, varNo2: number): boolean {
             return this.agi_test_equaln(varNo1, this.variables[varNo2]);
         }
@@ -1130,6 +1242,7 @@
         agi_test_lessn(varNo: number, val: number): boolean {
             return this.variables[varNo] < val;
         }
+
         agi_test_lessv(varNo1: number, varNo2: number): boolean {
             return this.agi_test_lessn(varNo1, this.variables[varNo2]);
         }
@@ -1137,6 +1250,7 @@
         agi_test_greatern(varNo: number, val: number): boolean {
             return this.variables[varNo] > val;
         }
+
         agi_test_greaterv(varNo1: number, varNo2: number): boolean {
             return this.agi_test_greatern(varNo1, this.variables[varNo2]);
         }
@@ -1144,6 +1258,7 @@
         agi_test_isset(flagNo: number): boolean {
             return this.flags[flagNo];
         }
+
         agi_test_issetv(varNo: number): boolean {
             return this.agi_test_isset(this.variables[varNo]);
         }
@@ -1162,12 +1277,12 @@
         }
 
         agi_test_controller(ctrNo: number): boolean {
-            return false;
+            return this.controllers[ctrNo] > 0;
         }
 
         agi_test_have_key(): boolean {
             var haveKey: boolean = this.haveKey;
-            this.haveKey = false;
+            this.haveKey         = false;
             return haveKey;
         }
 
@@ -1196,7 +1311,5 @@
         agi_object_on_water() {
 
         }
-
-        // ReSharper restore InconsistentNaming
     }
-} 
+}

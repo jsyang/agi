@@ -13,6 +13,7 @@ Adventure Game Interpreter for Sierra's classic 80's adventure games written in 
 - Click on the red outline to start the game
 - KB controls
     - `ENTER` to skip most title sequences
+- Menus now work (virtual program controller keys are supported, (ex: 21 for "About" menu item)
 
 ## Background
 

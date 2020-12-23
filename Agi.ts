@@ -2,11 +2,11 @@
   Adventure Game Interpreter
   Original IBM PC version by Jeff Stephenson and Cris Iden
   of Sierra On-Line Inc. Around 1984-1989.
-  
+
   JavaScript version by Erik Sandberg, 2014 (30th-ish anniversary!).
   This interpreter parses the original game resource files.
   I do not provide these files as they are the intellectual property of Sierra.
-  
+
   This is not a straight port, but has been implemented from the specs
   defined by Lance Ewing, Peter Kelly, Claudio Matsuoka, Stu George and David Symonds
   at http://wiki.scummvm.org/index.php/AGI/Specifications
@@ -32,9 +32,9 @@ namespace Agi {
     ];
 
     export var interpreter: Interpreter;
-    export function start(path: string, context: CanvasRenderingContext2D, audioContext: AudioContext) {
+    export function start(path: string, context: CanvasRenderingContext2D, audioContext: AudioContext, menuContainerElement: HTMLElement) {
         Resources.load(path, () => {
-            interpreter = new Interpreter(context, audioContext);
+            interpreter = new Interpreter(context, audioContext, menuContainerElement);
             interpreter.start();
 
             window.onkeypress = function (e) {

@@ -25,18 +25,29 @@
         width: 640px;
         height: 120px;
     }
+
+    #menu select {
+        appearance: none;
+        font-family: monospace;
+        margin-right: 4px;
+    }
 </style>
 <div>
+    <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
-<!--    <textarea id="textarea"></textarea>-->
+    <!--    <textarea id="textarea"></textarea>-->
 </div>
 <script src="dist/agi.js"></script>
 <script>
+    var hasStarted = false;
     var canvas     = document.getElementById("canvas");
     var context    = canvas.getContext("2d");
     canvas.onclick = function () {
+        if (hasStarted) return;
+
         var audioContext = new (AudioContext || webkitAudioContext)();
-        Agi.start("game/", context, audioContext);
+        Agi.start("game/", context, audioContext, document.getElementById('menu'));
+        hasStarted = true;
     };
 </script>
 </body>
