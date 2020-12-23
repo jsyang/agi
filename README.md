@@ -1,6 +1,19 @@
 # agi.js
 Adventure Game Interpreter for Sierra's classic 80's adventure games written in TypeScript.
 
+## Running
+
+0. Run `yarn` within the project root folder.
+1. Download any AGI game and extract its contents into a `game` folder within the project root folder.
+2. Run `yarn play`
+3. Open http://localhost:3000
+
+## Controls
+
+- Click on the red outline to start the game
+- KB controls
+    - `ENTER` to skip most title sequences
+
 ## Background
 
 This is a project that aims to recreate one of the most beautiful game engines ever created.
@@ -46,11 +59,11 @@ The resource manager is mostly complete, save for a few assets that hasn't been 
 yet (sounds, dictionary etc.).
 
 The interpreter works in cycles, best described in the documentation above. Every cycle the interpreter
-executes logic script 0 and any referenced logic scripts. The script itself may execture commands on the 
+executes logic script 0 and any referenced logic scripts. The script itself may execute commands on the 
 interpreter that updates game objects and draws them to both a visual frame buffer and a priority buffer. 
-The visual buffer is at the end of the cycle blitted to a canvas.
+The visual buffer is blitted to a canvas at the end of the cycle.
 
-The logic parser seems to be working well acording to my tests. The system mainly needs work on the 
+The logic parser seems to be working well according to my tests. The system mainly needs work on the 
 interpreter; the main issue being that some details are missing from the specs defined above and need
 slight reverse engineering.
 

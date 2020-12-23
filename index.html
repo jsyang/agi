@@ -1,28 +1,43 @@
 ﻿<!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8"/>
-        <title>AGI test</title>
-    </head>
-    <body>
-        <style>
-            canvas {
-                width: 320px;
-                height: 200px;
-                image-rendering: -moz-crisp-edges;
-                image-rendering: pixelated;
-            }
-        </style>
-        <canvas id="canvas" width="320" height="200"></canvas>
-        <script src="dist/agi.js"></script>
-        <textarea id="textarea" cols="50" rows="20"></textarea>
-        <script>
-            var canvas = document.getElementById("canvas");
-            var context = canvas.getContext("2d");
-            canvas.onclick = function() {
-                var audioContext = new (AudioContext || webkitAudioContext)();
-                Agi.start("game/", context, audioContext);
-            };
-        </script>
-    </body>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8"/>
+    <title>AGI.js</title>
+</head>
+<body>
+<style>
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    canvas {
+        outline: 1px solid red;
+        width: 640px;
+        height: 400px;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: pixelated;
+    }
+
+    textarea {
+        box-sizing: border-box;
+        width: 640px;
+        height: 120px;
+    }
+</style>
+<div>
+    <canvas id="canvas" width="320" height="200"></canvas>
+<!--    <textarea id="textarea"></textarea>-->
+</div>
+<script src="dist/agi.js"></script>
+<script>
+    var canvas     = document.getElementById("canvas");
+    var context    = canvas.getContext("2d");
+    canvas.onclick = function () {
+        var audioContext = new (AudioContext || webkitAudioContext)();
+        Agi.start("game/", context, audioContext);
+    };
+</script>
+</body>
 </html>

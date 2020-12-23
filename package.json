@@ -4,7 +4,7 @@
   "description": "Interpreter for Sierra AGI games",
   "main": "agi.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "play": "node ."
   },
   "repository": {
     "type": "git",
@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/r1sc/agi.js#readme",
   "dependencies": {
-    "typescript": "^3.3.3"
+    "express": "^4.17.1",
+    "typescript": "^4.1.3"
   }
 }
