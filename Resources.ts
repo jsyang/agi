@@ -4,23 +4,23 @@
         volOffset: number;
     }
 
-    var logdirRecords: IDirectoryEntry[] = [],
-        picdirRecords: IDirectoryEntry[] = [],
-        viewdirRecords: IDirectoryEntry[] = [],
-        snddirRecords: IDirectoryEntry[] = [];
-    var volBuffers: Fs.ByteStream[] = [];
-    var availableVols: boolean[] = [];
+    export var logdirRecords: IDirectoryEntry[]  = [];
+    export var picdirRecords: IDirectoryEntry[]  = [];
+    export var viewdirRecords: IDirectoryEntry[] = [];
+    export var snddirRecords: IDirectoryEntry[]  = [];
+    var volBuffers: Fs.ByteStream[]              = [];
+    var availableVols: boolean[]                 = [];
     export var fontStream: Fs.ByteStream;
 
     function parseDirfile(buffer: Fs.ByteStream, records: IDirectoryEntry[]): void {
         var length: number = buffer.length / 3;
         for (var i: number = 0; i < length; i++) {
-            var val: number = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
-            var volNo: number = val >>> 20;
+            var val: number       = (buffer.readUint8() << 16) + (buffer.readUint8() << 8) + buffer.readUint8();
+            var volNo: number     = val >>> 20;
             var volOffset: number = val & 0xFFFFF;
             if (val >>> 16 == 0xFF)
                 continue;
-            records[i] = { volNo: volNo, volOffset: volOffset };
+            records[i] = {volNo: volNo, volOffset: volOffset};
             if (availableVols[volNo] === undefined)
                 availableVols[volNo] = true;
         }
@@ -51,11 +51,11 @@
             default:
                 throw "Undefined resource type: " + type;
         }
-        var volstream = new Fs.ByteStream(volBuffers[record.volNo].buffer, record.volOffset);
-        var sig: number = volstream.readUint16();
+        var volstream     = new Fs.ByteStream(volBuffers[record.volNo].buffer, record.volOffset);
+        var sig: number   = volstream.readUint16();
         var volNo: number = volstream.readUint8();
-        var resLength = volstream.readUint16();
-        var volPart = new Fs.ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
+        var resLength     = volstream.readUint16();
+        var volPart       = new Fs.ByteStream(volstream.buffer, record.volOffset + 5, record.volOffset + 5 + resLength);
         return volPart;
     }
 

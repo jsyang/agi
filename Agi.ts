@@ -32,7 +32,8 @@ namespace Agi {
     ];
 
     export var interpreter: Interpreter;
-    export function start(path: string, context: CanvasRenderingContext2D, audioContext: AudioContext, menuContainerElement: HTMLElement) {
+
+    export function start(path: string, context: CanvasRenderingContext2D, audioContext: AudioContext, menuContainerElement: HTMLElement, FPS = 30) {
         Resources.load(path, () => {
             interpreter = new Interpreter(context, audioContext, menuContainerElement);
             interpreter.start();
@@ -50,7 +51,7 @@ namespace Agi {
                 if (interpreter.quit) return;
 
                 interpreter.cycle();
-                setTimeout(renderloop, (1000 / 20) * interpreter.variables[10]);
+                setTimeout(renderloop, (1000 / FPS) * interpreter.variables[10]);
             })();
         });
     }

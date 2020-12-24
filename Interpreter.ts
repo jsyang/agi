@@ -314,7 +314,9 @@ namespace Agi {
 
         updateScore() {
             const scoreEl = document.getElementById('score');
-            scoreEl.innerHTML = `Score: ${this.variables[VAR.score]} / ${this.variables[VAR.max_score]}`;
+            if (scoreEl) {
+                scoreEl.innerHTML = `Score: ${this.variables[VAR.score]} / ${this.variables[VAR.max_score]}`;
+            }
         }
 
         bltFrame() {
@@ -630,7 +632,6 @@ namespace Agi {
         }
 
         agi_new_room(roomNo: number) {
-            console.log("NEW_ROOM " + roomNo);
             this.newroom = roomNo;
         }
 
@@ -853,7 +854,7 @@ namespace Agi {
             this.variables[varNo] = this.gameObjects[objNo].loop;
         }
 
-        agi_currentview(objNo: number, varNo: number) {
+        agi_current_view(objNo: number, varNo: number) {
             this.variables[varNo] = this.gameObjects[objNo].viewNo;
         }
 
@@ -975,8 +976,8 @@ namespace Agi {
             this.blockY2 = y2;
         }
 
-        agi_set_string(strNo: number, msg: number) {
-            //this.strings[strNo] = message;
+        agi_set_string(strNo: number, msgNo: number) {
+            this.strings[strNo] = this._agi_get_message(msgNo);
         }
 
         agi_erase(objNo: number) {
@@ -1036,18 +1037,23 @@ namespace Agi {
 
         // jsyang
         private _agi_get_message(msgNo: number): string {
-            return this.loadedLogics[this.logicNo].logic.messages[msgNo];
+            let interpolated = this.loadedLogics[this.logicNo].logic.messages[msgNo];
+
+            // Variable interpolation
+            if (interpolated) {
+                interpolated = interpolated.replace(/%v[0-9]+/g, (match, p1) => {
+                    const vNum = parseFloat(match.replace('%v', ''));
+                    return this.variables[vNum].toString();
+                });
+            }
+
+            return interpolated;
         }
 
         agi_set_menu(msg: number) {
             this.currentMenu = {
-                name:  this._agi_get_message(msg),
-                members: [
-                    {
-                        text:  this._agi_get_message(msg),
-                        ctrNo: -1
-                    }
-                ]
+                name:    this._agi_get_message(msg),
+                members: [{text: this._agi_get_message(msg), ctrNo: -1}]
             };
 
             this.menu.push(this.currentMenu);
@@ -1086,7 +1092,7 @@ namespace Agi {
             }
 
             const scoreEl = document.createElement('span');
-            scoreEl.id = 'score';
+            scoreEl.id    = 'score';
             this.menuContainerElement.appendChild(scoreEl);
         }
 
@@ -1237,7 +1243,8 @@ namespace Agi {
         }
 
         agi_quit(n1: number) {
-            this.quit               = true;
+            this.quit = true;
+            this.soundEmulator.deactivate();
             document.body.innerHTML = '';
         }
 
@@ -1274,6 +1281,8 @@ namespace Agi {
         }
 
         agi_get_string(strNo: number, msg: string, x: number, y: number, maxLen: number) {
+            console.log('agi_get_string');
+
             this.dialogueStrNo  = strNo;
             this.dialoguePrompt = msg;
             this.dialogueStrX   = x;
@@ -1287,7 +1296,7 @@ namespace Agi {
         }
 
         agi_print(msgNo: number) {
-            alert(this.loadedLogics[this.logicNo].logic.messages[msgNo]);
+            alert(this._agi_get_message(msgNo));
         }
 
         agi_print_v(varNo: number) {
@@ -1308,6 +1317,12 @@ namespace Agi {
 
         agi_close_window() {
 
+        }
+
+        agi_get_num(mPROMPT, vNUM) {
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MathematicalCommands/get.num.html
+            const choice         = prompt(this._agi_get_message(mPROMPT), '0');
+            this.variables[vNUM] = parseFloat(choice || '0');
         }
 
         /* Tests */

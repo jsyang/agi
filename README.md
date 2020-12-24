@@ -70,6 +70,17 @@ slight reverse engineering.
 
 ![Space Quest II text rendering](screenshots/sc3.png)
 
+**jsyang note:** This is not correct, many commands for the interpreter are missing. SQ2 isn't playable
+beyond the first room for instance. Many aspects of the logic parser are broken.
+
+## AGI command references
+
+Open http://agi.sierrahelp.com/AGIStudioHelp/TOC.html and then run this to show all entries:
+
+```
+Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
+```
+
 ## Contribution
 
 **Please fork and contribute!** If you make anything useful, please provide a pull request so I can integrate
