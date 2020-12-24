@@ -9,7 +9,7 @@
 
     class AstNode {
         constructor(public opcode: number, public byteOffset: number) {
-            
+
         }
         public args: number[];
     }
@@ -562,10 +562,10 @@
                     }
                 } else {
                     funcName = LogicParser.statements[opCodeNr];
-                    //console.log(funcName);
+                    console.log(funcName);
                     statement = <IStatement>this.interpreter["agi_" + funcName];
                     if (statement === undefined)
-                        throw "Statement not implemented: " + funcName;
+                        throw `Statement not implemented: ${funcName} [${opCodeNr}]`;
                     debugLine = funcName;
                     //console.log(LogicParser.stNo + " @L" + this.logic.no + ": " + debugLine);
 

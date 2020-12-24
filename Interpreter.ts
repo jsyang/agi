@@ -68,9 +68,10 @@ namespace Agi {
         priorityBuffer: Bitmap;
         scriptSize: number      = 0;
         strings: string[]       = [];
-        variables: Uint8Array   = new Uint8Array(255);
-        flags: boolean[]        = new Array(255);
-        controllers: Uint8Array = new Uint8Array(255);
+        items: Uint8Array       = new Uint8Array(256);
+        variables: Uint8Array   = new Uint8Array(256);
+        flags: boolean[]        = new Array(256);
+        controllers: Uint8Array = new Uint8Array(256);
         msgBoxText: string      = null;
         msgBoxX: number;
         msgBoxY: number;
@@ -99,6 +100,8 @@ namespace Agi {
         inputBuffer: string             = "";
         allowInput: boolean             = true;
         haveKey: boolean                = false;
+        paused: boolean                 = false;
+        quit: boolean                   = false;
 
         dialogue: boolean;
         dialogueStrNo: number;
@@ -130,9 +133,12 @@ namespace Agi {
 
         start(): void {
             /* Reset all state */
-            this.controllers.fill(0);
+            this.resetControllers();
+            this.resetMenu();
             this.variables.fill(0);
             this.flags.fill(false);
+            this.items.fill(0);
+            this.paused = false;
 
             this.variables[VAR.room_no]       = 0;
             this.variables[VAR.video_mode]    = 3; // EGA
@@ -146,8 +152,6 @@ namespace Agi {
 
             this.agi_unanimate_all();
             this.agi_load_logic(0);
-
-            this.cycle();
         }
 
         setEgoDir(newEgoDir: number) {
@@ -224,6 +228,9 @@ namespace Agi {
             // calculate direction of movement
             while (true) {
                 this.agi_call(0);
+
+                if (this.paused) break;
+
                 this.flags[FLAG.noise_enabled] = false;     // Logic 0 executed for the first time
 
                 this.variables[VAR.object_edge_code]     = 0;
@@ -232,7 +239,6 @@ namespace Agi {
                 this.flags[FLAG.new_room]       = false;
                 this.flags[FLAG.game_restarted] = false;
                 this.flags[FLAG.game_restored]  = false;
-
 
                 for (var j = 0; j < this.gameObjects.length; j++) {
                     var obj = this.gameObjects[j];
@@ -288,8 +294,17 @@ namespace Agi {
                     break;
                 }
             }
+
             this.bltFrame();
             this.resetControllers();
+        }
+
+        resetMenu() {
+            this.menu = [];
+
+            while (this.menuContainerElement.children.length > 0) {
+                this.menuContainerElement.removeChild(this.menuContainerElement.children[0]);
+            }
         }
 
         resetControllers() {
@@ -1049,6 +1064,7 @@ namespace Agi {
                     const ctrNo             = parseFloat(selectEl.value);
                     this.controllers[ctrNo] = 1;
                     selectEl.selectedIndex  = 0;
+                    selectEl.blur();
                 };
 
                 for (let i of m.items) {
@@ -1071,8 +1087,12 @@ namespace Agi {
 
         }
 
-        agi_drop(item: number) {
+        agi_put_v(item, room) {
+            this.items[item] = room;
+        }
 
+        agi_drop(item: number) {
+            this.items[item] = 0;
         }
 
         agi_status_line_on() {
@@ -1138,31 +1158,80 @@ namespace Agi {
         }
 
         agi_get(itemNo: number) {
-
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/get.html
+            this.items[itemNo] = 255;
         }
 
         agi_discard_sound(soundNo: number) {
             this.loadedSounds[soundNo] = null;
         }
 
-        agi_save_game() {
+        _agi_get_state() {
+            return {
+                items:     this.items,
+                variables: this.variables,
+                flags:     this.flags,
+                ego:       this.gameObjects[0],
 
+                // Ensure the restored game can successfully show views and process logic
+                loadedViews:  this.loadedViews.map((v, i) => v ? i : null).filter(i => i !== null),
+                loadedLogics: this.loadedLogics.map((v, i) => v ? i : null).filter(i => i !== null)
+            };
+        }
+
+        agi_save_game() {
+            try {
+                localStorage.setItem('agi_savegame_1', JSON.stringify(this._agi_get_state()));
+            } catch (e) {
+                alert('Save game failed!');
+            }
         }
 
         agi_restore_game() {
+            if (!confirm('Your current game will be lost if you restore. Continue?')) return;
 
+            let savedState;
+            try {
+                savedState = JSON.parse(localStorage.getItem('agi_savegame_1'));
+
+                if (savedState) {
+                    for (let i = 0; i < 256; i++) {
+                        this.variables[i] = savedState.variables[i];
+                        this.flags[i]     = savedState.flags[i];
+                        this.items[i]     = savedState.items[i];
+                    }
+
+                    for (let k in savedState.ego) {
+                        this.gameObjects[0][k] = savedState.ego[k];
+                    }
+
+                    for (let i of savedState.loadedViews) {
+                        this.agi_load_view(i);
+                    }
+
+                    for (let i of savedState.loadedLogics) {
+                        this.agi_load_logic(i);
+                    }
+
+                    this.allowInput                = true;
+                    this.flags[FLAG.game_restored] = true;
+                }
+            } catch (e) {
+                alert('Restore game failed!');
+            }
         }
 
         agi_restart_game() {
-
+            this.start();
         }
 
         agi_quit(n1: number) {
-
+            this.quit               = true;
+            document.body.innerHTML = '';
         }
 
         agi_pause() {
-
+            this.paused = !this.paused;
         }
 
         agi_toggle_monitor() {

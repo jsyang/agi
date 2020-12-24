@@ -61,7 +61,7 @@
 
     export function load(path: string, done: () => void) {
         Fs.downloadAllFiles(path, ["LOGDIR", "PICDIR", "VIEWDIR", "SNDDIR"], (buffers: Fs.IByteStreamDict) => {
-            console.log("Directory files downloaded.");
+            // console.log("Directory files downloaded.");
             parseDirfile(buffers["LOGDIR"], logdirRecords);
             parseDirfile(buffers["PICDIR"], picdirRecords);
             parseDirfile(buffers["VIEWDIR"], viewdirRecords);
@@ -73,7 +73,7 @@
                 }
             }
             Fs.downloadAllFiles(path, volNames, (buffers: Fs.IByteStreamDict) => {
-                console.log("Resource volumes downloaded.");
+                // console.log("Resource volumes downloaded.");
                 for (var j: number = 0; j < volNames.length; j++) {
                     volBuffers[j] = buffers[volNames[j]];
                 }

@@ -40,16 +40,15 @@ namespace Agi {
             window.onkeypress = function (e) {
                 if (e.which != 13) {
                     interpreter.keyboardCharBuffer.push(e.which);
-                    console.log("Keypress");
                 }
             };
-            window.onkeydown = function (e) {
+            window.onkeydown  = function (e) {
                 interpreter.keyboardSpecialBuffer.push(e.which);
-                console.log("keydown");
             };
 
             (function renderloop() {
-                //window.requestAnimationFrame(renderloop);
+                if (interpreter.quit) return;
+
                 interpreter.cycle();
                 setTimeout(renderloop, (1000 / 20) * interpreter.variables[10]);
             })();
