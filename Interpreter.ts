@@ -1,6 +1,6 @@
 ﻿interface Menu {
     name: string;
-    items: MenuItem[];
+    members: MenuItem[];
 }
 
 interface MenuItem {
@@ -297,6 +297,7 @@ namespace Agi {
 
             this.bltFrame();
             this.resetControllers();
+            this.updateScore();
         }
 
         resetMenu() {
@@ -309,6 +310,11 @@ namespace Agi {
 
         resetControllers() {
             this.controllers.fill(0);
+        }
+
+        updateScore() {
+            const scoreEl = document.getElementById('score');
+            scoreEl.innerHTML = `Score: ${this.variables[VAR.score]} / ${this.variables[VAR.max_score]}`;
         }
 
         bltFrame() {
@@ -1036,7 +1042,7 @@ namespace Agi {
         agi_set_menu(msg: number) {
             this.currentMenu = {
                 name:  this._agi_get_message(msg),
-                items: [
+                members: [
                     {
                         text:  this._agi_get_message(msg),
                         ctrNo: -1
@@ -1048,7 +1054,7 @@ namespace Agi {
         }
 
         agi_set_menu_member(msg: number, ctrNo: number) {
-            this.currentMenu.items.push({
+            this.currentMenu.members.push({
                 text: this._agi_get_message(msg),
                 ctrNo
             });
@@ -1067,7 +1073,7 @@ namespace Agi {
                     selectEl.blur();
                 };
 
-                for (let i of m.items) {
+                for (let i of m.members) {
                     const optionEl     = document.createElement('option');
                     optionEl.value     = i.ctrNo.toString();
                     optionEl.innerHTML = i.text;
@@ -1076,7 +1082,12 @@ namespace Agi {
                 }
 
                 this.menuContainerElement.appendChild(selectEl);
+
             }
+
+            const scoreEl = document.createElement('span');
+            scoreEl.id = 'score';
+            this.menuContainerElement.appendChild(scoreEl);
         }
 
         agi_enable_member(ctrl: number) {
