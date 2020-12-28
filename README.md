@@ -75,11 +75,34 @@ beyond the first room for instance. Many aspects of the logic parser are broken.
 
 ## AGI command references
 
-Open http://agi.sierrahelp.com/AGIStudioHelp/TOC.html and then run this to show all entries:
-
+- Open http://agi.sierrahelp.com/AGIStudioHelp/TOC.html and then run this to show all entries:
 ```
 Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 ```
+
+- https://wiki.scummvm.org/index.php/AGI/Specifications/Resources#The_else_command_and_more_on_brackets
+
+```
+/usr/local/Cellar/qt/5.15.0/bin/qmake agistudio.pro -o Makefile
+```
+
+## AGI Architecture
+
+- LOGICs are the AGI virtual machine code for the game, tells the engine what to do
+    - Core aspect of the engine
+- PICTURES are background images with visual (displayed as is to user) and priority images (act as primitive z-buffer for clipping and bounding of game objects)
+- VIEWs are animations collections that sit on top of the PICs; e.g. ego, opening doors, portals, etc.
+  - CELs are individual sequences of animations
+  - LOOPs are individual frames within an animation sequence
+- SOUNDs are just that, both sound effects along with music
+- [WORDS.TOK](https://wiki.scummvm.org/index.php/AGIWiki/WORDS.TOK) contains words recognized by the game
+
+## Use Emscripten to compile the logic code because JS does not support GOTOs
+
+- https://emscripten.org/docs/getting_started/downloads.html
+- https://github.com/emscripten-core/emscripten/issues/9036#issuecomment-532092743
+  - `open /Applications/Python\ 3.8/Install\ Certificates.command`
+
 
 ## Contribution
 

@@ -62,6 +62,7 @@ namespace Agi {
 
     export class Interpreter {
         /* Interpreter vars */
+        wasmLoaded              = false;
         programControl: boolean;
         newroom: number         = 0;
         visualBuffer: Bitmap;
@@ -151,7 +152,39 @@ namespace Agi {
             this.flags[FLAG.new_room]      = true;       // Room script executed for the first time
 
             this.agi_unanimate_all();
-            this.agi_load_logic(0);
+
+            const fetchBody: string = Resources.logdirAvailableRecordIndices
+                // .filter(i => !(
+                //     i === 46
+                // ))
+                .filter(i => (
+                    i === 0 ||
+                    i === 1 ||
+                    i === 2 ||
+                    i === 98 ||
+                    i === 104 ||
+                    i === 105 ||
+                    i === 140
+                ))
+                .map(i => {
+                    this.loadedLogics[i] = new LogicParser(this, i);
+                    console.log(`new LogicParser(this, ${i})`);
+                    return `EMSCRIPTEN_KEEPALIVE void logic${i}() {\n\n${this.loadedLogics[i].decompile()}}\n\n`;
+                }).join('\n');
+
+            fetch('/logic.js', {method: 'POST', body: `#include <emscripten.h>\n\n${fetchBody}`})
+                .then(res => res.text())
+                .then(res => {
+                    const scriptEl     = document.createElement('script');
+                    scriptEl.innerHTML = res;
+                    document.body.appendChild(scriptEl);
+
+                    (window as any).Module()
+                        .then(instance => {
+                            (window as any).LOGIC = instance;
+                            this.wasmLoaded       = true;
+                        });
+                });
         }
 
         setEgoDir(newEgoDir: number) {
@@ -168,25 +201,36 @@ namespace Agi {
                 while (this.keyboardSpecialBuffer.length > 0) {
                     var key: number = this.keyboardSpecialBuffer.shift();
                     if (!this.dialogue) {
-                        if (key == 37) // left
-                            this.setEgoDir(7);
-                        else if (key == 36) // left-up
-                            this.setEgoDir(8);
-                        else if (key == 38) // up
-                            this.setEgoDir(1);
-                        else if (key == 33) // right-up
-                            this.setEgoDir(2);
-                        else if (key == 39) // right
-                            this.setEgoDir(3);
-                        else if (key == 34) // right-down
-                            this.setEgoDir(4);
-                        else if (key == 40) // down
-                            this.setEgoDir(5);
-                        else if (key == 35) // down-left
-                            this.setEgoDir(6);
-                        else if (key == 12) // stop
-                            this.setEgoDir(0);
-                        else if (key == 27) { // Escape
+                        switch (key) {
+                            case 37: // left
+                                this.setEgoDir(7);
+                                break;
+                            case 36: // left-up
+                                this.setEgoDir(8);
+                                break;
+                            case 38: // up
+                                this.setEgoDir(1);
+                                break;
+                            case 33: // right-up
+                                this.setEgoDir(2);
+                                break;
+                            case 39: // right
+                                this.setEgoDir(3);
+                                break;
+                            case 34: // right-down
+                                this.setEgoDir(4);
+                                break;
+                            case 40: // down
+                                this.setEgoDir(5);
+                                break;
+                            case 35: // down-left
+                                this.setEgoDir(6);
+                                break;
+                            case 12: // stop
+                                this.setEgoDir(0);
+                                break;
+                            case 27:  // Escape
+                                break;
                             // alert("Menu");
                             // jsyang: menu is always visible in our version
                         }
@@ -243,10 +287,10 @@ namespace Agi {
                 for (var j = 0; j < this.gameObjects.length; j++) {
                     var obj = this.gameObjects[j];
                     if (obj.update) {
-                        if (j == 0)
+                        if (j == 0) {
                             obj.direction = egoDir;
-                        //else
-                        //    obj.updateDirection(this);
+                        }
+
                         this.updateObject(obj, j);
                     }
                 }
@@ -254,7 +298,6 @@ namespace Agi {
                 if (this.newroom != 0) {
                     this.agi_stop_update(0);
                     this.agi_unanimate_all();
-                    this.loadedLogics = this.loadedLogics.slice(0, 1);
                     this.agi_player_control();
                     this.agi_unblock();
                     this.agi_set_horizon(36);
@@ -284,10 +327,8 @@ namespace Agi {
                         default:
                     }
 
-                    this.variables[VAR.ego_edge_code] = 0;
-                    this.flags[FLAG.input_received]   = false;
+                    this.flags[FLAG.input_received] = false;
 
-                    //this.agi_load_logic_v(0);
                     this.flags[FLAG.new_room] = true;
                     this.newroom              = 0;
                 } else {
@@ -342,24 +383,27 @@ namespace Agi {
                             xStep = yStep = obj.moveToStep;
                         }
                         if (obj.moveToX > obj.x) {
-                            if (obj.moveToY > obj.y)
+                            if (obj.moveToY > obj.y) {
                                 obj.direction = Direction.DownRight;
-                            else if (obj.moveToY < obj.y)
+                            } else if (obj.moveToY < obj.y) {
                                 obj.direction = Direction.UpRight;
-                            else
+                            } else {
                                 obj.direction = Direction.Right;
+                            }
                         } else if (obj.moveToX < obj.x) {
-                            if (obj.moveToY > obj.y)
+                            if (obj.moveToY > obj.y) {
                                 obj.direction = Direction.DownLeft;
-                            else if (obj.moveToY < obj.y)
+                            } else if (obj.moveToY < obj.y) {
                                 obj.direction = Direction.UpLeft;
-                            else
+                            } else {
                                 obj.direction = Direction.Left;
+                            }
                         } else {
-                            if (obj.moveToY > obj.y)
+                            if (obj.moveToY > obj.y) {
                                 obj.direction = Direction.Down;
-                            else if (obj.moveToY < obj.y)
+                            } else if (obj.moveToY < obj.y) {
                                 obj.direction = Direction.Up;
+                            }
                         }
 
                         yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
@@ -375,14 +419,17 @@ namespace Agi {
                 }
                 var newX: number = obj.x;
                 var newY: number = obj.y;
-                if (obj.direction == 1 || obj.direction == 2 || obj.direction == 8)
+                if (obj.direction == 1 || obj.direction == 2 || obj.direction == 8) {
                     newY = obj.y - yStep;
-                else if (obj.direction == 5 || obj.direction == 4 || obj.direction == 6)
+                } else if (obj.direction == 5 || obj.direction == 4 || obj.direction == 6) {
                     newY = obj.y + yStep;
-                if (obj.direction == 7 || obj.direction == 8 || obj.direction == 6)
+                }
+
+                if (obj.direction == 7 || obj.direction == 8 || obj.direction == 6) {
                     newX = obj.x - xStep;
-                else if (obj.direction == 3 || obj.direction == 2 || obj.direction == 4)
+                } else if (obj.direction == 3 || obj.direction == 2 || obj.direction == 4) {
                     newX = obj.x + xStep;
+                }
 
                 if (obj.ignoreBlocks == false && newY != obj.y) {
                     for (var xNumber: number = 0; xNumber < cel.width; xNumber++) {
@@ -392,8 +439,7 @@ namespace Agi {
                             obj.direction = 0;
                             if (obj.movementFlag == MovementFlags.Wander) {
                                 obj.direction = this.randomBetween(1, 9);
-                                if (no == 0)
-                                    this.variables[VAR.ego_dir] = obj.direction;
+                                if (no == 0) this.variables[VAR.ego_dir] = obj.direction;
                             }
 
                             break;
@@ -410,8 +456,7 @@ namespace Agi {
                         obj.direction = 0;
                         if (obj.movementFlag == MovementFlags.Wander) {
                             obj.direction = this.randomBetween(1, 9);
-                            if (no == 0)
-                                this.variables[VAR.ego_dir] = obj.direction;
+                            if (no == 0) this.variables[VAR.ego_dir] = obj.direction;
                         }
                     }
 
@@ -426,30 +471,30 @@ namespace Agi {
 
                 if (obj.x != obj.oldX || obj.y != obj.oldY) {
                     if (obj.x <= 0) {
-                        if (no == 0)
+                        if (no == 0) {
                             this.variables[VAR.ego_edge_code] = 4;
-                        else {
+                        } else {
                             this.variables[VAR.object_touching_edge] = no;
                             this.variables[VAR.object_edge_code]     = 4;
                         }
                     } else if (obj.x + cel.width >= 160) {
-                        if (no == 0)
+                        if (no == 0) {
                             this.variables[VAR.ego_edge_code] = 2;
-                        else {
+                        } else {
                             this.variables[VAR.object_touching_edge] = no;
                             this.variables[VAR.object_edge_code]     = 2;
                         }
                     } else if (!obj.ignoreHorizon && obj.y <= this.horizon) {
-                        if (no == 0)
+                        if (no == 0) {
                             this.variables[VAR.ego_edge_code] = 1;
-                        else {
+                        } else {
                             this.variables[VAR.object_touching_edge] = no;
                             this.variables[VAR.object_edge_code]     = 1;
                         }
                     } else if (obj.y >= 168) {
-                        if (no == 0)
+                        if (no == 0) {
                             this.variables[VAR.ego_edge_code] = 3;
-                        else {
+                        } else {
                             this.variables[VAR.object_touching_edge] = no;
                             this.variables[VAR.object_edge_code]     = 3;
                         }
@@ -457,48 +502,55 @@ namespace Agi {
                 }
 
                 if (!obj.fixedPriority) {
-                    if (obj.y < 48)
+                    if (obj.y < 48) {
                         obj.priority = 4;
-                    else if (obj.y == 168)
+                    } else if (obj.y == 168) {
                         obj.priority = 15;
-                    else
+                    } else {
                         obj.priority = ((obj.y / 12) | 0) + 1;
+                    }
 
                 }
                 if (!obj.fixedLoop) {
                     if (view.loops.length > 1 && view.loops.length < 4) {
                         if (obj.direction == 2 || obj.direction == 3 || obj.direction == 4 ||
-                            obj.direction == 6 || obj.direction == 7 || obj.direction == 8)
+                            obj.direction == 6 || obj.direction == 7 || obj.direction == 8) {
                             obj.loop = 1;
+                        }
                     } else if (view.loops.length >= 4) {
-                        if (obj.direction == 1)
+                        if (obj.direction == 1) {
                             obj.loop = 3;
-                        else if (obj.direction == 2 || obj.direction == 3 || obj.direction == 4)
+                        } else if (obj.direction == 2 || obj.direction == 3 || obj.direction == 4) {
                             obj.loop = 0;
-                        else if (obj.direction == 5)
+                        } else if (obj.direction == 5) {
                             obj.loop = 2;
-                        else if (obj.direction == 6 || obj.direction == 7 || obj.direction == 8)
+                        } else if (obj.direction == 6 || obj.direction == 7 || obj.direction == 8) {
                             obj.loop = 1;
+                        }
                     }
                 }
                 if (obj.celCycling) {
                     if (obj.nextCycle == 1) {
-                        if (obj.reverseCycle)
+                        if (obj.reverseCycle) {
                             obj.cel--;
-                        else
+                        } else {
                             obj.cel++;
+                        }
+
                         var endOfLoop: boolean = false;
                         if (obj.cel < 0) {
-                            if (obj.callAtEndOfLoop)
+                            if (obj.callAtEndOfLoop) {
                                 obj.cel = 0;
-                            else
+                            } else {
                                 obj.cel = view.loops[obj.loop].cels.length - 1;
+                            }
                             endOfLoop = true;
                         } else if (obj.cel > view.loops[obj.loop].cels.length - 1) {
-                            if (obj.callAtEndOfLoop)
+                            if (obj.callAtEndOfLoop) {
                                 obj.cel = view.loops[obj.loop].cels.length - 1;
-                            else
+                            } else {
                                 obj.cel = 0;
+                            }
                             endOfLoop = true;
                         }
                         if (endOfLoop && obj.callAtEndOfLoop) {
@@ -519,7 +571,8 @@ namespace Agi {
             return ((Math.random() * (max - min)) + min) | 0;
         }
 
-        // ReSharper disable InconsistentNaming
+        /////////////////////////// AGI
+
         agi_increment(varNo: number): void {
             if (this.variables[varNo] < 255)
                 this.variables[varNo]++;
@@ -578,7 +631,7 @@ namespace Agi {
             this.flags[flagNo] = !this.flags[flagNo];
         }
 
-        agi_setv(varNo: number): void {
+        agi_set_v(varNo: number): void {
             this.agi_set(this.variables[varNo]);
         }
 
@@ -593,12 +646,12 @@ namespace Agi {
         agi_call(logicNo: number): void {
             this.logicStack.push(this.logicNo);
             this.logicNo = logicNo;
-            if (this.loadedLogics[logicNo] != null) {
-                this.loadedLogics[logicNo].parseLogic();
-            } else {
-                this.agi_load_logic(logicNo);
-                this.loadedLogics[logicNo].parseLogic();
-                this.loadedLogics[logicNo] = null;
+            if (this.wasmLoaded) {
+                try {
+                    (window as any).LOGIC['_logic' + logicNo]();
+                } catch (e) {
+                    console.log('Logic ' + logicNo + ' not found!');
+                }
             }
             this.logicNo = this.logicStack.pop();
         }
@@ -611,27 +664,45 @@ namespace Agi {
 
         }
 
-        agi_print_atv(varNo: number, x: number, y: number, width: number): void {
+        agi_shake_screen(shakeCount: number): void {
+
+        }
+
+        agi_reposition(oA: number, vDX: number, vDY: number): void {
+            if (vDX > 127) {
+                vDX -= 256;
+            }
+
+            if (vDY > 127) {
+                vDY -= 256;
+            }
+
+            this.gameObjects[oA].x += vDX;
+            this.gameObjects[oA].y += vDY;
+        }
+
+        agi_print_at_v(varNo: number, x: number, y: number, width: number): void {
             this.agi_print_at(this.variables[varNo], x, y, width);
         }
 
-        agi_muln(varNo: number, val: number): void {
+        agi_mul_n(varNo: number, val: number): void {
             this.variables[this.variables[varNo]] *= val;
         }
 
-        agi_mulv(varNo1: number, varNo2: number): void {
-            this.agi_muln(varNo1, this.variables[varNo2]);
+        agi_mul_v(varNo1: number, varNo2: number): void {
+            this.agi_mul_n(varNo1, this.variables[varNo2]);
         }
 
-        agi_divn(varNo: number, val: number): void {
+        agi_div_n(varNo: number, val: number): void {
             this.variables[this.variables[varNo]] /= val;
         }
 
-        agi_divv(varNo1: number, varNo2: number): void {
-            this.agi_divn(varNo1, this.variables[varNo2]);
+        agi_div_v(varNo1: number, varNo2: number): void {
+            this.agi_div_n(varNo1, this.variables[varNo2]);
         }
 
         agi_new_room(roomNo: number) {
+            console.log(`agi_new_room(${roomNo})`);
             this.newroom = roomNo;
         }
 
@@ -711,6 +782,24 @@ namespace Agi {
             this.programControl = true;
         }
 
+        // DEBUG COMMANDS?
+
+        agi_show_pri_screen() {
+            // ???
+        }
+
+        agi_show_mem() {
+            // ???
+        }
+
+        agi_obj_status_v(oA: number) {
+            // ???
+        }
+
+        agi_return() {
+            // Logic early exit
+        }
+
         agi_set_horizon(y: number) {
             this.horizon = y;
         }
@@ -783,15 +872,17 @@ namespace Agi {
         }
 
         agi_stop_motion(objNo: number) {
-            if (objNo == 0)
+            if (objNo == 0) {
                 this.agi_program_control();
+            }
             this.gameObjects[objNo].motion    = false;
             this.gameObjects[objNo].direction = Direction.Stopped;
         }
 
         agi_start_motion(objNo: number) {
-            if (objNo == 0)
+            if (objNo == 0) {
                 this.agi_player_control();
+            }
             this.gameObjects[objNo].motion = true;
         }
 
@@ -989,9 +1080,8 @@ namespace Agi {
         }
 
         agi_load_logic(logNo: number) {
-            this.loadedLogics[logNo] = new LogicParser(this, logNo);
+            return;
         }
-
 
         agi_load_logic_v(varNo: number) {
             this.agi_load_logic(this.variables[varNo]);
@@ -1045,6 +1135,11 @@ namespace Agi {
                     const vNum = parseFloat(match.replace('%v', ''));
                     return this.variables[vNum].toString();
                 });
+
+                interpolated = interpolated.replace(/%m[0-9]{1,3}/g, (match, p1) => {
+                    const mNum = parseFloat(match.replace('%m', ''));
+                    return this.loadedLogics[this.logicNo].logic.messages[mNum];
+                });
             }
 
             return interpolated;
@@ -1067,6 +1162,8 @@ namespace Agi {
         }
 
         agi_submit_menu() {
+            if (this.menuContainerElement.children.length > 0) return;
+
             for (let m of this.menu) {
                 const menuId           = 'menu-' + m.name.toLowerCase();
                 const selectEl         = document.createElement('select');
@@ -1167,15 +1264,20 @@ namespace Agi {
         }
 
         agi_show_obj(objNo: number) {
-
+            console.log('agi_show_obj');
         }
 
         agi_show_obj_v(varNo: number) {
-
+            console.log('agi_show_obj_v');
         }
 
         agi_get(itemNo: number) {
             // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/get.html
+            this.items[itemNo] = 255;
+        }
+
+        agi_get_v(itemNo: number) {
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/get.v.html
             this.items[itemNo] = 255;
         }
 
@@ -1281,8 +1383,6 @@ namespace Agi {
         }
 
         agi_get_string(strNo: number, msg: string, x: number, y: number, maxLen: number) {
-            console.log('agi_get_string');
-
             this.dialogueStrNo  = strNo;
             this.dialoguePrompt = msg;
             this.dialogueStrX   = x;
@@ -1359,11 +1459,11 @@ namespace Agi {
         }
 
         agi_test_has(itemNo: number): boolean {
-            return false;
+            return this.items[itemNo] === 255;
         }
 
         agi_test_obj_in_room(itemNo: number, varNo: number): boolean {
-            return false;
+            return this.items[itemNo] === this.variables[varNo];
         }
 
         agi_test_posn(objNo: number, x1: number, y1: number, x2: number, y2: number): boolean {
@@ -1389,8 +1489,13 @@ namespace Agi {
             return this.strings[strNo1] == this.strings[strNo2];
         }
 
-        agi_test_obj_in_box(): boolean {
-            return false;
+        agi_test_obj_in_box(oA, X1, Y1, X2, Y2): boolean {
+            return (
+                this.gameObjects[oA].x <= X2 &&
+                this.gameObjects[oA].x >= X1 &&
+                this.gameObjects[oA].y <= Y2 &&
+                this.gameObjects[oA].y <= Y1
+            );
         }
 
         agi_distance(objNo1: number, objNo2: number, varNo: number) {
@@ -1404,7 +1509,15 @@ namespace Agi {
         }
 
         agi_object_on_water() {
+            console.log('agi_object_on_water()');
+        }
 
+        agi_object_on_land() {
+            console.log('agi_object_on_land()');
+        }
+
+        agi_object_on_anything() {
+            console.log('agi_object_on_anything()');
         }
     }
 }

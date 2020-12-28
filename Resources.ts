@@ -4,12 +4,13 @@
         volOffset: number;
     }
 
+    export var logdirAvailableRecordIndices:number[] = [];
     export var logdirRecords: IDirectoryEntry[]  = [];
     export var picdirRecords: IDirectoryEntry[]  = [];
     export var viewdirRecords: IDirectoryEntry[] = [];
     export var snddirRecords: IDirectoryEntry[]  = [];
     var volBuffers: Fs.ByteStream[]              = [];
-    var availableVols: boolean[]                 = [];
+    export var availableVols: boolean[]                 = [];
     export var fontStream: Fs.ByteStream;
 
     function parseDirfile(buffer: Fs.ByteStream, records: IDirectoryEntry[]): void {
@@ -21,6 +22,9 @@
             if (val >>> 16 == 0xFF)
                 continue;
             records[i] = {volNo: volNo, volOffset: volOffset};
+            if(records === logdirRecords) {
+                logdirAvailableRecordIndices.push(i);
+            }
             if (availableVols[volNo] === undefined)
                 availableVols[volNo] = true;
         }

@@ -10,8 +10,10 @@
     export class LogicParser {
         logic: Logic;
         scanStart: number;
+        run: Function                 = new Function();
         private decryptionKey: string = "Avis Durgan";
         private entryPoint: number;
+        private gotoTable: any        = [];
         private messagesStartOffset: number;
         static tests: string[]        = [
             "equaln",
@@ -235,11 +237,7 @@
             return this.logic.data.readInt16();
         }
 
-        private jumpRelative(offset: number): void {
-            this.logic.data.position += offset;
-        }
-
-        loadLogic(no: number): void {
+        loadLogic(no: number): string {
             this.logic                  = new Logic(no, Resources.readAgiResource(Resources.AgiResource.Logic, no));
             var messageOffset: number   = this.readUint16();
             this.logic.data.position += messageOffset;
@@ -268,128 +266,214 @@
             }
             this.logic.data.position = pos - messageOffset;
             this.scanStart           = this.entryPoint = this.logic.data.position;
+
+            return `
+                EMSCRIPTEN_KEEPALIVE
+                void logic${this.logic.no}() {
+                    ${this.decompile()}
+                }
+            `;
         }
 
-        parseLogic(): void {
-            var orMode: boolean     = false;
-            var invertMode: boolean = false;
-            var testMode: boolean   = false;
-            var testResult: boolean = true;
-            var debugLine: string   = "";
-            var orResult: boolean   = false;
-            var funcName: string;
-            var test: ITest;
-            var statement: IStatement;
-            var args: number[];
+        decompile(): string {
+            this._decompile(true);
+            return this._decompile();
+        }
 
-            this.logic.data.position = this.scanStart;
-            while (true) {
-                var opCodeNr: number = this.readUint8();
-                if (opCodeNr == 0x00) {
-                    break;
-                } else if (opCodeNr == 0x91) {
-                    // set.scan.start
-                    this.scanStart = this.logic.data.position + 1;
-                } else if (opCodeNr == 0x92) {
-                    // reset.scan.start
-                    this.scanStart = this.entryPoint;
-                } else if (opCodeNr == 0xFE) {
-                    // GOTO block (not else!)
-                    var n1: number     = this.readUint8();
-                    var n2: number     = this.readUint8();
-                    var offset: number = (((n2 << 8) | n1) << 16) >> 16;
-                    this.jumpRelative(offset);
-                } else if (opCodeNr == 0xFF) {
-                    if (testMode) {
-                        testMode = false;
+        _decompile(shouldAddLabels = false, stopPosition = this.messagesStartOffset): string {
+            // Start from beginning
+            this.logic.data.position = this.entryPoint;
 
-                        // -3 due to https://wiki.scummvm.org/index.php/AGI/Specifications/Resources#The_else_command_and_more_on_brackets
-                        var possibleElseOffset: number = this.readUint16() - 3;
+            let code                                         = '\n';
+            let isInsideConditional                          = false;
+            let conditionalExpression                        = [];
+            let conditionalStatementBlockOffsets: number[][] = [];
+            let elseStatementBlockOffsets: number[][]        = [];
+            let isNotExpression                              = false;
+            let isOrExpression                               = false;
 
-                        // Evaluate last test
-                        if (testResult != true) {
-                            this.jumpRelative(possibleElseOffset);
-
-                            if (this.readUint8() === 0xFE) {
-                                // This was an ELSE!
-                                this.readUint16();
-                            } else {
-                                // Just a standalone IF
-                                this.jumpRelative(-1); // undo uint8 read
-                                this.jumpRelative(-possibleElseOffset); // undo jumprel
-                                this.jumpRelative(-2); // undo uint16 read
-                                this.jumpRelative(this.readUint16());
-                            }
-                        }
-                    } else {
-                        debugLine  = "if(";
-                        invertMode = false;
-                        orMode     = false;
-                        testResult = true;
-                        orResult   = false;
-                        testMode   = true;
-                    }
-                } else if (testMode) {
-                    if (opCodeNr == 0xFC) {
-                        orMode = !orMode;
-                        if (orMode === true) {
-                            orResult = false;
-                        } else {
-                            testResult = testResult && orResult;
-                        }
-                    } else if (opCodeNr == 0xFD) {
-                        invertMode = !invertMode;
-                    } else {
-                        funcName           = LogicParser.tests[opCodeNr - 1];
-                        test               = <ITest>this.interpreter["agi_test_" + funcName];
-                        args               = [];
-                        var argLen: number = test.length;
-                        if (opCodeNr == 0x0E) { // Said, variable nr of arguments
-                            argLen = this.readUint8();
-                            for (var i = 0; i < argLen; i++) {
-                                args.push(this.readUint16());
-                            }
-                        } else {
-                            for (var i = 0; i < argLen; i++) {
-                                args.push(this.readUint8());
-                            }
-                        }
-                        var result = test.apply(this.interpreter, args);
-                        if (testResult == null) {
-                            debugLine += funcName;
-                        } else {
-                            debugLine += (orMode ? " || " : " && ") + funcName;
-                        }
-                        if (invertMode) {
-                            result     = !result;
-                            invertMode = false;
-                        }
-
-                        if (orMode) {
-                            orResult = orResult || result;
-                        } else {
-                            testResult = testResult && result;
-                        }
-                    }
-                } else {
-                    funcName  = LogicParser.statements[opCodeNr];
-                    statement = <IStatement>this.interpreter["agi_" + funcName];
-                    if (statement === undefined) {
-                        throw `Statement not implemented: ${funcName} [${opCodeNr}]`;
+            const countIndentations = () => conditionalStatementBlockOffsets.concat(elseStatementBlockOffsets).reduce(
+                (prev, curr) => {
+                    if (this.logic.data.position - 1 >= curr[0] && this.logic.data.position - 1 <= curr[1]) {
+                        return prev + 1;
                     }
 
-                    args = [];
-                    for (var i = 0; i < statement.length; i++) {
-                        args.push(this.readUint8());
+                    return prev;
+                }, 0);
+
+            // How many block terminations should we have
+            const getBlockTerminations = () => conditionalStatementBlockOffsets.concat(elseStatementBlockOffsets).reduce((prev, curr) => {
+                if (this.logic.data.position - 1 === curr[1]) {
+                    return prev + 1;
+                }
+
+                return prev;
+            }, 0);
+
+            const isNextInsideElse = () => elseStatementBlockOffsets.some(blockInfo => {
+                return this.logic.data.position >= blockInfo[0] && this.logic.data.position <= blockInfo[1];
+            });
+
+            while (this.logic.data.position < stopPosition) {
+                let willBeInsideConditional = false;
+                let codeLine                = '';
+
+                this.gotoTable.forEach(label => {
+                    if (this.logic.data.position === label[1]) {
+                        codeLine += `${label[0]}:\n`;
                     }
-                    statement.apply(this.interpreter, args);
-                    if (opCodeNr == 0x12) // new.room
-                    {
-                        this.logic.data.position = 0;
+                });
+
+                let opCodeNr: number = this.readUint8();
+                switch (opCodeNr) {
+                    case 0x00: // return
+                        codeLine += '  '.repeat(countIndentations());
+                        codeLine += 'return;';
                         break;
+                    case 0xFF: // if / endif
+                        if (isInsideConditional) {
+
+                            isInsideConditional = false;
+
+                            codeLine += '  '.repeat(countIndentations());
+                            codeLine += 'if (' + conditionalExpression.join(' && ') + ') {\n';
+                            conditionalExpression = [];
+
+                            // -3 due to https://wiki.scummvm.org/index.php/AGI/Specifications/Resources#The_else_command_and_more_on_brackets
+                            let standaloneIfStart       = this.logic.data.position + 2;
+                            let standaloneIfBlockLength = this.readUint16();
+
+                            const ifStart = standaloneIfStart;
+                            const ifEnd   = standaloneIfBlockLength + standaloneIfStart - 1;
+                            conditionalStatementBlockOffsets.push([ifStart, ifEnd]);
+
+                        } else {
+                            willBeInsideConditional = true;
+                        }
+                        break;
+                    case 0xFD: // not
+                        isNotExpression = true;
+                        break;
+
+                    case 0xFC: // or
+                        if (isOrExpression) {
+                            const orStart = conditionalExpression.lastIndexOf('OR') + 1;
+                            const orBody  = conditionalExpression.slice(orStart).join(' || ');
+
+                            conditionalExpression = conditionalExpression.slice(0, orStart - 1);
+                            conditionalExpression.push(`(${orBody})`);
+                            isOrExpression = false;
+
+                        } else {
+                            conditionalExpression.push('OR');
+                            isOrExpression = true;
+                        }
+                        break;
+                    case 0xFE: // goto / ELSE (very careful here)
+                        const labelAddress = this.readInt16();
+                        codeLine += '  '.repeat(countIndentations() - 1);
+
+                        if (shouldAddLabels) {
+                            this.gotoTable.push([`Label${this.gotoTable.length + 1}`, this.logic.data.position + labelAddress]);
+                            codeLine += `goto ${labelAddress};\n`;
+                        } else {
+                            const labelName = this.gotoTable.find(label => label[1] === this.logic.data.position + labelAddress)[0];
+                            codeLine += `goto ${labelName};\n`;
+                        }
+
+                        break;
+                    default:
+                        if (isInsideConditional) { // Use test commands
+                            const funcName = LogicParser.tests[opCodeNr - 1];
+                            const testFunc = <ITest>this.interpreter["agi_test_" + funcName];
+                            if (testFunc === undefined) {
+                                console.log(code);
+                                throw `Test not implemented: ${funcName} [0x${opCodeNr.toString(16)}]`;
+                            }
+
+                            const testFuncArgs = [];
+                            let argLen         = testFunc.length; // How many arguments for this testFunc
+
+                            if (opCodeNr === 0x0E) { // `said`
+                                argLen = this.readUint8();
+                                for (let i = 0; i < argLen; i++) {
+                                    testFuncArgs.push(this.readUint16());
+                                }
+                            } else {
+                                for (let i = 0; i < argLen; i++) {
+                                    testFuncArgs.push(this.readUint8());
+                                }
+                            }
+
+                            if (isNotExpression) {
+                                conditionalExpression.push(`!EM_ASM_INT({ return Agi.interpreter['agi_test_${funcName}'](${testFuncArgs.join(',')}); })`);
+                                isNotExpression = false;
+                            } else {
+                                conditionalExpression.push(`EM_ASM_INT({ return Agi.interpreter['agi_test_${funcName}'](${testFuncArgs.join(',')}); })`);
+                            }
+                        } else { // Use AGI command statements
+                            const funcName = LogicParser.statements[opCodeNr] || 'UNKNOWN';
+                            let actionFunc = <IStatement>this.interpreter["agi_" + funcName];
+                            if (actionFunc === undefined) {
+                                throw `Action not implemented: ${funcName} [0x${opCodeNr.toString(16)}]`;
+                            }
+
+                            const actionFuncArgs = [];
+                            for (let i = 0; i < actionFunc.length; i++) {
+                                actionFuncArgs.push(this.readUint8());
+                            }
+
+                            codeLine += '  '.repeat(countIndentations());
+                            codeLine += `EM_ASM_INT({ return Agi.interpreter['agi_${funcName}'](${actionFuncArgs.join(',')}); });\n`;
+                        }
+                        break;
+                }
+
+                if (!isInsideConditional) {
+                    let blockTerminations = getBlockTerminations();
+
+                    if (isNextInsideElse()) {
+                        blockTerminations--;
+                    }
+
+                    for (let i = blockTerminations; i-- > 0;) {
+                        codeLine += '  '.repeat(countIndentations() - (blockTerminations - i) + 1);
+                        codeLine += '}\n';
                     }
                 }
+
+                code += codeLine;
+
+                if (willBeInsideConditional) {
+                    isInsideConditional = true;
+                }
             }
+
+            return code;
+        }
+
+        showHex(stopPosition = this.messagesStartOffset, maxPerRow = 10): string {
+            let hex                  = '';
+            this.logic.data.position = this.entryPoint;
+            let col                  = 0;
+            while (this.logic.data.position < stopPosition) {
+                if (col === maxPerRow) {
+                    hex += '\n';
+                    col = 0;
+                }
+
+                let BB = this.readUint8().toString(16).toUpperCase();
+
+                if (BB.length === 1) {
+                    BB = '0' + BB;
+                }
+
+                hex += BB + '  ';
+                col++;
+
+            }
+
+            return hex;
         }
     }
 }

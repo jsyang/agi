@@ -1,13 +1,13 @@
 namespace Agi {
 
-    const VOICE_END: number = 0xFFFF;
+    const VOICE_END: number         = 0xFFFF;
     const TICK_MILLISECONDS: number = 16;
 
     export class Sound {
         soundEmulator: SoundEmulatorTiSn76496a;
         onFinished: () => void;
         voicesData: Fs.ByteStream[] = [];
-        nextNoteHandle: number[] = [];
+        nextNoteHandle: number[]    = [];
 
         constructor(stream: Fs.ByteStream) {
             var prevOffset = stream.startPosition + stream.readUint16();
@@ -20,7 +20,7 @@ namespace Agi {
         }
 
         play(soundEmulator: SoundEmulatorTiSn76496a, onFinished: () => void): void {
-            this.onFinished = onFinished;
+            this.onFinished    = onFinished;
             this.soundEmulator = soundEmulator;
             for (var i = 0; i < 4; i++) {
                 this.voicesData[i].position = 0;
@@ -39,7 +39,7 @@ namespace Agi {
 
         private processNote(voiceIndex: number): void {
             var voiceData: Fs.ByteStream = this.voicesData[voiceIndex];
-            var duration: number = voiceData.readUint16();
+            var duration: number         = voiceData.readUint16();
             if (duration === VOICE_END) {
                 this.silenceVoice(voiceIndex);
                 console.debug(`Voice ${voiceIndex} finished`);
