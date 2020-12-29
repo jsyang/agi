@@ -58,12 +58,19 @@
         font-size: 12px;
         padding: 2px;
     }
+
+    #debug {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
 </style>
 <div>
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
     <div id="actions"></div>
 </div>
+<div id="debug"></div>
 <script src="game/index.js"></script>
 <script>
     let hasStarted = false;

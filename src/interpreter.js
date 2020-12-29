@@ -1,4 +1,4 @@
-import {FLAG, GAMEOBJECT_DIRECTION, GAMEOBJECT_MOVE_FLAGS, VAR} from './constants';
+import {FLAG, GAMEOBJECT_DIRECTION, GAMEOBJECT_MAX_Y, GAMEOBJECT_MOVE_FLAGS, VAR} from './constants';
 import {Bitmap} from './bitmap';
 import screen from './screen';
 import logicCommands from './logicCommands';
@@ -46,6 +46,7 @@ const state = {
     soundEmulator: null, // SoundEmulatorTiSn76496a,
     playedSound:   null,
 
+    debugFrameData:        null, // ImageData // For checking various visual / priority aspects
     frameData:             null, // ImageData
     framePriorityData:     null, // Bitmap,
     keyboardSpecialBuffer: [], // number[]
@@ -98,6 +99,14 @@ let canvasContext;
 let audioContext;
 
 const bltFrame = () => canvasContext.putImageData(state.frameData, 0, 0);
+const bltDebug = () => {
+    const c = document.createElement('canvas');
+    c.getContext('2d').putImageData(state.debugFrameData, 0, 0);
+    const imageEl   = document.createElement('img');
+    imageEl.src     = c.toDataURL();
+    imageEl.onclick = e => e.target.parentElement.removeChild(e.target);
+    document.getElementById('debug').appendChild(imageEl);
+};
 
 const resetControllers = () => state.controllers.fill(0);
 const resetMenu        = () => {
@@ -132,6 +141,7 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
     state.priorityBuffer    = new Bitmap();
     state.framePriorityData = new Bitmap();
     state.frameData         = canvasContext.createImageData(320, 200);
+    state.debugFrameData    = canvasContext.createImageData(320, 200);
 
     state.soundEmulator = new SoundEmulatorTiSn76496a(_audioContext);
 
@@ -306,6 +316,9 @@ const updateObject = (obj, no) => {
         } else {
             obj.y = Math.max(newY, state.horizon);
         }
+
+        // Game objects cannot be set to more than this Y value
+        obj.y = Math.min(obj.y, GAMEOBJECT_MAX_Y);
 
         if (obj.ignoreBlocks === false && newX !== obj.x) {
             const leftIdx  = obj.y * 160 + newX;
@@ -493,6 +506,7 @@ const cycle = () => {
 
 
 export default {
+    bltDebug,
     state,
     init,
     restart,

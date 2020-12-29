@@ -49,18 +49,31 @@ export function bltText(row = 0, col = 0, text = '', colorNo = 0) {
 }
 
 export function bltPic() {
-    const {data} = interpreterState.frameData;
+    const {data}        = interpreterState.frameData;
+    const {data: _data} = interpreterState.debugFrameData;
     for (let k = 0; k < BITMAP_HEIGHT * BITMAP_WIDTH; k++) {
+        let rgb;
         interpreterState.framePriorityData.data[k] = interpreterState.priorityBuffer.data[k];
-        const rgb                                  = palette[interpreterState.visualBuffer.data[k]];
-        data[k * 8 + 0]                            = (rgb >>> 16) & 0xFF;
-        data[k * 8 + 1]                            = (rgb >>> 8) & 0xFF;
-        data[k * 8 + 2]                            = rgb & 0xFF;
-        data[k * 8 + 3]                            = 255;
-        data[k * 8 + 4]                            = (rgb >>> 16) & 0xFF;
-        data[k * 8 + 5]                            = (rgb >>> 8) & 0xFF;
-        data[k * 8 + 6]                            = rgb & 0xFF;
-        data[k * 8 + 7]                            = 255;
+        rgb                                        = palette[interpreterState.visualBuffer.data[k]];
+
+        data[k * 8]     = (rgb >>> 16) & 0xFF;
+        data[k * 8 + 1] = (rgb >>> 8) & 0xFF;
+        data[k * 8 + 2] = rgb & 0xFF;
+        data[k * 8 + 3] = 255;
+        data[k * 8 + 4] = (rgb >>> 16) & 0xFF;
+        data[k * 8 + 5] = (rgb >>> 8) & 0xFF;
+        data[k * 8 + 6] = rgb & 0xFF;
+        data[k * 8 + 7] = 255;
+
+        rgb              = palette[interpreterState.priorityBuffer.data[k]];
+        _data[k * 8]     = (rgb >>> 16) & 0xFF;
+        _data[k * 8 + 1] = (rgb >>> 8) & 0xFF;
+        _data[k * 8 + 2] = rgb & 0xFF;
+        _data[k * 8 + 3] = 255;
+        _data[k * 8 + 4] = (rgb >>> 16) & 0xFF;
+        _data[k * 8 + 5] = (rgb >>> 8) & 0xFF;
+        _data[k * 8 + 6] = rgb & 0xFF;
+        _data[k * 8 + 7] = 255;
     }
 }
 
@@ -119,7 +132,8 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
     }
 
-    const {data} = interpreterState.frameData;
+    const {data}        = interpreterState.frameData;
+    const {data: _data} = interpreterState.debugFrameData;
     for (let cy = 0; cy < cel.height; cy++) {
         if (cy + y - cel.height >= 200)
             break;
@@ -144,15 +158,30 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
             }
 
             interpreterState.framePriorityData.data[idx] = priority;
-            const rgb                                    = palette[color];
-            data[idx * 8 + 0]                            = (rgb >>> 16) & 0xFF;
-            data[idx * 8 + 1]                            = (rgb >>> 8) & 0xFF;
-            data[idx * 8 + 2]                            = rgb & 0xFF;
-            data[idx * 8 + 3]                            = 255;
-            data[idx * 8 + 4]                            = (rgb >>> 16) & 0xFF;
-            data[idx * 8 + 5]                            = (rgb >>> 8) & 0xFF;
-            data[idx * 8 + 6]                            = rgb & 0xFF;
-            data[idx * 8 + 7]                            = 255;
+
+            let rgb;
+
+            rgb = palette[color];
+
+            data[idx * 8]     = (rgb >>> 16) & 0xFF;
+            data[idx * 8 + 1] = (rgb >>> 8) & 0xFF;
+            data[idx * 8 + 2] = rgb & 0xFF;
+            data[idx * 8 + 3] = 255;
+            data[idx * 8 + 4] = (rgb >>> 16) & 0xFF;
+            data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
+            data[idx * 8 + 6] = rgb & 0xFF;
+            data[idx * 8 + 7] = 255;
+
+            /*
+            _data[idx * 8 + 0] = (rgb >>> 16) & 0xFF;
+            _data[idx * 8 + 1] = (rgb >>> 8) & 0xFF;
+            _data[idx * 8 + 2] = rgb & 0xFF;
+            _data[idx * 8 + 3] = 255;
+            _data[idx * 8 + 4] = (rgb >>> 16) & 0xFF;
+            _data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
+            _data[idx * 8 + 6] = rgb & 0xFF;
+            _data[idx * 8 + 7] = 255;
+            */
         }
     }
 }
@@ -186,6 +215,11 @@ function clear() {
         interpreterState.frameData.data[i * 4 + 1] = 0;
         interpreterState.frameData.data[i * 4 + 2] = 0;
         interpreterState.frameData.data[i * 4 + 3] = 0xFF;
+
+        interpreterState.debugFrameData.data[i * 4]     = 0;
+        interpreterState.debugFrameData.data[i * 4 + 1] = 0;
+        interpreterState.debugFrameData.data[i * 4 + 2] = 0;
+        interpreterState.debugFrameData.data[i * 4 + 3] = 0xFF;
     }
 }
 

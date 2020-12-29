@@ -1,20 +1,20 @@
 export const palette = [
-    0x000000,
-    0x0000AA,
-    0x00AA00,
-    0x00AAAA,
-    0xAA0000,
-    0xAA00AA,
-    0xAA5500,
-    0xAAAAAA,
-    0x555555,
-    0x5555FF,
-    0x55FF55,
-    0x55FFFF,
-    0xFF5555,
-    0xFF55FF,
-    0xFFFF55,
-    0xFFFFFF
+    0x000000,   // BLACK
+    0x0000AA,   // DARK BLUE
+    0x00AA00,   // DARK GREEN
+    0x00AAAA,   // DARK CYAN
+    0xAA0000,   // DARK RED
+    0xAA00AA,   // DARK MAGENTA
+    0xAA5500,   // DARK BROWN
+    0xAAAAAA,   // GRAY
+    0x555555,   // DARK GRAY
+    0x5555FF,   // BLUE
+    0x55FF55,   // GREEN
+    0x55FFFF,   // CYAN
+    0xFF5555,   // RED
+    0xFF55FF,   // MAGENTA
+    0xFFFF55,   // YELLOW
+    0xFFFFFF    // WHITE
 ];
 
 export const FLAG = {
@@ -301,3 +301,5 @@ export const AGI_RESOURCE_TYPE = {
     SOUND: 3
 };
 
+// http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
+export const GAMEOBJECT_MAX_Y = 167;
