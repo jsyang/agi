@@ -10,6 +10,7 @@ import {
     VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
     GAMEOBJECT_MOVE_FLAGS
 } from './constants';
+import {commands} from './interpreter';
 
 const INTERPOLATE_VAR = /%v[0-9]+/g;
 const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
@@ -19,7 +20,6 @@ export default (state, restart) => {
     let currentMenu;
 
     const LLL = args => console.log(state.logicNo, args);
-
 
     const commands = {
         agi_increment: (varNo) => {
@@ -93,6 +93,7 @@ export default (state, restart) => {
         },
 
         agi_call: (logicNo) => {
+            // LLL(['agi_call', logicNo]);
             state.logicStack.push(state.logicNo);
             state.logicNo = logicNo;
             if (state.loadedLogics[logicNo] != null) {
@@ -110,7 +111,7 @@ export default (state, restart) => {
         },
 
         agi_print_at: (msgNo, x, y, width) => {
-
+            alert(commands._agi_get_message(msgNo));
         },
 
         agi_shake_screen: (shakeCount) => {
@@ -178,14 +179,14 @@ export default (state, restart) => {
             state.variables[VAR.ego_view_no] = state.gameObjects[0].viewNo;
 
             // The logic for the new room is loaded (logic ROOMNO)
-            state.logicStack = [];
+            // state.logicStack = [];
             commands.agi_load_logic(roomNo);
 
             // Flag 5 (new_room) is set (this is reset after the first cycle in the new room)
             commands.agi_set(FLAG.new_room);
 
             // Execution jumps to the start of logic 0
-            state.loadedLogics[0].scanStart = state.loadedLogics[0].entryPoint;
+            state.loadedLogics[0].data.position = state.loadedLogics[0].scanStart;
         },
 
         agi_new_room_v: (varNo) => {
@@ -193,12 +194,12 @@ export default (state, restart) => {
         },
 
         agi_load_pic: (varNo) => {
-            var picNo               = state.variables[varNo];
+            const picNo             = state.variables[varNo];
             state.loadedPics[picNo] = new Pic(readAgiResource(AGI_RESOURCE_TYPE.PIC, picNo));
         },
 
         agi_overlay_pic: (varNo) => {
-            var picNo = state.variables[varNo];
+            const picNo = state.variables[varNo];
             state.loadedPics[picNo].draw(state.visualBuffer, state.priorityBuffer);
         },
 
@@ -216,7 +217,7 @@ export default (state, restart) => {
         },
 
         agi_discard_pic: (varNo) => {
-            var picNo               = state.variables[varNo];
+            const picNo             = state.variables[varNo];
             state.loadedPics[picNo] = null;
         },
 
@@ -249,8 +250,7 @@ export default (state, restart) => {
         },
 
         agi_unanimate_all: () => {
-            state.gameObjects = [];
-            for (var j = 0; j < 16; j++) {
+            for (let j = 0; j < 16; j++) {
                 state.gameObjects[j] = GameObject();
             }
         },
@@ -414,7 +414,7 @@ export default (state, restart) => {
         },
 
         agi_last_cel: (objNo, varNo) => {
-            var obj                = state.gameObjects[objNo];
+            const obj              = state.gameObjects[objNo];
             state.variables[varNo] = state.loadedViews[obj.viewNo].loops[obj.loop].cels.length - 1;
         },
 
@@ -489,7 +489,7 @@ export default (state, restart) => {
         },
 
         agi_move_obj: (objNo, x, y, stepSpeed, flagNo) => {
-            var obj                   = state.gameObjects[objNo];
+            const obj                 = state.gameObjects[objNo];
             obj.moveToX               = x;
             obj.moveToY               = y;
             obj.moveToStep            = stepSpeed;
@@ -502,7 +502,7 @@ export default (state, restart) => {
         },
 
         agi_follow_ego: (objNo, stepSpeed, flagNo) => {
-            var obj                   = state.gameObjects[objNo];
+            const obj                 = state.gameObjects[objNo];
             obj.moveToStep            = stepSpeed;
             obj.flagToSetWhenFinished = flagNo;
             obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.ChaseEgo;
@@ -546,19 +546,25 @@ export default (state, restart) => {
         },
 
         agi_set_string: (strNo, msgNo) => {
+            LLL(`agi_set_string(${strNo},${msgNo})`);
             state.strings[strNo] = commands._agi_get_message(msgNo);
         },
 
         agi_erase: (objNo) => {
-            var obj  = state.gameObjects[objNo];
-            obj.draw = false;
-            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+            const obj = state.gameObjects[objNo];
+            obj.draw  = false;
+            // screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.x, obj.y, obj.oldPriority);
             obj.loop = 0;
             obj.cel  = 0;
         },
 
         agi_load_logic: (logNo) => {
-            state.loadedLogics[logNo] = new LogicParser(logNo);
+            if (state.loadedLogics[logNo]) {
+                state.loadedLogics[logNo].data.position = state.loadedLogics[logNo].entryPoint;
+            } else {
+                state.loadedLogics[logNo] = new LogicParser(logNo);
+            }
         },
 
         agi_load_logic_v: (varNo) => {
@@ -566,7 +572,11 @@ export default (state, restart) => {
         },
 
         agi_display: (row, col, msg) => {
-            screen.bltText(row, col, state.loadedLogics[state.logicNo].messages[msg]);
+            if (state.isTextScreen) {
+                state.textScreenMessages.push(state.loadedLogics[state.logicNo].messages[msg]);
+            } else {
+                screen.bltText(row, col, state.loadedLogics[state.logicNo].messages[msg]);
+            }
         },
 
         agi_display_v: (varNo1, varNo2, varNo3) => {
@@ -574,8 +584,8 @@ export default (state, restart) => {
         },
 
         agi_clear_lines: (fromRow, row, colorNo) => {
-            for (var y = fromRow; y < row + 1; y++) {
-                screen.bltText(y, 0, "                                        ");
+            for (let y = fromRow; y < row + 1; y++) {
+                screen.bltText(y, 0, "                                        ", colorNo);
             }
         },
 
@@ -591,17 +601,14 @@ export default (state, restart) => {
 
         },
 
-        agi_set_game_id: (msg) => {
+        // http://agi.sierrahelp.com/AGIStudioHelp/Logic/SystemCommands/set.game.id.html
+        agi_set_game_id: (msg) => 0,
 
-        },
+        // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/configure.screen.html
+        agi_configure_screen: (PLAYTOP, INPUTLINE, STATUSLINE) => 0,
 
-        agi_configure_screen: (num1, num2, num3) => {
-
-        },
-
-        agi_set_cursor_char: (msg) => {
-
-        },
+        // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.cursor.char.html
+        agi_set_cursor_char: (msg) => 0,
 
         _agi_get_message: (msgNo) => {
             let interpolated = state.loadedLogics[state.logicNo].messages[msgNo];
@@ -720,7 +727,6 @@ export default (state, restart) => {
         },
 
         agi_reposition_to: (objNo, x, y) => {
-            var obj = state.gameObjects[objNo];
             commands.agi_position(objNo, x, y);
         },
 
@@ -729,15 +735,16 @@ export default (state, restart) => {
         },
 
         agi_text_screen: () => {
-
+            // set up for a text only screen
+            state.isTextScreen = true;
         },
 
         agi_status: () => {
 
         },
 
-        agi_clear_text_rect: (n1, n2, n3, n4, n5) => {
-
+        agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
+            LLL('agi_clear_text_rect');
         },
 
         agi_menu_input: () => {
@@ -867,13 +874,23 @@ export default (state, restart) => {
         },
 
         agi_get_string: (strNo, msg, x, y, maxLen) => {
-            LLL(['agi_get_string', x,y]);
             state.dialogueStrNo  = strNo;
             state.dialoguePrompt = msg;
             state.dialogueStrX   = x;
             state.dialogueStrY   = y;
             state.dialogueStrLen = maxLen;
             state.dialogueMode   = 1;
+
+            // Ask user for a string
+            const result = prompt(
+                [...state.textScreenMessages, '', commands._agi_get_message(msg)].join('\n')
+            );
+
+            if (result) {
+                state.strings[strNo] = result.substring(0, maxLen);
+                commands.agi_set(FLAG.input_received);
+                commands.agi_set(FLAG.input_parsed);
+            }
         },
 
         agi_parse: (strNo) => {
@@ -951,7 +968,7 @@ export default (state, restart) => {
         },
 
         agi_test_posn: (objNo, x1, y1, x2, y2) => {
-            var obj = state.gameObjects[objNo];
+            const obj = state.gameObjects[objNo];
             return x1 <= obj.x && obj.x <= x2 && y1 <= obj.y && obj.y <= y2;
         },
 
@@ -960,7 +977,7 @@ export default (state, restart) => {
         },
 
         agi_test_have_key: () => {
-            var haveKey   = state.haveKey;
+            const haveKey = state.haveKey;
             state.haveKey = false;
             return haveKey;
         },
@@ -983,8 +1000,8 @@ export default (state, restart) => {
         },
 
         agi_distance: (objNo1, objNo2, varNo) => {
-            var obj1 = state.gameObjects[objNo1];
-            var obj2 = state.gameObjects[objNo2];
+            const obj1 = state.gameObjects[objNo1];
+            const obj2 = state.gameObjects[objNo2];
             if (obj1 != null && obj2 != null && obj1.draw && obj2.draw) {
                 state.variables[varNo] = Math.abs(obj1.x - obj2.x) + Math.abs(obj1.y - obj2.y);
             } else {

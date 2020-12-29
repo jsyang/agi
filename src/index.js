@@ -17,8 +17,6 @@ window.AGI = {
         AGI.state    = interpreter.state;
         AGI.commands = interpreter.commands;
         AGI.cycle    = interpreter.cycle;
-
-        //AGI.render();
     },
 
     render: () => {

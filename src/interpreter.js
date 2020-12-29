@@ -16,10 +16,14 @@ const state = {
     flags:          new Uint8Array(256),
     controllers:    new Uint8Array(256),
 
-    msgBoxText:  '',
-    msgBoxX:     0,
-    msgBoxY:     0,
-    msgBoxWidth: 128,
+    // For prompt screens
+    isTextScreen:       false,
+    textScreenMessages: [],
+
+    msgBoxText:         '',
+    msgBoxX:            0,
+    msgBoxY:            0,
+    msgBoxWidth:        128,
 
     gameObjects: [],
 
@@ -49,13 +53,13 @@ const state = {
     hasPaused:             false,
     hasQuit:               false,
 
-    dialogue:             false,
-    dialogueStrNo:        0,
-    dialoguePrompt:       '',
-    dialogueStrLen:       0,
-    dialogueStrY:         0,
-    dialogueStrX:         0,
-    dialogueMode:         0,
+    dialogue:       false,
+    dialogueStrNo:  0,
+    dialoguePrompt: '',
+    dialogueStrLen: 0,
+    dialogueStrY:   0,
+    dialogueStrX:   0,
+    dialogueMode:   0,
 
     menu:                 [],
     menuContainerElement: null,
@@ -89,6 +93,10 @@ let canvasContext;
 let audioContext;
 
 
+const bltFrame = () => {
+    canvasContext.putImageData(state.frameData, 0, 0);
+}
+
 export const commands = logicCommands(state, restart);
 
 const resetControllers = () => state.controllers.fill(0);
@@ -105,26 +113,18 @@ const resetMenu        = () => {
 const init = (_canvasContext, _audioContext, _menuContainerElement) => {
     if (canvasContext) return;
 
-    canvasContext        = _canvasContext;
-    audioContext         = _audioContext;
+    canvasContext              = _canvasContext;
+    audioContext               = _audioContext;
     state.menuContainerElement = _menuContainerElement;
-    screen.init(state);
 
     state.visualBuffer      = new Bitmap();
     state.priorityBuffer    = new Bitmap();
     state.framePriorityData = new Bitmap();
     state.frameData         = canvasContext.createImageData(320, 200);
 
-    // set frameData to all black
-    for (let i = 320 * 200; i-- > 0;) {
-        state.frameData.data[i * 4]     = 0;
-        state.frameData.data[i * 4 + 1] = 0;
-        state.frameData.data[i * 4 + 2] = 0;
-        state.frameData.data[i * 4 + 3] = 0xFF;
-    }
-
     state.soundEmulator = new SoundEmulatorTiSn76496a(_audioContext);
 
+    screen.init(state);
 
     window.onkeypress = e => e.which !== 13 ? state.keyboardCharBuffer.push(e.which) : null;
     window.onkeydown  = e => state.keyboardSpecialBuffer.push(e.which);
@@ -138,8 +138,9 @@ const setEgoDir = newEgoDir => {
 };
 
 const handleInput = () => {
-    state.flags[FLAG.input_received] = false;  // The player has entered a command
-    state.flags[FLAG.input_parsed]   = false;  // said accepted user input
+    state.isTextScreen = false;
+    commands.agi_reset(FLAG.input_received);
+    commands.agi_reset(FLAG.input_parsed);
 
     state.haveKey = (state.keyboardCharBuffer.length + state.keyboardSpecialBuffer.length) > 0;
     if (state.allowInput) {
@@ -197,18 +198,8 @@ const handleInput = () => {
         }
     }
 
-    if (state.dialogue) {
-        if (state.dialogueMode === 1) { // string input
-            state.strings[state.dialogueStrNo] = state.inputBuffer;
-            screen.bltText(state.dialogueStrY, state.dialogueStrX, state.dialoguePrompt + state.strings[state.dialogueStrNo]);
-        }
-    }
     state.keyboardCharBuffer    = [];
     state.keyboardSpecialBuffer = [];
-}
-
-const bltFrame = () => {
-    canvasContext.putImageData(state.frameData, 0, 0);
 }
 
 const updateScore = () => {
@@ -230,7 +221,6 @@ const updateObject = (obj, no) => {
         let yStep = obj.stepSize;
         switch (obj.movementFlag) {
             case GAMEOBJECT_MOVE_FLAGS.Normal:
-
                 break;
             case GAMEOBJECT_MOVE_FLAGS.MoveTo:
                 if (obj.moveToStep !== 0) {
@@ -264,7 +254,6 @@ const updateObject = (obj, no) => {
                 xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
                 break;
             case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
-
                 break;
 
             case GAMEOBJECT_MOVE_FLAGS.Wander:
@@ -422,6 +411,7 @@ const updateObject = (obj, no) => {
 
 
 const cycle = () => {
+    resetControllers();
     handleInput();
 
     let egoDir = state.variables[VAR.ego_dir];
@@ -432,7 +422,6 @@ const cycle = () => {
         state.variables[VAR.ego_dir] = egoDir;
     }
 
-    // calculate direction of movement
     while (true) {
         commands.agi_call(0);
 
@@ -456,11 +445,11 @@ const cycle = () => {
             }
         }
 
+
         break;
     }
 
     bltFrame();
-    resetControllers();
     updateScore();
 }
 

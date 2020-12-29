@@ -7,7 +7,7 @@ let fontStream;
 
 const sRegex = /\%s(\d+)/; // "%s123" string regex
 
-export function bltText(row = 0, col = 0, text = '') {
+export function bltText(row = 0, col = 0, text = '', colorNo = 0) {
     let regexResult;
     while ((regexResult = sRegex.exec(text)) !== null) {
         text = text.slice(0, regexResult.index) + interpreterState.strings[parseInt(regexResult[1])] + text.slice(regexResult.index + regexResult.length + 1);
@@ -26,7 +26,7 @@ export function bltText(row = 0, col = 0, text = '') {
         for (let y = 0; y < 8; y++) {
             let colData = fontStream.readUint8();
             for (let x = 0; x < 8; x++) {
-                let color = 0x00;
+                let color = palette[colorNo];
                 if ((colData & 0x80) === 0x80) {
                     color = 0xFF;
                 }
@@ -176,10 +176,22 @@ export function drawObject(obj, no) {
 export const init = _interpreterState => {
     interpreterState = _interpreterState;
     fontStream       = getFontStream();
+
+    clear();
 };
+
+function clear() {
+    for (let i = 320 * 200; i-- > 0;) {
+        interpreterState.frameData.data[i * 4]     = 0;
+        interpreterState.frameData.data[i * 4 + 1] = 0;
+        interpreterState.frameData.data[i * 4 + 2] = 0;
+        interpreterState.frameData.data[i * 4 + 3] = 0xFF;
+    }
+}
 
 export default {
     init,
+    clear,
     bltText,
     bltPic,
     bltView,
