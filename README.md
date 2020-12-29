@@ -52,10 +52,17 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 ```
 
 - https://wiki.scummvm.org/index.php/AGI/Specifications/Resources#The_else_command_and_more_on_brackets
-
 ```
 /usr/local/Cellar/qt/5.15.0/bin/qmake agistudio.pro -o Makefile
 ```
+
+## Game Specific References
+
+### SQ2
+- https://www.youtube.com/watch?v=eVsF_FZ54O0
+- http://sarien.net/spacequest2#outsidexos4
+
+Progress: You can finally die in the first room! By falling off the scaffolding...
 
 ## AGI Architecture
 

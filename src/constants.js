@@ -303,3 +303,11 @@ export const AGI_RESOURCE_TYPE = {
 
 // http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
 export const GAMEOBJECT_MAX_Y = 167;
+
+// Corresponds to palette
+export const GAMEOBJECT_PRIORITY = {
+    UNCONDITIONAL_BARRIER: 0,   // BLACK
+    CONDITIONAL_BARRIER:   1,   // DARK BLUE
+    SIGNAL:                2,   // DARK GREEN
+    WATER:                 3,   // DARK GREEN
+};

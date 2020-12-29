@@ -29,7 +29,8 @@ const TEMPLATE = {
     moveToStep: 0,
 
     movementFlag:   GAMEOBJECT_MOVE_FLAGS.Normal,
-    allowedSurface: 0,
+    allowedOnLand:  true,
+    allowedOnWater: true,
     update:         true,
     reverseLoop:    false,
     nextCycle:      1,

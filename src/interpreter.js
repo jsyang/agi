@@ -1,4 +1,11 @@
-import {FLAG, GAMEOBJECT_DIRECTION, GAMEOBJECT_MAX_Y, GAMEOBJECT_MOVE_FLAGS, VAR} from './constants';
+import {
+    FLAG,
+    GAMEOBJECT_DIRECTION,
+    GAMEOBJECT_MAX_Y,
+    GAMEOBJECT_MOVE_FLAGS,
+    GAMEOBJECT_PRIORITY,
+    VAR
+} from './constants';
 import {Bitmap} from './bitmap';
 import screen from './screen';
 import logicCommands from './logicCommands';
@@ -231,6 +238,95 @@ const updateScore = () => {
     scoreEl.innerHTML = `Score: ${state.variables[VAR.score]} / ${state.variables[VAR.max_score]}`;
 }
 
+// http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/ControllingObstacles.html
+const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
+    // todo: consider other objects (16 checks first)
+
+    const view         = state.loadedViews[obj.viewNo];
+    const cel          = view.loops[obj.loop].cels[obj.cel];
+    const priorityData = state.priorityBuffer.data;
+    let shouldMoveX    = true;
+    let shouldMoveY    = true;
+
+    let hasHitSignalLine = false;
+    let isEgoOnWater     = no === 0;
+
+    if (newY !== obj.y) {
+        for (let i = 0; i < cel.width; i++) {
+            // Out of bounds
+            if (obj.x + i < 0 || obj.x + i >= 160 || newY * 160 > priorityData.length) {
+                continue;
+            }
+
+            const nextPositionPriority = priorityData[newY * 160 + obj.x + i];
+
+            shouldMoveY &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
+
+            if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
+                shouldMoveY = false;
+            }
+
+            // Hit a signal line
+            hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;
+
+            // Is entirely within water
+            isEgoOnWater &&= nextPositionPriority === GAMEOBJECT_PRIORITY.WATER;
+        }
+    }
+
+    if (newX !== obj.x) {
+        for (let i = 0; i < cel.width; i++) {
+            // Out of bounds
+            if (newX + i >= 160 || newX + i < 0) {
+                continue;
+            }
+
+            const nextPositionPriority = priorityData[obj.y * 160 + newX + i];
+
+            shouldMoveX &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
+
+            if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
+                shouldMoveY = false;
+            }
+
+            // Hit a signal line
+            hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;
+
+            // Is entirely within water
+            isEgoOnWater &&= nextPositionPriority === GAMEOBJECT_PRIORITY.WATER;
+        }
+    }
+
+    // Only move if should move
+    newX = shouldMoveX ? newX : obj.x;
+    newY = shouldMoveY ? newY : obj.y;
+
+    // Hit a stop somewhere
+    if (!shouldMoveY || !shouldMoveX) {
+        obj.direction = GAMEOBJECT_DIRECTION.Stopped;
+
+        if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.Wander) {
+            obj.direction = randomBetween(1, 9);
+        }
+
+        if (no === 0) {
+            state.variables[VAR.ego_dir] = obj.direction;
+        }
+    }
+
+    if (no === 0) {
+        if (hasHitSignalLine) {
+            commands.agi_set(FLAG.ego_touching_signal_line);
+        }
+
+        if (isEgoOnWater) {
+            commands.agi_set(FLAG.ego_on_water);
+        }
+    }
+
+    return [newX, newY];
+}
+
 const updateObject = (obj, no) => {
     obj.oldX = obj.x;
     obj.oldY = obj.y;
@@ -296,21 +392,9 @@ const updateObject = (obj, no) => {
             newX = obj.x + xStep;
         }
 
-        if (obj.ignoreBlocks === false && newY !== obj.y) {
-            for (let xNumber = 0; xNumber < cel.width; xNumber++) {
-                const idx = newY * 160 + (obj.x + xNumber);
-                if (state.priorityBuffer.data[idx] === 0 || state.priorityBuffer.data[idx] === 1) {
-                    newY          = obj.y;
-                    obj.direction = 0;
-                    if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.Wander) {
-                        obj.direction = randomBetween(1, 9);
-                        if (no === 0) state.variables[VAR.ego_dir] = obj.direction;
-                    }
+        // Set newX, newY based on blocks
+        [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
 
-                    break;
-                }
-            }
-        }
         if (obj.ignoreHorizon) {
             obj.y = newY;
         } else {
@@ -319,20 +403,6 @@ const updateObject = (obj, no) => {
 
         // Game objects cannot be set to more than this Y value
         obj.y = Math.min(obj.y, GAMEOBJECT_MAX_Y);
-
-        if (obj.ignoreBlocks === false && newX !== obj.x) {
-            const leftIdx  = obj.y * 160 + newX;
-            const rightIdx = obj.y * 160 + newX + cel.width;
-            if (state.priorityBuffer.data[leftIdx] === 0 || state.priorityBuffer.data[rightIdx] === 0 || state.priorityBuffer.data[leftIdx] === 1 || state.priorityBuffer.data[rightIdx] === 1) {
-                newX          = obj.x;
-                obj.direction = 0;
-                if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.Wander) {
-                    obj.direction = randomBetween(1, 9);
-                    if (no === 0) state.variables[VAR.ego_dir] = obj.direction;
-                }
-            }
-
-        }
         obj.x = newX;
 
         if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {

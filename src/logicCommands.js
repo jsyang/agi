@@ -357,15 +357,15 @@ export default (state, restart) => {
             if (objNo === 0) {
                 commands.agi_program_control();
             }
-            state.gameObjects[objNo].motion    = false;
             state.gameObjects[objNo].direction = GAMEOBJECT_DIRECTION.Stopped;
         },
 
         agi_start_motion: (objNo) => {
             if (objNo === 0) {
                 commands.agi_player_control();
+                state.gameObjects[objNo].direction    = GAMEOBJECT_DIRECTION.Stopped;
             }
-            state.gameObjects[objNo].motion = true;
+            state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
         },
 
         agi_normal_motion: (objNo) => {
@@ -373,6 +373,7 @@ export default (state, restart) => {
         },
 
         agi_step_size: (objNo, varNo) => {
+            LLL(`agi_step_size(${objNo}, ${varNo})`);
             state.gameObjects[objNo].stepSize = state.variables[varNo];
         },
 
@@ -489,16 +490,18 @@ export default (state, restart) => {
             state.variables[varNo] = randomBetween(start, end);
         },
 
-        agi_move_obj: (objNo, x, y, stepSpeed, flagNo) => {
+        agi_move_obj: (objNo, x, y, stepSize, flagNo) => {
             const obj                 = state.gameObjects[objNo];
             obj.moveToX               = x;
             obj.moveToY               = y;
-            obj.moveToStep            = stepSpeed;
+            obj.moveToStep            = stepSize > 0 ? stepSize : obj.moveToStep;
             obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.MoveTo;
             obj.flagToSetWhenFinished = flagNo;
         },
 
-        agi_move_obj_v: (objNo, varNo1, varNo2, stepSpeed, flagNo) => {
+        agi_move_obj_v: (objNo, varNo1, varNo2, stepSize, flagNo) => {
+            // jsyang: very weird, STEPSIZE here gets set to a very large number when this is called
+            // docs for AGI command may possibly be wrong
             commands.agi_move_obj(objNo, state.variables[varNo1], state.variables[varNo2], 1, flagNo);
         },
 
@@ -519,10 +522,6 @@ export default (state, restart) => {
             }
         },
 
-        aginormal_motion: (objNo) => {
-            state.gameObjects[objNo].motion = true;
-        },
-
         agi_set_dir: (objNo, varNo) => {
             state.gameObjects[objNo].direction = state.variables[varNo];
         },
@@ -532,10 +531,12 @@ export default (state, restart) => {
         },
 
         agi_ignore_blocks: (objNo) => {
+            LLL(`agi_ignore_blocks(${objNo})`);
             state.gameObjects[objNo].ignoreBlocks = true;
         },
 
         agi_observe_blocks: (objNo) => {
+            LLL(`agi_observe_blocks(${objNo})`);
             state.gameObjects[objNo].ignoreBlocks = false;
         },
 
@@ -561,7 +562,7 @@ export default (state, restart) => {
         },
 
         agi_load_logic: (logNo) => {
-            LLL(`agi_load_logic${logNo}`);
+            LLL(`agi_load_logic(${logNo})`);
 
             if (state.loadedLogics[logNo]) {
                 state.loadedLogics[logNo].data.position = state.loadedLogics[logNo].entryPoint;
@@ -896,6 +897,8 @@ export default (state, restart) => {
                 commands.agi_set(FLAG.input_received);
                 commands.agi_set(FLAG.input_parsed);
             }
+
+            state.textScreenMessages = [];
         },
 
         agi_parse: (strNo) => {
@@ -974,7 +977,7 @@ export default (state, restart) => {
 
         agi_test_posn: (objNo, x1, y1, x2, y2) => {
             const obj = state.gameObjects[objNo];
-            return x1 <= obj.x && obj.x <= x2 && y1 <= obj.y && obj.y <= y2;
+            return obj.x >= x1 && obj.x <= x2 && obj.y >= y1 && obj.y <= y2;
         },
 
         agi_test_controller: (ctrNo) => {
@@ -1024,16 +1027,22 @@ export default (state, restart) => {
             }
         },
 
-        agi_object_on_water: () => {
-            console.log('agi_object_on_water()');
+        agi_object_on_water: (oA) => {
+            const obj          = state.gameObjects[oA];
+            obj.allowedOnWater = true;
+            obj.allowedOnLand  = false;
         },
 
-        agi_object_on_land: () => {
-            console.log('agi_object_on_land()');
+        agi_object_on_land: (oA) => {
+            const obj          = state.gameObjects[oA];
+            obj.allowedOnWater = false;
+            obj.allowedOnLand  = true;
         },
 
-        agi_object_on_anything: () => {
-            console.log('agi_object_on_anything()');
+        agi_object_on_anything: (oA) => {
+            const obj          = state.gameObjects[oA];
+            obj.allowedOnWater = true;
+            obj.allowedOnLand  = true;
         },
     };
 
