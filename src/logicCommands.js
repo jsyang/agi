@@ -3,7 +3,7 @@ import screen from './screen';
 import LogicParser from './logicParser';
 import GameObject from './gameObject';
 import {Pic} from './bitmap';
-import {readAgiResource} from './resources';
+import {readAgiResource, wordGroups} from './resources';
 import Sound from './sound';
 import {View} from './view';
 import {
@@ -152,7 +152,7 @@ export default (state, restart) => {
         },
 
         agi_new_room: (roomNo) => {
-            console.log(`agi_new_room(${roomNo})`);
+            LLL(`agi_new_room(${roomNo})`);
 
             // All objects are unanimated
             commands.agi_stop_update(0);
@@ -187,6 +187,9 @@ export default (state, restart) => {
 
             // Execution jumps to the start of logic 0
             state.loadedLogics[0].data.position = state.loadedLogics[0].scanStart;
+
+            // Empty out the said options
+            state.testSaid = {};
         },
 
         agi_new_room_v: (varNo) => {
@@ -211,9 +214,7 @@ export default (state, restart) => {
 
         agi_show_pic: () => {
             screen.bltPic();
-            state.gameObjects.forEach(obj => {
-                obj.redraw = true;
-            });
+            state.gameObjects.forEach(obj => obj.redraw = true);
         },
 
         agi_discard_pic: (varNo) => {
@@ -546,7 +547,7 @@ export default (state, restart) => {
         },
 
         agi_set_string: (strNo, msgNo) => {
-            LLL(`agi_set_string(${strNo},${msgNo})`);
+            // LLL(`agi_set_string(${strNo},${msgNo})`);
             state.strings[strNo] = commands._agi_get_message(msgNo);
         },
 
@@ -560,6 +561,8 @@ export default (state, restart) => {
         },
 
         agi_load_logic: (logNo) => {
+            LLL(`agi_load_logic${logNo}`);
+
             if (state.loadedLogics[logNo]) {
                 state.loadedLogics[logNo].data.position = state.loadedLogics[logNo].entryPoint;
             } else {
@@ -571,11 +574,13 @@ export default (state, restart) => {
             commands.agi_load_logic(state.variables[varNo]);
         },
 
-        agi_display: (row, col, msg) => {
+        agi_display: (row, col, msgNo) => {
+            const msg = commands._agi_get_message(msgNo);
+
             if (state.isTextScreen) {
-                state.textScreenMessages.push(state.loadedLogics[state.logicNo].messages[msg]);
+                state.textScreenMessages.push(msg);
             } else {
-                screen.bltText(row, col, state.loadedLogics[state.logicNo].messages[msg]);
+                screen.bltText(row, col, msg);
             }
         },
 
@@ -744,7 +749,7 @@ export default (state, restart) => {
         },
 
         agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
-            LLL('agi_clear_text_rect');
+            // LLL('agi_clear_text_rect');
         },
 
         agi_menu_input: () => {
@@ -894,7 +899,7 @@ export default (state, restart) => {
         },
 
         agi_parse: (strNo) => {
-
+            LLL('agi_parse');
         },
 
         agi_print: (msgNo) => {
@@ -982,7 +987,17 @@ export default (state, restart) => {
             return haveKey;
         },
 
-        agi_test_said: (wordGroups) => {
+        agi_test_said: (...testWordGroups) => {
+            const indicesString = testWordGroups.join(',');
+
+            if (state.playerSaid.length > 0) {
+                return indicesString === state.playerSaid;
+            }
+
+            // Make sure we can see what the options are
+            const key           = testWordGroups.map(iWG => wordGroups[iWG][0]).join(' ');
+            state.testSaid[key] = indicesString;
+
             return false;
         },
 

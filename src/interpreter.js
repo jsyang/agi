@@ -20,12 +20,15 @@ const state = {
     isTextScreen:       false,
     textScreenMessages: [],
 
-    msgBoxText:         '',
-    msgBoxX:            0,
-    msgBoxY:            0,
-    msgBoxWidth:        128,
+    msgBoxText:  '',
+    msgBoxX:     0,
+    msgBoxY:     0,
+    msgBoxWidth: 128,
 
     gameObjects: [],
+
+    testSaid:   {},    // List all the said test command queries as options to be chosen
+    playerSaid: '',    // Has the player said anything that has matched any of the wordgroups? ex: "3,204"
 
     horizon: 0,
     blockX1: 0,
@@ -63,6 +66,8 @@ const state = {
 
     menu:                 [],
     menuContainerElement: null,
+
+    actionContainerElement: null,
 }
 
 const restart = () => {
@@ -92,17 +97,11 @@ const restart = () => {
 let canvasContext;
 let audioContext;
 
-
-const bltFrame = () => {
-    canvasContext.putImageData(state.frameData, 0, 0);
-}
-
-export const commands = logicCommands(state, restart);
+const bltFrame = () => canvasContext.putImageData(state.frameData, 0, 0);
 
 const resetControllers = () => state.controllers.fill(0);
 const resetMenu        = () => {
     state.menu = [];
-
     while (state.menuContainerElement.children.length > 0) {
         state.menuContainerElement.removeChild(
             state.menuContainerElement.children[0]
@@ -110,12 +109,24 @@ const resetMenu        = () => {
     }
 };
 
-const init = (_canvasContext, _audioContext, _menuContainerElement) => {
+const resetActions = () => {
+    while (state.actionContainerElement.children.length > 0) {
+        state.actionContainerElement.removeChild(
+            state.actionContainerElement.children[0]
+        );
+    }
+};
+
+
+export const commands = logicCommands(state, restart);
+
+const init = (_canvasContext, _audioContext, _menuContainerElement, _actionContainerElement) => {
     if (canvasContext) return;
 
-    canvasContext              = _canvasContext;
-    audioContext               = _audioContext;
-    state.menuContainerElement = _menuContainerElement;
+    canvasContext                = _canvasContext;
+    audioContext                 = _audioContext;
+    state.menuContainerElement   = _menuContainerElement;
+    state.actionContainerElement = _actionContainerElement;
 
     state.visualBuffer      = new Bitmap();
     state.priorityBuffer    = new Bitmap();
@@ -176,8 +187,9 @@ const handleInput = () => {
                         setEgoDir(GAMEOBJECT_DIRECTION.Stopped);
                         break;
                     case 27:  // Escape
+                        // Use this to enter in words usually reserved for `said`
+
                         break;
-                    // menu is always visible
                 }
             }
         }
@@ -289,7 +301,11 @@ const updateObject = (obj, no) => {
                 }
             }
         }
-        obj.y = newY;
+        if (obj.ignoreHorizon) {
+            obj.y = newY;
+        } else {
+            obj.y = Math.max(newY, state.horizon);
+        }
 
         if (obj.ignoreBlocks === false && newX !== obj.x) {
             const leftIdx  = obj.y * 160 + newX;
@@ -409,6 +425,27 @@ const updateObject = (obj, no) => {
     }
 }
 
+// SQ2 specific
+const discardCommon = /^(clock|restore|restore game|restart|restart game|fastest|normal|slow|fast|quit|pause game|explore pocket|check out|rescue|rescue game|inv|check out inv)$/;
+
+const setSaid = e => state.playerSaid = e.target.getAttribute('data-word-groups');
+
+const updateSaidSystem = () => {
+    const actionNames = Object.keys(state.testSaid).filter(k => !discardCommon.test(k));
+    if (state.actionContainerElement.children.length !== actionNames.length) {
+        resetActions();
+
+        actionNames.forEach(act => {
+            const buttonEl = document.createElement('button');
+            buttonEl.setAttribute('data-word-groups', state.testSaid[act]);
+            buttonEl.onclick   = setSaid;
+            buttonEl.innerHTML = act;
+            state.actionContainerElement.appendChild(buttonEl);
+        });
+    }
+
+    state.playerSaid = '';
+};
 
 const cycle = () => {
     resetControllers();
@@ -451,6 +488,7 @@ const cycle = () => {
 
     bltFrame();
     updateScore();
+    updateSaidSystem();
 }
 
 

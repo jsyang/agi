@@ -45,16 +45,29 @@
         margin: 0 0 0 4px;
         color: white;
     }
+
+    #actions {
+        display: grid;
+        grid-template-columns: 150px 150px 150px 150px;
+        grid-gap: 10px;
+    }
+
+    #actions button {
+        appearance: none;
+        font-family: monospace;
+        font-size: 12px;
+        padding: 2px;
+    }
 </style>
 <div>
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
+    <div id="actions"></div>
 </div>
 <script src="game/index.js"></script>
 <script>
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");
-    const context  = canvas.getContext("2d");
     canvas.onclick = function () {
         if (hasStarted) {
             AGI.togglePause();
@@ -62,7 +75,10 @@
         }
 
         const audioContext = new (AudioContext || webkitAudioContext)();
-        AGI.start(context, audioContext, document.getElementById('menu'));
+        AGI.start(
+            canvas, audioContext,
+            document.getElementById('menu'), document.getElementById('actions')
+        );
         hasStarted = true;
     };
 </script>

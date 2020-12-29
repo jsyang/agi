@@ -9,6 +9,8 @@ let volBuffers     = [];
 let availableVols  = [];
 let fontStream;
 
+export const wordGroups = [];
+
 function parseDirfile(buffer, records) {
     const length = buffer.length / 3;
     for (let i = 0; i < length; i++) {
@@ -53,13 +55,58 @@ export function readAgiResource(type, num) {
     return new ByteStream(volStream.buffer, record.volOffset + 5, record.volOffset + 5 + resourceLength);
 }
 
-export async function load(path = 'game/') {
-    const buffers = await downloadAllFiles(path, ["LOGDIR", "PICDIR", "VIEWDIR", "SNDDIR"]);
+// http://www.agidev.com/articles/agispec/agispecs-10.html#ss10.2
+const getASCIIFromWordChar   = byte => byte ^ 0x7F;
+const isWithinLowercaseASCII = v => (v >= 97 && v <= 122);
 
-    parseDirfile(buffers["LOGDIR"], logdirRecords);
-    parseDirfile(buffers["PICDIR"], picdirRecords);
-    parseDirfile(buffers["VIEWDIR"], viewdirRecords);
-    parseDirfile(buffers["SNDDIR"], snddirRecords);
+export function extractWords(/** @type ByteStream */byteStream) {
+    byteStream.startPosition = byteStream.readUint16(false);// 26 x 2 bytes for each letter of the alphabet
+    byteStream.position      = 0;
+
+    let lastWord = '';
+    while (true) {
+        let currentWord           = '';
+        // Process each word
+        let charCountFromLastWord = byteStream.readUint8();
+
+        while (true) {
+            const byte  = byteStream.readUint8();
+            const ascii = getASCIIFromWordChar(byte >= 128 ? byte - 128 : byte);
+
+            if (isWithinLowercaseASCII(ascii)) {
+                currentWord += String.fromCharCode(ascii);
+            } else if (ascii === 32) {
+                currentWord += ' ';
+            } else if (ascii === 45) {
+                currentWord += '-';
+            } else {
+                byteStream.position--;
+                // End of word; next byte = word group number
+                const wordGroupNumber       = byteStream.readUint16(false);
+                currentWord                 = lastWord.substring(0, charCountFromLastWord) + currentWord;
+                wordGroups[wordGroupNumber] = wordGroups[wordGroupNumber] || [];
+                wordGroups[wordGroupNumber].push(currentWord);
+                lastWord = currentWord;
+                break;
+            }
+
+        }
+        if (byteStream.end <= byteStream.startPosition + byteStream.position) return;
+    }
+
+}
+
+
+export async function load(path = 'game/') {
+    let downloadedBuffers;
+
+    // Locations of each type of resource are
+    downloadedBuffers = await downloadAllFiles(path, ["LOGDIR", "PICDIR", "VIEWDIR", "SNDDIR"]);
+
+    parseDirfile(downloadedBuffers["LOGDIR"], logdirRecords);
+    parseDirfile(downloadedBuffers["PICDIR"], picdirRecords);
+    parseDirfile(downloadedBuffers["VIEWDIR"], viewdirRecords);
+    parseDirfile(downloadedBuffers["SNDDIR"], snddirRecords);
 
     const volNames = [];
     for (let i = 0; i < availableVols.length; i++) {
@@ -68,13 +115,19 @@ export async function load(path = 'game/') {
         }
     }
 
-    const volBufs = await downloadAllFiles(path, volNames);
+    // Actual resources are held in volume files
+    downloadedBuffers = await downloadAllFiles(path, volNames);
     for (let j = 0; j < volNames.length; j++) {
-        volBuffers[j] = volBufs[volNames[j]];
+        volBuffers[j] = downloadedBuffers[volNames[j]];
     }
 
-    const fontBuf = await downloadAllFiles("", ["font.bin"]);
-    fontStream    = fontBuf["font.bin"];
+    // Word groups for the parser
+    downloadedBuffers = await downloadAllFiles(path, ['words.tok']);
+    extractWords(downloadedBuffers['words.tok']);
+
+    // Font bitmap for text
+    downloadedBuffers = await downloadAllFiles('', ["font.bin"]);
+    fontStream        = downloadedBuffers["font.bin"];
 }
 
 export const getFontStream = () => fontStream;

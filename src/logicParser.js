@@ -54,8 +54,6 @@ export default class LogicParser {
         }
         this.data.position = pos - messageOffset;
         this.scanStart     = this.entryPoint = this.data.position;
-
-        console.log(`Logic ${this.no} loaded!`);
     }
 
     jumpRel(offset) {

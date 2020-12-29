@@ -88,6 +88,8 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 
 ## AGI Architecture
 
+- Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
+
 - LOGICs are the AGI virtual machine code for the game, tells the engine what to do
     - Core aspect of the engine
 - PICTURES are background images with visual (displayed as is to user) and priority images (act as primitive z-buffer for clipping and bounding of game objects)
