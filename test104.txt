@@ -1,0 +1,75 @@
+if (isset(f5)) {
+  set.string(s4,"Ver. 2.0A");
+  if (isset(f64)) {
+    set.string(s1,"Roger Wilco");
+  }
+  trace.info(102,3,10);
+  set.key(0,59,c2);
+  set.key(0,60,c16);
+  set.key(19,0,c16);
+  set.key(0,61,c9);
+  set.key(5,0,c9);
+  set.key(0,62,c22);
+  set.key(0,63,c3);
+  set.key(0,64,c6);
+  set.key(0,65,c5);
+  set.key(0,66,c11);
+  set.key(0,67,c7);
+  set.key(0,68,c13);
+  set.key(9,0,c10);
+  set.key(0,32,c14);
+  set.key(10,0,c15);
+  set.key(3,0,c17);
+  set.key(18,0,c12);
+  set.key(0,44,c1);
+  set.key(43,0,c26);
+  set.key(61,0,c26);
+  set.key(45,0,c27);
+  if (v20 == 1) {
+    set.key(49,0,c2);
+    set.key(50,0,c16);
+    set.key(51,0,c9);
+    set.key(53,0,c3);
+    set.key(55,0,c5);
+    set.key(57,0,c7);
+  }
+  if (v20 == 5) {
+    set.key(27,0,c18);
+  }
+  else {
+    set.key(27,0,c19);
+  }
+  set.key(1,1,c4);
+  set.key(1,2,c4);
+  set.key(1,3,c19);
+  set.key(1,4,c10);
+  set(f8);
+  v15 = 3;
+  set.game.id("SQ2");
+  configure.screen(1,22,0);
+  set.string(s0,">");
+  set.cursor.char("_");
+  position(o0,37,137);
+  v7 = 250;
+  v64 = 2;
+  v10 = 2;
+  if (!isset(f6)) {
+    display(23,7,"Welcome to Space Quest ][");
+  }
+  v86 = 1;
+  v87 = 2;
+  v88 = 3;
+  v90 = 4;
+  v91 = 5;
+  v112 = 6;
+  return();
+}
+return();
+
+// Messages
+#message 1 ">"
+#message 2 "_"
+#message 3 "Welcome to Space Quest ]["
+#message 4 "Roger Wilco"
+#message 12 "SQ2"
+#message 13 "Ver. 2.0A"

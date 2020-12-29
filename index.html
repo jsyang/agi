@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8"/>
-    <title>AGI.js</title>
+    <title>AGI</title>
     <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
@@ -50,16 +50,19 @@
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
 </div>
-<script src="dist/agi.js"></script>
+<script src="game/index.js"></script>
 <script>
-    var hasStarted = false;
-    var canvas     = document.getElementById("canvas");
-    var context    = canvas.getContext("2d");
+    let hasStarted = false;
+    const canvas   = document.getElementById("canvas");
+    const context  = canvas.getContext("2d");
     canvas.onclick = function () {
-        if (hasStarted) return;
+        if (hasStarted) {
+            AGI.togglePause();
+            return;
+        }
 
-        var audioContext = new (AudioContext || webkitAudioContext)();
-        Agi.start("game/", context, audioContext, document.getElementById('menu'));
+        const audioContext = new (AudioContext || webkitAudioContext)();
+        AGI.start(context, audioContext, document.getElementById('menu'));
         hasStarted = true;
     };
 </script>

@@ -1,0 +1,1009 @@
+import {randomBetween} from './helpers';
+import screen from './screen';
+import LogicParser from './logicParser';
+import GameObject from './gameObject';
+import {Pic} from './bitmap';
+import {readAgiResource} from './resources';
+import Sound from './sound';
+import {View} from './view';
+import {
+    VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
+    GAMEOBJECT_MOVE_FLAGS
+} from './constants';
+
+const INTERPOLATE_VAR = /%v[0-9]+/g;
+const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
+const INTERPOLATE_STR = /%s[0-9]{1,3}/g;
+
+export default (state, restart) => {
+    let currentMenu;
+
+    const LLL = args => console.log(state.logicNo, args);
+
+
+    const commands = {
+        agi_increment: (varNo) => {
+            if (state.variables[varNo] < 255)
+                state.variables[varNo]++;
+        },
+
+        agi_decrement: (varNo) => {
+            if (state.variables[varNo] > 0)
+                state.variables[varNo]--;
+        },
+
+        agi_assignn: (varNo, num) => {
+            state.variables[varNo] = num;
+        },
+
+        agi_assignv: (varNo1, varNo2) => {
+            commands.agi_assignn(varNo1, state.variables[varNo2]);
+        },
+
+        agi_addn: (varNo, num) => {
+            state.variables[varNo] += num;
+        },
+
+        agi_addv: (varNo1, varNo2) => {
+            commands.agi_addn(varNo1, state.variables[varNo2]);
+        },
+
+        agi_subn: (varNo, num) => {
+            state.variables[varNo] -= num;
+        },
+
+        agi_subv: (varNo1, varNo2) => {
+            commands.agi_subn(varNo1, state.variables[varNo2]);
+        },
+
+        agi_lindirectn: (varNo, val) => {
+            state.variables[state.variables[varNo]] = val;
+        },
+
+        agi_lindirectv: (varNo1, varNo2) => {
+            commands.agi_lindirectn(varNo1, state.variables[varNo2]);
+        },
+
+        agi_rindirect: (varNo1, varNo2) => {
+            state.variables[varNo1] = state.variables[state.variables[varNo2]];
+        },
+
+        agi_set: (flagNo) => {
+            state.flags[flagNo] = true;
+        },
+
+        agi_reset: (flagNo) => {
+            state.flags[flagNo] = false;
+        },
+
+        agi_toggle: (flagNo) => {
+            state.flags[flagNo] = !state.flags[flagNo];
+        },
+
+        agi_set_v: (varNo) => {
+            commands.agi_set(state.variables[varNo]);
+        },
+
+        agi_reset_v: (varNo) => {
+            commands.agi_reset(state.variables[varNo]);
+        },
+
+        agi_togglev: (varNo) => {
+            commands.agi_toggle(state.variables[varNo]);
+        },
+
+        agi_call: (logicNo) => {
+            state.logicStack.push(state.logicNo);
+            state.logicNo = logicNo;
+            if (state.loadedLogics[logicNo] != null) {
+                state.loadedLogics[logicNo].parseLogic();
+            } else {
+                commands.agi_load_logic(logicNo);
+                state.loadedLogics[logicNo].parseLogic();
+                state.loadedLogics[logicNo] = null;
+            }
+            state.logicNo = state.logicStack.pop();
+        },
+
+        agi_call_v: (varNo) => {
+            commands.agi_call(state.variables[varNo]);
+        },
+
+        agi_print_at: (msgNo, x, y, width) => {
+
+        },
+
+        agi_shake_screen: (shakeCount) => {
+
+        },
+
+        agi_reposition: (oA, vDX, vDY) => {
+            if (vDX > 127) {
+                vDX -= 256;
+            }
+
+            if (vDY > 127) {
+                vDY -= 256;
+            }
+
+            state.gameObjects[oA].x += vDX;
+            state.gameObjects[oA].y += vDY;
+        },
+
+        agi_print_at_v: (varNo, x, y, width) => {
+            commands.agi_print_at(state.variables[varNo], x, y, width);
+        },
+
+        agi_mul_n: (varNo, val) => {
+            state.variables[state.variables[varNo]] *= val;
+        },
+
+        agi_mul_v: (varNo1, varNo2) => {
+            commands.agi_mul_n(varNo1, state.variables[varNo2]);
+        },
+
+        agi_div_n: (varNo, val) => {
+            state.variables[state.variables[varNo]] /= val;
+        },
+
+        agi_div_v: (varNo1, varNo2) => {
+            commands.agi_div_n(varNo1, state.variables[varNo2]);
+        },
+
+        agi_new_room: (roomNo) => {
+            console.log(`agi_new_room(${roomNo})`);
+
+            // All objects are unanimated
+            commands.agi_stop_update(0);
+            commands.agi_unanimate_all();
+
+            // All resources except logic 0 are discarded
+
+            // player.control command is executed
+            commands.agi_player_control();
+
+            // unblock command is executed
+            commands.agi_unblock();
+
+            // horizon is set to 36
+            commands.agi_set_horizon(36);
+
+            // v1 (prev_room_no) is set to the value of v0 (room_no)
+            state.variables[VAR.prev_room_no] = state.variables[VAR.room_no];
+
+            // v0 (room_no) is assigned to the new room number
+            state.variables[VAR.room_no] = roomNo;
+
+            // v16 (ego_view_no) is set to the view number assigned to ego
+            state.variables[VAR.ego_view_no] = state.gameObjects[0].viewNo;
+
+            // The logic for the new room is loaded (logic ROOMNO)
+            state.logicStack = [];
+            commands.agi_load_logic(roomNo);
+
+            // Flag 5 (new_room) is set (this is reset after the first cycle in the new room)
+            commands.agi_set(FLAG.new_room);
+
+            // Execution jumps to the start of logic 0
+            state.loadedLogics[0].scanStart = state.loadedLogics[0].entryPoint;
+        },
+
+        agi_new_room_v: (varNo) => {
+            commands.agi_new_room(state.variables[varNo]);
+        },
+
+        agi_load_pic: (varNo) => {
+            var picNo               = state.variables[varNo];
+            state.loadedPics[picNo] = new Pic(readAgiResource(AGI_RESOURCE_TYPE.PIC, picNo));
+        },
+
+        agi_overlay_pic: (varNo) => {
+            var picNo = state.variables[varNo];
+            state.loadedPics[picNo].draw(state.visualBuffer, state.priorityBuffer);
+        },
+
+        agi_draw_pic: (varNo) => {
+            state.visualBuffer.clear(0x0F);
+            state.priorityBuffer.clear(0x04);
+            commands.agi_overlay_pic(varNo);
+        },
+
+        agi_show_pic: () => {
+            screen.bltPic();
+            state.gameObjects.forEach(obj => {
+                obj.redraw = true;
+            });
+        },
+
+        agi_discard_pic: (varNo) => {
+            var picNo               = state.variables[varNo];
+            state.loadedPics[picNo] = null;
+        },
+
+        agi_get_posn: (objNo, varNo1, varNo2) => {
+            state.variables[varNo1] = state.gameObjects[objNo].x;
+            state.variables[varNo2] = state.gameObjects[objNo].y;
+        },
+
+        agi_stop_update: (objNo) => {
+            state.gameObjects[objNo].update = false;
+        },
+
+        agi_animate_obj: (objNo) => {
+            state.gameObjects[objNo] = GameObject();
+        },
+
+        agi_draw: (objNo) => {
+            state.gameObjects[objNo].draw = true;
+        },
+
+        agi_set_view: (objNo, viewNo) => {
+            state.gameObjects[objNo].viewNo     = viewNo;
+            state.gameObjects[objNo].loop       = 0;
+            state.gameObjects[objNo].cel        = 0;
+            state.gameObjects[objNo].celCycling = true;
+        },
+
+        agi_set_view_v: (objNo, varNo) => {
+            commands.agi_set_view(objNo, state.variables[varNo]);
+        },
+
+        agi_unanimate_all: () => {
+            state.gameObjects = [];
+            for (var j = 0; j < 16; j++) {
+                state.gameObjects[j] = GameObject();
+            }
+        },
+
+        agi_player_control: () => {
+            state.programControl = false;
+        },
+
+        agi_program_control: () => {
+            state.programControl = true;
+        },
+
+        // DEBUG COMMANDS?
+
+        agi_show_pri_screen: () => {
+            // ???
+        },
+
+        agi_show_mem: () => {
+            // ???
+        },
+
+        agi_obj_status_v: (oA) => {
+            // ???
+        },
+
+        agi_return: () => {
+            // Logic early exit
+        },
+
+        agi_set_horizon: (y) => {
+            state.horizon = y;
+        },
+
+        agi_unblock: () => {
+            state.blockX1 = state.blockY1 = state.blockX2 = state.blockY2 = 0;
+        },
+
+        agi_load_view: (viewNo) => {
+            state.loadedViews[viewNo] = new View(readAgiResource(AGI_RESOURCE_TYPE.VIEW, viewNo));
+        },
+
+        agi_load_view_v: (varNo) => {
+            commands.agi_load_view(state.variables[varNo]);
+        },
+
+        agi_discard_view: (viewNo) => {
+            state.loadedViews[viewNo] = null;
+        },
+
+        agi_discard_view_v: (varNo) => {
+            commands.agi_discard_view(state.variables[varNo]);
+        },
+
+        agi_observe_objs: (objNo) => {
+            state.gameObjects[objNo].ignoreObjs = false;
+        },
+
+        agi_ignore_objs: (objNo) => {
+            state.gameObjects[objNo].ignoreObjs = true;
+        },
+
+        agi_position: (objNo, x, y) => {
+            state.gameObjects[objNo].x = x;
+            state.gameObjects[objNo].y = y;
+        },
+
+        agi_position_v: (objNo, varNo1, varNo2) => {
+            commands.agi_position(objNo, state.variables[varNo1], state.variables[varNo2]);
+        },
+
+        agi_stop_cycling: (objNo) => {
+            state.gameObjects[objNo].celCycling = false;
+        },
+
+        agi_start_cycling: (objNo) => {
+            state.gameObjects[objNo].celCycling = true;
+        },
+
+        agi_normal_cycle: (objNo) => {
+            state.gameObjects[objNo].reverseCycle = false;
+        },
+
+        agi_end_of_loop: (objNo, flagNo) => {
+            state.gameObjects[objNo].callAtEndOfLoop       = true;
+            state.gameObjects[objNo].flagToSetWhenFinished = flagNo;
+            //state.gameObjects[objNo].celCycling = true;
+        },
+
+        agi_reverse_cycle: (objNo) => {
+            state.gameObjects[objNo].reverseCycle = true;
+        },
+
+        agi_cycle_time: (objNo, varNo) => {
+            state.gameObjects[objNo].cycleTime = state.variables[varNo];
+        },
+
+        agi_reverse_loop: (objNo, flagNo) => {
+            state.gameObjects[objNo].reverseLoop = true;
+        },
+
+        agi_stop_motion: (objNo) => {
+            if (objNo === 0) {
+                commands.agi_program_control();
+            }
+            state.gameObjects[objNo].motion    = false;
+            state.gameObjects[objNo].direction = GAMEOBJECT_DIRECTION.Stopped;
+        },
+
+        agi_start_motion: (objNo) => {
+            if (objNo === 0) {
+                commands.agi_player_control();
+            }
+            state.gameObjects[objNo].motion = true;
+        },
+
+        agi_normal_motion: (objNo) => {
+            state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
+        },
+
+        agi_step_size: (objNo, varNo) => {
+            state.gameObjects[objNo].stepSize = state.variables[varNo];
+        },
+
+        agi_step_time: (objNo, varNo) => {
+            state.gameObjects[objNo].stepTime = state.variables[varNo];
+        },
+
+        agi_set_loop: (objNo, loopNo) => {
+            state.gameObjects[objNo].loop = loopNo;
+        },
+
+        agi_set_loop_v: (objNo, varNo) => {
+            commands.agi_set_loop(objNo, state.variables[varNo]);
+        },
+
+        agi_fix_loop: (objNo) => {
+            state.gameObjects[objNo].fixedLoop = true;
+        },
+
+        agi_set_priority: (objNo, priority) => {
+            state.gameObjects[objNo].priority      = priority;
+            state.gameObjects[objNo].fixedPriority = true;
+        },
+
+        agi_set_priority_v: (objNo, varNo) => {
+            commands.agi_set_priority(objNo, state.variables[varNo]);
+        },
+
+        agi_release_loop: (objNo) => {
+            state.gameObjects[objNo].fixedLoop = false;
+        },
+
+        agi_set_cel: (objNo, celNo) => {
+            state.gameObjects[objNo].nextCycle = 1;
+            state.gameObjects[objNo].cel       = celNo;
+        },
+
+        agi_set_cel_v: (objNo, varNo) => {
+            commands.agi_set_cel(objNo, state.variables[varNo]);
+        },
+
+        agi_last_cel: (objNo, varNo) => {
+            var obj                = state.gameObjects[objNo];
+            state.variables[varNo] = state.loadedViews[obj.viewNo].loops[obj.loop].cels.length - 1;
+        },
+
+        agi_current_cel: (objNo, varNo) => {
+            state.variables[varNo] = state.gameObjects[objNo].cel;
+        },
+
+        agi_current_loop: (objNo, varNo) => {
+            state.variables[varNo] = state.gameObjects[objNo].loop;
+        },
+
+        agi_current_view: (objNo, varNo) => {
+            state.variables[varNo] = state.gameObjects[objNo].viewNo;
+        },
+
+        agi_number_of_loops: (objNo, varNo) => {
+            state.variables[varNo] = state.loadedViews[state.gameObjects[objNo].viewNo].loops.length;
+        },
+
+        agi_release_priority: (objNo) => {
+            state.gameObjects[objNo].fixedPriority = false;
+        },
+
+        agi_get_priority: (objNo, varNo) => {
+            state.variables[varNo] = state.gameObjects[objNo].priority;
+        },
+
+        agi_start_update: (objNo) => {
+            state.gameObjects[objNo].update = true;
+        },
+
+        agi_force_update: (objNo) => {
+            state.gameObjects[objNo].draw = true;
+            commands.agi_draw(objNo);
+        },
+
+        agi_ignore_horizon: (objNo) => {
+            state.gameObjects[objNo].ignoreHorizon = true;
+        },
+
+        agi_observe_horizon: (objNo) => {
+            state.gameObjects[objNo].ignoreHorizon = false;
+        },
+
+        agi_prevent_input: () => {
+            state.allowInput = false;
+        },
+
+        agi_accept_input: () => {
+            state.allowInput = true;
+        },
+
+        agi_add_to_pic: (viewNo, loopNo, celNo, x, y, priority, margin) => {
+            // TODO margin
+            screen.bltView(viewNo, loopNo, celNo, x, y, priority);
+        },
+
+        agi_add_to_pic_v: (varNo1, varNo2, varNo3, varNo4, varNo5, varNo6, varNo7) => {
+            commands.agi_add_to_pic(
+                state.variables[varNo1],
+                state.variables[varNo2],
+                state.variables[varNo3],
+                state.variables[varNo4],
+                state.variables[varNo5],
+                state.variables[varNo6],
+                state.variables[varNo7]
+            );
+        },
+
+        agi_random: (start, end, varNo) => {
+            state.variables[varNo] = randomBetween(start, end);
+        },
+
+        agi_move_obj: (objNo, x, y, stepSpeed, flagNo) => {
+            var obj                   = state.gameObjects[objNo];
+            obj.moveToX               = x;
+            obj.moveToY               = y;
+            obj.moveToStep            = stepSpeed;
+            obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.MoveTo;
+            obj.flagToSetWhenFinished = flagNo;
+        },
+
+        agi_move_obj_v: (objNo, varNo1, varNo2, stepSpeed, flagNo) => {
+            commands.agi_move_obj(objNo, state.variables[varNo1], state.variables[varNo2], 1, flagNo);
+        },
+
+        agi_follow_ego: (objNo, stepSpeed, flagNo) => {
+            var obj                   = state.gameObjects[objNo];
+            obj.moveToStep            = stepSpeed;
+            obj.flagToSetWhenFinished = flagNo;
+            obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.ChaseEgo;
+        },
+
+        agi_wander: (objNo) => {
+            state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Wander;
+            state.gameObjects[objNo].direction    = randomBetween(1, 9);
+
+            if (objNo === 0) {
+                state.variables[VAR.ego_dir] = state.gameObjects[objNo].direction;
+                commands.agi_program_control();
+            }
+        },
+
+        aginormal_motion: (objNo) => {
+            state.gameObjects[objNo].motion = true;
+        },
+
+        agi_set_dir: (objNo, varNo) => {
+            state.gameObjects[objNo].direction = state.variables[varNo];
+        },
+
+        agi_get_dir: (objNo, varNo) => {
+            state.variables[varNo] = state.gameObjects[objNo].direction;
+        },
+
+        agi_ignore_blocks: (objNo) => {
+            state.gameObjects[objNo].ignoreBlocks = true;
+        },
+
+        agi_observe_blocks: (objNo) => {
+            state.gameObjects[objNo].ignoreBlocks = false;
+        },
+
+        agi_block: (x1, y1, x2, y2) => {
+            state.blockX1 = x1;
+            state.blockY1 = y1;
+            state.blockX2 = x2;
+            state.blockY2 = y2;
+        },
+
+        agi_set_string: (strNo, msgNo) => {
+            state.strings[strNo] = commands._agi_get_message(msgNo);
+        },
+
+        agi_erase: (objNo) => {
+            var obj  = state.gameObjects[objNo];
+            obj.draw = false;
+            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+            obj.loop = 0;
+            obj.cel  = 0;
+        },
+
+        agi_load_logic: (logNo) => {
+            state.loadedLogics[logNo] = new LogicParser(logNo);
+        },
+
+        agi_load_logic_v: (varNo) => {
+            commands.agi_load_logic(state.variables[varNo]);
+        },
+
+        agi_display: (row, col, msg) => {
+            screen.bltText(row, col, state.loadedLogics[state.logicNo].messages[msg]);
+        },
+
+        agi_display_v: (varNo1, varNo2, varNo3) => {
+            commands.agi_display(state.variables[varNo1], state.variables[varNo2], state.variables[varNo3]);
+        },
+
+        agi_clear_lines: (fromRow, row, colorNo) => {
+            for (var y = fromRow; y < row + 1; y++) {
+                screen.bltText(y, 0, "                                        ");
+            }
+        },
+
+        agi_script_size: (bytes) => {
+
+        },
+
+        agi_trace_info: (logNo, firstRow, height) => {
+
+        },
+
+        agi_set_key: (num1, num2, num3) => {
+
+        },
+
+        agi_set_game_id: (msg) => {
+
+        },
+
+        agi_configure_screen: (num1, num2, num3) => {
+
+        },
+
+        agi_set_cursor_char: (msg) => {
+
+        },
+
+        _agi_get_message: (msgNo) => {
+            let interpolated = state.loadedLogics[state.logicNo].messages[msgNo];
+
+            // Variable interpolation
+            if (interpolated) {
+                interpolated = interpolated.replace(INTERPOLATE_VAR, (match, p1) => {
+                    const vNum = parseFloat(match.replace('%v', ''));
+                    return state.variables[vNum].toString();
+                });
+
+                interpolated = interpolated.replace(INTERPOLATE_MSG, (match, p1) => {
+                    const mNum = parseFloat(match.replace('%m', ''));
+                    return state.loadedLogics[state.logicNo].messages[mNum];
+                });
+
+                interpolated = interpolated.replace(INTERPOLATE_STR, (match, p1) => {
+                    const sNum = parseFloat(match.replace('%s', ''));
+                    return state.strings[sNum];
+                });
+            }
+
+            return interpolated;
+        },
+
+        agi_set_menu: (msg) => {
+            currentMenu = {
+                name:    commands._agi_get_message(msg),
+                members: [{text: commands._agi_get_message(msg), ctrNo: -1}]
+            };
+
+            state.menu.push(currentMenu);
+        },
+
+        agi_set_menu_member: (msg, ctrNo) => {
+            currentMenu.members.push({
+                text: commands._agi_get_message(msg),
+                ctrNo
+            });
+        },
+
+        agi_submit_menu: () => {
+            if (state.menuContainerElement.children.length > 0) return;
+
+            for (let m of state.menu) {
+                const menuId           = 'menu-' + m.name.toLowerCase();
+                const selectEl         = document.createElement('select');
+                selectEl.id            = menuId;
+                selectEl.selectedIndex = 0;
+                selectEl.onchange      = () => {
+                    const ctrNo              = parseFloat(selectEl.value);
+                    state.controllers[ctrNo] = 1;
+                    selectEl.selectedIndex   = 0;
+                    selectEl.blur();
+                };
+
+                for (let i of m.members) {
+                    const optionEl     = document.createElement('option');
+                    optionEl.value     = i.ctrNo.toString();
+                    optionEl.innerHTML = i.text;
+
+                    selectEl.appendChild(optionEl);
+                }
+
+                state.menuContainerElement.appendChild(selectEl);
+
+            }
+
+            const scoreEl = document.createElement('span');
+            scoreEl.id    = 'score';
+            state.menuContainerElement.appendChild(scoreEl);
+        },
+
+        agi_enable_member: (ctrl) => {
+
+        },
+
+        agi_disable_member: (ctrl) => {
+
+        },
+
+        agi_put_v: (item, room) => {
+            state.items[item] = room;
+        },
+
+        agi_drop: (item) => {
+            state.items[item] = 0;
+        },
+
+        agi_status_line_on: () => {
+
+        },
+
+        agi_status_line_off: () => {
+
+        },
+
+        agi_load_sound: (soundNo) => {
+            state.loadedSounds[soundNo] = new Sound(readAgiResource(AGI_RESOURCE_TYPE.SOUND, soundNo));
+        },
+
+        agi_sound: (soundNo, flagNo) => {
+            state.playedSound && state.playedSound.stop();
+            state.playedSound = state.loadedSounds[soundNo];
+
+            if (state.playedSound) {
+                state.playedSound.play(state.soundEmulator, () => {
+                    commands.agi_set(flagNo);
+                });
+            }
+        },
+
+        agi_stop_sound: () => {
+            state.playedSound && state.playedSound.stop();
+            state.playedSound = null;
+        },
+
+        agi_reposition_to: (objNo, x, y) => {
+            var obj = state.gameObjects[objNo];
+            commands.agi_position(objNo, x, y);
+        },
+
+        agi_reposition_to_v: (objNo, varNo1, varNo2) => {
+            commands.agi_reposition_to(objNo, state.variables[varNo1], state.variables[varNo2]);
+        },
+
+        agi_text_screen: () => {
+
+        },
+
+        agi_status: () => {
+
+        },
+
+        agi_clear_text_rect: (n1, n2, n3, n4, n5) => {
+
+        },
+
+        agi_menu_input: () => {
+
+        },
+
+        agi_graphics: () => {
+
+        },
+
+        agi_show_obj: (objNo) => {
+            console.log('agi_show_obj');
+        },
+
+        agi_show_obj_v: (varNo) => {
+            console.log('agi_show_obj_v');
+        },
+
+        agi_get: (itemNo) => {
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/get.html
+            state.items[itemNo] = 255;
+        },
+
+        agi_get_v: (vItem) => {
+            commands.agi_get(state.variables[vItem]);
+        },
+
+        agi_discard_sound: (soundNo) => {
+            state.loadedSounds[soundNo] = null;
+        },
+
+        _agi_get_state: () => {
+            return {
+                items:     state.items,
+                variables: state.variables,
+                flags:     state.flags,
+                ego:       state.gameObjects[0],
+
+                // Ensure the restored game can successfully show views and process logic
+                loadedViews:  state.loadedViews.map((v, i) => v ? i : null).filter(i => i !== null),
+                loadedLogics: state.loadedLogics.map((v, i) => v ? i : null).filter(i => i !== null)
+            };
+        },
+
+        agi_save_game: () => {
+            try {
+                localStorage.setItem('agi_savegame_1', JSON.stringify(commands._agi_get_state()));
+            } catch (e) {
+                alert('Save game failed!');
+            }
+        },
+
+        agi_restore_game: () => {
+            if (!confirm('Your current game will be lost if you restore. Continue?')) return;
+
+            let savedState;
+            try {
+                savedState = JSON.parse(localStorage.getItem('agi_savegame_1'));
+
+                if (savedState) {
+                    for (let i = 0; i < 256; i++) {
+                        state.variables[i] = savedState.variables[i];
+                        state.flags[i]     = savedState.flags[i];
+                        state.items[i]     = savedState.items[i];
+                    }
+
+                    for (let k in savedState.ego) {
+                        state.gameObjects[0][k] = savedState.ego[k];
+                    }
+
+                    for (let i of savedState.loadedViews) {
+                        commands.agi_load_view(i);
+                    }
+
+                    for (let i of savedState.loadedLogics) {
+                        commands.agi_load_logic(i);
+                    }
+
+                    state.allowInput                = true;
+                    state.flags[FLAG.game_restored] = true;
+                }
+            } catch (e) {
+                alert('Restore game failed!');
+            }
+        },
+
+        agi_restart_game: () => {
+            restart();
+        },
+
+        agi_quit: (n1) => {
+            state.hasQuit = true;
+            state.soundEmulator.deactivate();
+            document.body.innerHTML = '';
+        },
+
+        agi_pause: () => {
+            state.hasPaused = !state.hasPaused;
+        },
+
+        agi_toggle_monitor: () => {
+
+        },
+
+        agi_init_joy: () => {
+
+        },
+
+        agi_version: () => {
+
+        },
+
+        agi_echo_line: () => {
+
+        },
+
+        agi_cancel_line: () => {
+
+        },
+
+        agi_open_dialogue: () => {
+            state.dialogue = true;
+        },
+
+        agi_close_dialogue: () => {
+            state.dialogue = false;
+        },
+
+        agi_get_string: (strNo, msg, x, y, maxLen) => {
+            LLL(['agi_get_string', x,y]);
+            state.dialogueStrNo  = strNo;
+            state.dialoguePrompt = msg;
+            state.dialogueStrX   = x;
+            state.dialogueStrY   = y;
+            state.dialogueStrLen = maxLen;
+            state.dialogueMode   = 1;
+        },
+
+        agi_parse: (strNo) => {
+
+        },
+
+        agi_print: (msgNo) => {
+            alert(commands._agi_get_message(msgNo));
+        },
+
+        agi_print_v: (varNo) => {
+            commands.agi_print(state.variables[varNo]);
+        },
+
+        agi_set_text_attribute: (fg, bg) => {
+
+        },
+
+        /* Handled by the LogicParser
+
+        agi_set_scan_start,
+        agi_reset_scan_start,
+
+         */
+
+        agi_close_window: () => {
+
+        },
+
+        agi_get_num: (mPROMPT, vNUM) => {
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MathematicalCommands/get.num.html
+            const choice          = prompt(commands._agi_get_message(mPROMPT), '0');
+            state.variables[vNUM] = parseFloat(choice || '0');
+        },
+
+        /* Tests */
+        agi_test_equaln: (varNo, val) => {
+            return state.variables[varNo] == val;
+        },
+
+        agi_test_equalv: (varNo1, varNo2) => {
+            return commands.agi_test_equaln(varNo1, state.variables[varNo2]);
+        },
+
+        agi_test_lessn: (varNo, val) => {
+            return state.variables[varNo] < val;
+        },
+
+        agi_test_lessv: (varNo1, varNo2) => {
+            return commands.agi_test_lessn(varNo1, state.variables[varNo2]);
+        },
+
+        agi_test_greatern: (varNo, val) => {
+            return state.variables[varNo] > val;
+        },
+
+        agi_test_greaterv: (varNo1, varNo2) => {
+            return commands.agi_test_greatern(varNo1, state.variables[varNo2]);
+        },
+
+        agi_test_isset: (flagNo) => {
+            return state.flags[flagNo];
+        },
+
+        agi_test_issetv: (varNo) => {
+            return commands.agi_test_isset(state.variables[varNo]);
+        },
+
+        agi_test_has: (itemNo) => {
+            return state.items[itemNo] === 255;
+        },
+
+        agi_test_obj_in_room: (itemNo, varNo) => {
+            return state.items[itemNo] === state.variables[varNo];
+        },
+
+        agi_test_posn: (objNo, x1, y1, x2, y2) => {
+            var obj = state.gameObjects[objNo];
+            return x1 <= obj.x && obj.x <= x2 && y1 <= obj.y && obj.y <= y2;
+        },
+
+        agi_test_controller: (ctrNo) => {
+            return state.controllers[ctrNo] > 0;
+        },
+
+        agi_test_have_key: () => {
+            var haveKey   = state.haveKey;
+            state.haveKey = false;
+            return haveKey;
+        },
+
+        agi_test_said: (wordGroups) => {
+            return false;
+        },
+
+        agi_test_compare_strings: (strNo1, strNo2) => {
+            return state.strings[strNo1] == state.strings[strNo2];
+        },
+
+        agi_test_obj_in_box: (oA, X1, Y1, X2, Y2) => {
+            return (
+                state.gameObjects[oA].x <= X2 &&
+                state.gameObjects[oA].x >= X1 &&
+                state.gameObjects[oA].y <= Y2 &&
+                state.gameObjects[oA].y <= Y1
+            );
+        },
+
+        agi_distance: (objNo1, objNo2, varNo) => {
+            var obj1 = state.gameObjects[objNo1];
+            var obj2 = state.gameObjects[objNo2];
+            if (obj1 != null && obj2 != null && obj1.draw && obj2.draw) {
+                state.variables[varNo] = Math.abs(obj1.x - obj2.x) + Math.abs(obj1.y - obj2.y);
+            } else {
+                state.variables[varNo] = 255;
+            }
+        },
+
+        agi_object_on_water: () => {
+            console.log('agi_object_on_water()');
+        },
+
+        agi_object_on_land: () => {
+            console.log('agi_object_on_land()');
+        },
+
+        agi_object_on_anything: () => {
+            console.log('agi_object_on_anything()');
+        },
+    };
+
+    return commands;
+};

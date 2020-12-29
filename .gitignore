@@ -1,3 +1,4 @@
+.parcel-cache
 logic.*
 .idea
 .DS_Store
@@ -10,7 +11,6 @@ logic.*
 *.sln.docstates
 game/
 play/
-*.js
 *.map
 
 # Build results
