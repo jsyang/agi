@@ -242,7 +242,7 @@ export default (state, restart) => {
             state.gameObjects[objNo].redraw       = true;
         },
 
-        // jsyang: this was used to free mem, nowadays don't need it
+        // jsyang: this was used to free mem, nowadays don't need to keep nulling it
         agi_unanimate_all: () => {
             for (let j = 0; j < 16; j++) {
                 if (state.gameObjects[j].draw) {
@@ -459,7 +459,10 @@ export default (state, restart) => {
         },
 
         agi_start_update: (objNo) => {
-            state.gameObjects[objNo].update = true;
+            const obj  = state.gameObjects[objNo];
+            obj.update = true;
+            obj.redraw = true;
+            screen.drawObject(obj);
         },
 
         agi_force_update: (objNo) => {
@@ -567,16 +570,14 @@ export default (state, restart) => {
         },
 
         agi_erase: (objNo) => {
-            const obj = state.gameObjects[objNo];
-            obj.draw  = false;
+            const obj  = state.gameObjects[objNo];
+            obj.draw   = false;
             obj.update = false;
             screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
-            obj.loop = 0;
-            obj.cel  = 0;
         },
 
         agi_load_logic: (logNo) => {
-            LLL(`agi_load_logic(${logNo})`);
+            // LLL(`agi_load_logic(${logNo})`);
 
             if (state.loadedLogics[logNo]) {
                 state.loadedLogics[logNo].data.position = state.loadedLogics[logNo].entryPoint;
