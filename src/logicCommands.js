@@ -229,31 +229,44 @@ export default (state, restart) => {
 
         agi_stop_update: (objNo) => {
             state.gameObjects[objNo].update = false;
+            state.gameObjects[objNo].draw   = false;
         },
 
+        // https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.Kernel.cs#L371
         agi_animate_obj: (objNo) => {
-            state.gameObjects[objNo] = GameObject();
+            LLL(`agi_animate_obj(${objNo})`);
+            state.gameObjects[objNo].celCycling   = true;
+            state.gameObjects[objNo].direction    = GAMEOBJECT_DIRECTION.Stopped;
+            state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
+            state.gameObjects[objNo].update       = true;
+            state.gameObjects[objNo].redraw       = true;
+        },
+
+        // jsyang: this was used to free mem, nowadays don't need it
+        agi_unanimate_all: () => {
+            for (let j = 0; j < 16; j++) {
+                if (state.gameObjects[j].draw) {
+                    commands.agi_erase(j);
+                }
+                state.gameObjects[j].update = false;
+                state.gameObjects[j].draw   = false;
+            }
         },
 
         agi_draw: (objNo) => {
-            state.gameObjects[objNo].draw = true;
+            const obj = state.gameObjects[objNo];
+            screen.drawObject(obj);
+            obj.draw = true;
         },
 
         agi_set_view: (objNo, viewNo) => {
-            state.gameObjects[objNo].viewNo     = viewNo;
-            state.gameObjects[objNo].loop       = 0;
-            state.gameObjects[objNo].cel        = 0;
-            state.gameObjects[objNo].celCycling = true;
+            LLL(`agi_set_view(${objNo},${viewNo})`);
+            state.gameObjects[objNo].viewNo = viewNo;
+            state.gameObjects[objNo].redraw = true;
         },
 
         agi_set_view_v: (objNo, varNo) => {
             commands.agi_set_view(objNo, state.variables[varNo]);
-        },
-
-        agi_unanimate_all: () => {
-            for (let j = 0; j < 16; j++) {
-                state.gameObjects[j] = GameObject();
-            }
         },
 
         agi_player_control: () => {
@@ -472,7 +485,7 @@ export default (state, restart) => {
 
         agi_add_to_pic: (viewNo, loopNo, celNo, x, y, priority, margin) => {
             // TODO margin
-            screen.bltView(viewNo, loopNo, celNo, x, y, priority);
+            screen.bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin);
         },
 
         agi_add_to_pic_v: (varNo1, varNo2, varNo3, varNo4, varNo5, varNo6, varNo7) => {
@@ -556,7 +569,7 @@ export default (state, restart) => {
         agi_erase: (objNo) => {
             const obj = state.gameObjects[objNo];
             obj.draw  = false;
-            // screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+            obj.update = false;
             screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
             obj.loop = 0;
             obj.cel  = 0;
@@ -759,7 +772,7 @@ export default (state, restart) => {
         },
 
         agi_graphics: () => {
-
+            state.textScreenMessages = [];
         },
 
         agi_show_obj: (objNo) => {

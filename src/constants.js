@@ -38,6 +38,7 @@ export const FLAG = {
     auto_loop:                20
 };
 
+// http://agi.sierrahelp.com/AGIStudioHelp/Logic/SpecialVariables.html
 export const VAR = {
     room_no:                 0,
     prev_room_no:            1,

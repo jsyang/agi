@@ -31,7 +31,7 @@ const TEMPLATE = {
     movementFlag:   GAMEOBJECT_MOVE_FLAGS.Normal,
     allowedOnLand:  true,
     allowedOnWater: true,
-    update:         true,
+    update:         false,
     reverseLoop:    false,
     nextCycle:      1,
 

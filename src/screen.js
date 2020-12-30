@@ -181,6 +181,65 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
     }
 }
 
+export function bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin) {
+    margin       = Math.min(Math.max(margin, 0), 3);
+    const view   = interpreterState.loadedViews[viewNo];
+    let cel      = view.loops[loopNo].cels[celNo];
+    const mirror = cel.mirrored;
+    if (cel.mirrored) {
+        cel = view.loops[cel.mirroredLoop].cels[celNo];
+    }
+
+    const {data}        = interpreterState.visualBuffer;
+    const {data: _data} = interpreterState.frameData;
+
+    for (let cy = 0; cy < cel.height; cy++) {
+        if (cy + y - cel.height >= 200) {
+            break;
+        }
+
+        for (let cx = 0; cx < cel.width; cx++) {
+            if (cx + x >= 160) {
+                break;
+            }
+
+            const idx = (cy + y + 1 - cel.height) * 160 + (cx + x);
+
+            let ccx = cx;
+            if (mirror) {
+                ccx = cel.width - cx - 1;
+            }
+
+            const color = cel.pixelData[cy * cel.width + ccx];
+            if (color === cel.transparentColor) {
+                continue;
+            }
+
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/ObjectViewCommands/add.to.pic.html
+            // If MARGIN is 0, 1, 2 or 3, the base line of the object (the bottom row of pixels of the cel) is given a priority of MARGIN.
+            if (cy === cel.height - 1) {
+                interpreterState.priorityBuffer.data[idx]    = margin;
+                interpreterState.framePriorityData.data[idx] = margin;
+            } else {
+                interpreterState.priorityBuffer.data[idx]    = priority;
+                interpreterState.framePriorityData.data[idx] = priority;
+            }
+
+            const rgb = palette[color];
+            data[idx] = color;
+
+            _data[idx * 8]     = (rgb >>> 16) & 0xFF;
+            _data[idx * 8 + 1] = (rgb >>> 8) & 0xFF;
+            _data[idx * 8 + 2] = rgb & 0xFF;
+            _data[idx * 8 + 3] = 255;
+            _data[idx * 8 + 4] = (rgb >>> 16) & 0xFF;
+            _data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
+            _data[idx * 8 + 6] = rgb & 0xFF;
+            _data[idx * 8 + 7] = 255;
+        }
+    }
+}
+
 
 export function drawObject(obj) {
     if (obj.redraw || obj.oldView !== obj.viewNo || obj.oldLoop !== obj.loop || obj.oldCel !== obj.cel || obj.oldDrawX !== obj.x || obj.oldDrawY !== obj.y || obj.oldPriority !== obj.priority) {
@@ -224,6 +283,7 @@ export default {
     bltText,
     bltPic,
     bltView,
+    bltViewToPic,
     drawObject,
     clearView,
 };

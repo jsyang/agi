@@ -61,11 +61,13 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 ### SQ2
 - https://www.youtube.com/watch?v=eVsF_FZ54O0
 - http://sarien.net/spacequest2#outsidexos4
+- http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
 Progress: You can finally die in the first room! By falling off the scaffolding...
 
 ## AGI Architecture
 
+- http://agiwiki.sierrahelp.com/images/f/f5/AGDS.pdf
 - Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
 - http://agiwiki.sierrahelp.com/index.php?title=Actions,_Tests_and_Flags_in_the_Adventure_Game_Interpreter#Flags
 

@@ -11,6 +11,7 @@ import screen from './screen';
 import logicCommands from './logicCommands';
 import SoundEmulatorTiSn76496a from './soundEmulator';
 import {randomBetween} from './helpers';
+import GameObject from './gameObject';
 
 const state = {
     programControl: false,
@@ -98,7 +99,9 @@ const restart = () => {
     state.flags[FLAG.noise_enabled] = 1;
     state.flags[FLAG.new_room]      = 1;
 
-    commands.agi_unanimate_all();
+    for(let i = 16; i-->0;){
+        state.gameObjects[i] = GameObject();
+    }
     commands.agi_load_logic(0);
 };
 
