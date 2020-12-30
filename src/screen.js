@@ -87,15 +87,18 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
 
     const {data} = interpreterState.frameData;
     for (let cy = 0; cy < cel.height; cy++) {
-        if (cy + y - cel.height >= 200)
+        if (cy + y >= 200) {
             break;
+        }
+
         for (let cx = 0; cx < cel.width; cx++) {
             if (cx + x >= 160) {
                 break;
             }
 
-            const idx = (cy + y + 1 - cel.height) * 160 + (cx + x);
-            if (priority < interpreterState.framePriorityData.data[idx]) {
+            const idx                   = (cy + y + 1 - cel.height) * 160 + (cx + x);
+            const existingFramePriority = interpreterState.framePriorityData.data[idx]
+            if (priority < existingFramePriority) {
                 continue;
             }
 
@@ -111,15 +114,16 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
 
             color                                        = interpreterState.visualBuffer.data[idx];
             interpreterState.framePriorityData.data[idx] = interpreterState.priorityBuffer.data[idx];
-            const rgb                                    = palette[color];
-            data[idx * 8 + 0]                            = (rgb >>> 16) & 0xFF;
-            data[idx * 8 + 1]                            = (rgb >>> 8) & 0xFF;
-            data[idx * 8 + 2]                            = rgb & 0xFF;
-            data[idx * 8 + 3]                            = 255;
-            data[idx * 8 + 4]                            = (rgb >>> 16) & 0xFF;
-            data[idx * 8 + 5]                            = (rgb >>> 8) & 0xFF;
-            data[idx * 8 + 6]                            = rgb & 0xFF;
-            data[idx * 8 + 7]                            = 255;
+
+            const rgb         = palette[color];
+            data[idx * 8 + 0] = (rgb >>> 16) & 0xFF;
+            data[idx * 8 + 1] = (rgb >>> 8) & 0xFF;
+            data[idx * 8 + 2] = rgb & 0xFF;
+            data[idx * 8 + 3] = 255;
+            data[idx * 8 + 4] = (rgb >>> 16) & 0xFF;
+            data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
+            data[idx * 8 + 6] = rgb & 0xFF;
+            data[idx * 8 + 7] = 255;
         }
     }
 }
@@ -132,18 +136,20 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
     }
 
-    const {data}        = interpreterState.frameData;
-    const {data: _data} = interpreterState.debugFrameData;
+    const {data} = interpreterState.frameData;
     for (let cy = 0; cy < cel.height; cy++) {
-        if (cy + y - cel.height >= 200)
+        if (cy + y - cel.height >= 200) {
             break;
+        }
+
         for (let cx = 0; cx < cel.width; cx++) {
             if (cx + x >= 160) {
                 break;
             }
 
-            const idx = (cy + y + 1 - cel.height) * 160 + (cx + x);
-            if (priority < interpreterState.framePriorityData.data[idx]) {
+            const idx                   = (cy + y + 1 - cel.height) * 160 + (cx + x);
+            const existingFramePriority = interpreterState.framePriorityData.data[idx];
+            if (priority < existingFramePriority) {
                 continue;
             }
 
@@ -171,23 +177,12 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
             data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
             data[idx * 8 + 6] = rgb & 0xFF;
             data[idx * 8 + 7] = 255;
-
-            /*
-            _data[idx * 8 + 0] = (rgb >>> 16) & 0xFF;
-            _data[idx * 8 + 1] = (rgb >>> 8) & 0xFF;
-            _data[idx * 8 + 2] = rgb & 0xFF;
-            _data[idx * 8 + 3] = 255;
-            _data[idx * 8 + 4] = (rgb >>> 16) & 0xFF;
-            _data[idx * 8 + 5] = (rgb >>> 8) & 0xFF;
-            _data[idx * 8 + 6] = rgb & 0xFF;
-            _data[idx * 8 + 7] = 255;
-            */
         }
     }
 }
 
 
-export function drawObject(obj, no) {
+export function drawObject(obj) {
     if (obj.redraw || obj.oldView !== obj.viewNo || obj.oldLoop !== obj.loop || obj.oldCel !== obj.cel || obj.oldDrawX !== obj.x || obj.oldDrawY !== obj.y || obj.oldPriority !== obj.priority) {
         obj.redraw = false;
         clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);

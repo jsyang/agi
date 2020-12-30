@@ -67,6 +67,7 @@ Progress: You can finally die in the first room! By falling off the scaffolding.
 ## AGI Architecture
 
 - Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
+- http://agiwiki.sierrahelp.com/index.php?title=Actions,_Tests_and_Flags_in_the_Adventure_Game_Interpreter#Flags
 
 - LOGICs are the AGI virtual machine code for the game, tells the engine what to do
     - Core aspect of the engine

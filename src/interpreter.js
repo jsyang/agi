@@ -94,7 +94,7 @@ const restart = () => {
     state.variables[VAR.sound_volume]  = 15;
     state.variables[VAR.max_input_len] = 41;
 
-    state.flags[FLAG.sound_on]      = 1;
+    state.flags[FLAG.sound_on]      = 0; // jsyang: turn off sound for now
     state.flags[FLAG.noise_enabled] = 1;
     state.flags[FLAG.new_room]      = 1;
 
@@ -107,7 +107,9 @@ let audioContext;
 
 const bltFrame = () => canvasContext.putImageData(state.frameData, 0, 0);
 const bltDebug = () => {
-    const c = document.createElement('canvas');
+    const c  = document.createElement('canvas');
+    c.width  = 320;
+    c.height = 200;
     c.getContext('2d').putImageData(state.debugFrameData, 0, 0);
     const imageEl   = document.createElement('img');
     imageEl.src     = c.toDataURL();
@@ -155,7 +157,15 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
     screen.init(state);
 
     window.onkeypress = e => e.which !== 13 ? state.keyboardCharBuffer.push(e.which) : null;
-    window.onkeydown  = e => state.keyboardSpecialBuffer.push(e.which);
+    window.onkeydown  = e => {
+        const {which} = e;
+        state.keyboardSpecialBuffer.push(which);
+
+        // Arrow keys
+        if (which >= 37 && which <= 40) {
+            e.preventDefault();
+        }
+    }
 
     restart();
 };
@@ -260,6 +270,16 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 
             const nextPositionPriority = priorityData[newY * 160 + obj.x + i];
 
+            // Reached bottom of the screen
+            if (newY > GAMEOBJECT_MAX_Y) {
+                shouldMoveY = false;
+            }
+
+            // Hit the horizon
+            if (!obj.ignoreHorizon) {
+                shouldMoveY &&= newY >= state.horizon;
+            }
+
             shouldMoveY &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
 
             if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
@@ -286,7 +306,7 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
             shouldMoveX &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
 
             if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
-                shouldMoveY = false;
+                shouldMoveX = false;
             }
 
             // Hit a signal line
@@ -395,15 +415,8 @@ const updateObject = (obj, no) => {
         // Set newX, newY based on blocks
         [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
 
-        if (obj.ignoreHorizon) {
-            obj.y = newY;
-        } else {
-            obj.y = Math.max(newY, state.horizon);
-        }
-
-        // Game objects cannot be set to more than this Y value
-        obj.y = Math.min(obj.y, GAMEOBJECT_MAX_Y);
         obj.x = newX;
+        obj.y = newY;
 
         if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
             obj.direction = GAMEOBJECT_DIRECTION.Stopped;
@@ -446,7 +459,7 @@ const updateObject = (obj, no) => {
         if (!obj.fixedPriority) {
             if (obj.y < 48) {
                 obj.priority = 4;
-            } else if (obj.y === 168) {
+            } else if (obj.y > GAMEOBJECT_MAX_Y) {
                 obj.priority = 15;
             } else {
                 obj.priority = ((obj.y / 12) | 0) + 1;
@@ -504,9 +517,12 @@ const updateObject = (obj, no) => {
                 obj.nextCycle--;
         }
 
-        screen.drawObject(obj, no);
+        screen.drawObject(obj);
     }
 }
+
+// todo: this doesn't work
+const updateSound = () => state.soundEmulator.muted = !state.flags[FLAG.sound_on];
 
 // SQ2 specific
 const discardCommon = /^(clock|restore|restore game|restart|restart game|fastest|normal|slow|fast|quit|pause game|explore pocket|check out|rescue|rescue game|inv|check out inv)$/;
@@ -531,7 +547,6 @@ const updateSaidSystem = () => {
 };
 
 const cycle = () => {
-    resetControllers();
     handleInput();
 
     let egoDir = state.variables[VAR.ego_dir];
@@ -565,13 +580,14 @@ const cycle = () => {
             }
         }
 
-
         break;
     }
 
     bltFrame();
     updateScore();
     updateSaidSystem();
+    updateSound();
+    resetControllers();
 }
 
 

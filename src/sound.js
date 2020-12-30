@@ -23,11 +23,14 @@ export default class Sound {
     play(soundEmulator, onFinished) {
         this.onFinished    = onFinished;
         this.soundEmulator = soundEmulator;
-        for (let i = 0; i < 4; i++) {
-            this.voicesData[i].position = 0;
-            this.processNote(i);
+
+        if (!soundEmulator.muted) {
+            for (let i = 0; i < 4; i++) {
+                this.voicesData[i].position = 0;
+                this.processNote(i);
+            }
+            this.soundEmulator.activate();
         }
-        this.soundEmulator.activate();
     }
 
     stop() {
@@ -39,12 +42,15 @@ export default class Sound {
     }
 
     processNote(voiceIndex) {
+        if (this.soundEmulator.muted) {
+            this.stop();
+            return;
+        }
+
         const voiceData = this.voicesData[voiceIndex];
         const duration  = voiceData.readUint16();
         if (duration === VOICE_END) {
             this.silenceVoice(voiceIndex);
-
-            // console.debug(`Voice ${voiceIndex} finished`);
 
             let allVoicesFinished = true;
             for (let i = 0; i < 4; i++) {

@@ -258,6 +258,8 @@ export default (state, restart) => {
 
         agi_player_control: () => {
             state.programControl = false;
+
+            state.variables[VAR.ego_dir] = state.gameObjects[0].direction = GAMEOBJECT_DIRECTION.Stopped;
         },
 
         agi_program_control: () => {
@@ -363,7 +365,6 @@ export default (state, restart) => {
         agi_start_motion: (objNo) => {
             if (objNo === 0) {
                 commands.agi_player_control();
-                state.gameObjects[objNo].direction    = GAMEOBJECT_DIRECTION.Stopped;
             }
             state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
         },
@@ -556,7 +557,7 @@ export default (state, restart) => {
             const obj = state.gameObjects[objNo];
             obj.draw  = false;
             // screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
-            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.x, obj.y, obj.oldPriority);
+            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
             obj.loop = 0;
             obj.cel  = 0;
         },

@@ -1,4 +1,5 @@
 import {FastQueue} from './fastqueue';
+import {GAMEOBJECT_PRIORITY} from './constants';
 
 export const BITMAP_WIDTH  = 160;
 export const BITMAP_HEIGHT = 168;
@@ -197,7 +198,9 @@ export class Pic {
         }
 
         if (this.priEnabled && drawPri) {
-            this.priority.data[index] = this.priColor;
+            if (this.priority.data[index] !== GAMEOBJECT_PRIORITY.TOP) {
+                this.priority.data[index] = this.priColor;
+            }
         }
     }
 

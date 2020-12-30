@@ -310,4 +310,5 @@ export const GAMEOBJECT_PRIORITY = {
     CONDITIONAL_BARRIER:   1,   // DARK BLUE
     SIGNAL:                2,   // DARK GREEN
     WATER:                 3,   // DARK GREEN
+    TOP:                   15,  // WHITE
 };

@@ -32,7 +32,7 @@ const NOISE_FREQUENCY_DIVISOR = {
     [NoiseShiftRate.NoiseLow]:    0x40,
 };
 
-const BORROWED_VOICE       = 2;
+const BORROWED_VOICE              = 2;
 export const NOISE_VOICE          = 3;
 export const COMPLETE_ATTENUATION = 0xF;
 
@@ -47,6 +47,7 @@ export default class SoundEmulatorTiSn76496a {
     gains        = [];
     lastInputBit;
     noiseOutputBit;
+    muted        = false;
     audioContext = null;
 
     constructor(_audioContext) {
