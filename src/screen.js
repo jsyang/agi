@@ -241,10 +241,14 @@ export function bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin) {
 }
 
 
+export function clearOldObjectView(obj) {
+    clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+}
+
 export function drawObject(obj) {
     if (obj.redraw || obj.oldView !== obj.viewNo || obj.oldLoop !== obj.loop || obj.oldCel !== obj.cel || obj.oldDrawX !== obj.x || obj.oldDrawY !== obj.y || obj.oldPriority !== obj.priority) {
         obj.redraw = false;
-        clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+        clearOldObjectView(obj);
         bltView(obj.viewNo, obj.loop, obj.cel, obj.x, obj.y, obj.priority);
     }
 
@@ -286,4 +290,5 @@ export default {
     bltViewToPic,
     drawObject,
     clearView,
+    clearOldObjectView,
 };

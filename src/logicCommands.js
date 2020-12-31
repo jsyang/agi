@@ -245,11 +245,13 @@ export default (state, restart) => {
         // jsyang: this was used to free mem, nowadays don't need to keep nulling it
         agi_unanimate_all: () => {
             for (let j = 0; j < 16; j++) {
-                if (state.gameObjects[j].draw) {
+                const obj = state.gameObjects[j];
+
+                if (obj.draw) {
                     commands.agi_erase(j);
                 }
-                state.gameObjects[j].update = false;
-                state.gameObjects[j].draw   = false;
+                obj.update          = false;
+                obj.callAtEndOfLoop = false;
             }
         },
 
@@ -261,7 +263,16 @@ export default (state, restart) => {
 
         agi_set_view: (objNo, viewNo) => {
             LLL(`agi_set_view(${objNo},${viewNo})`);
-            state.gameObjects[objNo].viewNo = viewNo;
+
+            const obj = state.gameObjects[objNo];
+
+            obj.viewNo = viewNo;
+            if (obj.loop >= state.loadedViews[viewNo].loops.length) {
+                obj.loop = 0;
+            }
+
+            obj.cel = 0;
+
             state.gameObjects[objNo].redraw = true;
         },
 
@@ -330,8 +341,13 @@ export default (state, restart) => {
         },
 
         agi_position: (objNo, x, y) => {
-            state.gameObjects[objNo].x = x;
-            state.gameObjects[objNo].y = y;
+            const obj = state.gameObjects[objNo];
+            if (obj.draw) {
+                screen.clearOldObjectView(obj);
+            }
+            obj.callAtEndOfLoop = false;
+            obj.x               = x;
+            obj.y               = y;
         },
 
         agi_position_v: (objNo, varNo1, varNo2) => {
@@ -339,7 +355,8 @@ export default (state, restart) => {
         },
 
         agi_stop_cycling: (objNo) => {
-            state.gameObjects[objNo].celCycling = false;
+            const obj      = state.gameObjects[objNo];
+            obj.celCycling = false;
         },
 
         agi_start_cycling: (objNo) => {
@@ -347,16 +364,18 @@ export default (state, restart) => {
         },
 
         agi_normal_cycle: (objNo) => {
+            state.gameObjects[objNo].celCycling   = true;
             state.gameObjects[objNo].reverseCycle = false;
         },
 
         agi_end_of_loop: (objNo, flagNo) => {
             state.gameObjects[objNo].callAtEndOfLoop       = true;
             state.gameObjects[objNo].flagToSetWhenFinished = flagNo;
-            //state.gameObjects[objNo].celCycling = true;
+            state.gameObjects[objNo].celCycling            = true;
         },
 
         agi_reverse_cycle: (objNo) => {
+            state.gameObjects[objNo].celCycling   = true;
             state.gameObjects[objNo].reverseCycle = true;
         },
 
@@ -396,7 +415,10 @@ export default (state, restart) => {
         },
 
         agi_set_loop: (objNo, loopNo) => {
-            state.gameObjects[objNo].loop = loopNo;
+            const obj           = state.gameObjects[objNo];
+            obj.loop            = loopNo;
+            obj.callAtEndOfLoop = false;
+            obj.cel             = 0;
         },
 
         agi_set_loop_v: (objNo, varNo) => {
@@ -508,10 +530,11 @@ export default (state, restart) => {
         },
 
         agi_move_obj: (objNo, x, y, stepSize, flagNo) => {
+
             const obj                 = state.gameObjects[objNo];
             obj.moveToX               = x;
             obj.moveToY               = y;
-            obj.moveToStep            = stepSize > 0 ? stepSize : obj.moveToStep;
+            obj.moveToStep            = stepSize;//stepSize > 0 ? stepSize : obj.moveToStep;
             obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.MoveTo;
             obj.flagToSetWhenFinished = flagNo;
         },
@@ -570,10 +593,9 @@ export default (state, restart) => {
         },
 
         agi_erase: (objNo) => {
-            const obj  = state.gameObjects[objNo];
-            obj.draw   = false;
-            obj.update = false;
-            screen.clearView(obj.oldView, obj.oldLoop, obj.oldCel, obj.oldDrawX, obj.oldDrawY, obj.oldPriority);
+            const obj = state.gameObjects[objNo];
+            screen.clearOldObjectView(obj);
+            obj.draw = false;
         },
 
         agi_load_logic: (logNo) => {
@@ -748,7 +770,8 @@ export default (state, restart) => {
         },
 
         agi_reposition_to: (objNo, x, y) => {
-            commands.agi_position(objNo, x, y);
+            state.gameObjects[objNo].x = x;
+            state.gameObjects[objNo].y = y;
         },
 
         agi_reposition_to_v: (objNo, varNo1, varNo2) => {

@@ -99,7 +99,7 @@ const restart = () => {
     state.flags[FLAG.noise_enabled] = 1;
     state.flags[FLAG.new_room]      = 1;
 
-    for(let i = 16; i-->0;){
+    for (let i = 16; i-- > 0;) {
         state.gameObjects[i] = GameObject();
     }
     commands.agi_load_logic(0);
@@ -467,8 +467,8 @@ const updateObject = (obj, no) => {
             } else {
                 obj.priority = ((obj.y / 12) | 0) + 1;
             }
-
         }
+
         if (!obj.fixedLoop) {
             if (view.loops.length > 1 && view.loops.length < 4) {
                 if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4 ||
@@ -487,6 +487,7 @@ const updateObject = (obj, no) => {
                 }
             }
         }
+
         if (obj.celCycling) {
             if (obj.nextCycle === 1) {
                 if (obj.reverseCycle) {
@@ -511,13 +512,15 @@ const updateObject = (obj, no) => {
                     }
                     endOfLoop = true;
                 }
+
                 if (endOfLoop && obj.callAtEndOfLoop) {
                     obj.celCycling = false;
                     commands.agi_set(obj.flagToSetWhenFinished);
                 }
                 obj.nextCycle = obj.cycleTime;
-            } else
+            } else {
                 obj.nextCycle--;
+            }
         }
 
         screen.drawObject(obj);

@@ -79,7 +79,13 @@
 <script>
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");
-    canvas.onclick = function () {
+
+    canvas.onmousemove = e => {
+        const {left, top} = canvas.getBoundingClientRect();
+        document.title    = `(${(e.clientX - left) >> 2}, ${(e.clientY +1 - top) >> 1})`;
+    };
+
+    canvas.onclick = () => {
         if (hasStarted) {
             AGI.togglePause();
             return;
