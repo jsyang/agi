@@ -71,6 +71,10 @@ Progress: You can finally die in the first room! By falling off the scaffolding.
 - Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
 - http://agiwiki.sierrahelp.com/index.php?title=Actions,_Tests_and_Flags_in_the_Adventure_Game_Interpreter#Flags
 
+Logic command implementations from another engine
+- https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.Kernel.cs
+- https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.cs
+
 - LOGICs are the AGI virtual machine code for the game, tells the engine what to do
     - Core aspect of the engine
 - PICTURES are background images with visual (displayed as is to user) and priority images (act as primitive z-buffer for clipping and bounding of game objects)

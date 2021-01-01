@@ -101,7 +101,7 @@ export default (state, restart) => {
             } else {
                 commands.agi_load_logic(logicNo);
                 state.loadedLogics[logicNo].parseLogic();
-                state.loadedLogics[logicNo] = null;
+                // state.loadedLogics[logicNo] = null;
             }
             state.logicNo = state.logicStack.pop();
         },
@@ -235,11 +235,14 @@ export default (state, restart) => {
         // https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.Kernel.cs#L371
         agi_animate_obj: (objNo) => {
             LLL(`agi_animate_obj(${objNo})`);
-            state.gameObjects[objNo].celCycling   = true;
-            state.gameObjects[objNo].direction    = GAMEOBJECT_DIRECTION.Stopped;
-            state.gameObjects[objNo].movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
-            state.gameObjects[objNo].update       = true;
-            state.gameObjects[objNo].redraw       = true;
+            const obj = state.gameObjects[objNo];
+
+            obj.celCycling    = true;
+            obj.direction     = GAMEOBJECT_DIRECTION.Stopped;
+            obj.movementFlag  = GAMEOBJECT_MOVE_FLAGS.Normal;
+            obj.update        = true;
+            obj.redraw        = true;
+            obj.fixedPriority = false;
         },
 
         // jsyang: this was used to free mem, nowadays don't need to keep nulling it
@@ -252,6 +255,8 @@ export default (state, restart) => {
                 }
                 obj.update          = false;
                 obj.callAtEndOfLoop = false;
+                obj.fixedPriority   = false;
+                obj.fixedLoop       = false;
             }
         },
 
@@ -509,7 +514,7 @@ export default (state, restart) => {
         },
 
         agi_add_to_pic: (viewNo, loopNo, celNo, x, y, priority, margin) => {
-            // TODO margin
+            LLL(`agi_add_to_pic(${viewNo}, ${loopNo}, ${celNo}, ${x}, ${y}, ${priority}, ${margin})`);
             screen.bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin);
         },
 

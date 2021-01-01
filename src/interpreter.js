@@ -340,10 +340,14 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
     if (no === 0) {
         if (hasHitSignalLine) {
             commands.agi_set(FLAG.ego_touching_signal_line);
+        } else {
+            commands.agi_reset(FLAG.ego_touching_signal_line);
         }
 
         if (isEgoOnWater) {
             commands.agi_set(FLAG.ego_on_water);
+        } else {
+            commands.agi_reset(FLAG.ego_on_water);
         }
     }
 
