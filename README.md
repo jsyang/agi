@@ -63,7 +63,9 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 - http://sarien.net/spacequest2#outsidexos4
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
-Progress: You can finally die in the first room! By falling off the scaffolding...
+Progress: 
+Cannot leave 2nd room. Cannot see HOROSCOPE of the first room communicator scene!
+- F10 key not implemented
 
 ## AGI Architecture
 

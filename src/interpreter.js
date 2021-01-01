@@ -355,175 +355,178 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 }
 
 const updateObject = (obj, no) => {
-    obj.oldX = obj.x;
-    obj.oldY = obj.y;
-
     if (obj.draw) {
-        const view = state.loadedViews[obj.viewNo];
-        const cel  = view.loops[obj.loop].cels[obj.cel];
 
-        let xStep = obj.stepSize;
-        let yStep = obj.stepSize;
-        switch (obj.movementFlag) {
-            case GAMEOBJECT_MOVE_FLAGS.Normal:
-                break;
-            case GAMEOBJECT_MOVE_FLAGS.MoveTo:
-                if (obj.moveToStep !== 0) {
-                    xStep = yStep = obj.moveToStep;
-                }
-                if (obj.moveToX > obj.x) {
-                    if (obj.moveToY > obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.DownRight;
-                    } else if (obj.moveToY < obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.UpRight;
+        if (obj.update) {
+            obj.oldX = obj.x;
+            obj.oldY = obj.y;
+
+            const view = state.loadedViews[obj.viewNo];
+            const cel  = view.loops[obj.loop].cels[obj.cel];
+
+            let xStep = obj.stepSize;
+            let yStep = obj.stepSize;
+            switch (obj.movementFlag) {
+                case GAMEOBJECT_MOVE_FLAGS.Normal:
+                    break;
+                case GAMEOBJECT_MOVE_FLAGS.MoveTo:
+                    if (obj.moveToStep !== 0) {
+                        xStep = yStep = obj.moveToStep;
+                    }
+                    if (obj.moveToX > obj.x) {
+                        if (obj.moveToY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.DownRight;
+                        } else if (obj.moveToY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.UpRight;
+                        } else {
+                            obj.direction = GAMEOBJECT_DIRECTION.Right;
+                        }
+                    } else if (obj.moveToX < obj.x) {
+                        if (obj.moveToY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
+                        } else if (obj.moveToY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
+                        } else {
+                            obj.direction = GAMEOBJECT_DIRECTION.Left;
+                        }
                     } else {
-                        obj.direction = GAMEOBJECT_DIRECTION.Right;
+                        if (obj.moveToY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.Down;
+                        } else if (obj.moveToY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.Up;
+                        }
                     }
-                } else if (obj.moveToX < obj.x) {
-                    if (obj.moveToY > obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
-                    } else if (obj.moveToY < obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
+
+                    yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
+                    xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
+                    break;
+                case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
+                    break;
+
+                case GAMEOBJECT_MOVE_FLAGS.Wander:
+                    break;
+                default:
+            }
+            let newX = obj.x;
+            let newY = obj.y;
+            if (obj.direction === 1 || obj.direction === 2 || obj.direction === 8) {
+                newY = obj.y - yStep;
+            } else if (obj.direction === 5 || obj.direction === 4 || obj.direction === 6) {
+                newY = obj.y + yStep;
+            }
+
+            if (obj.direction === 7 || obj.direction === 8 || obj.direction === 6) {
+                newX = obj.x - xStep;
+            } else if (obj.direction === 3 || obj.direction === 2 || obj.direction === 4) {
+                newX = obj.x + xStep;
+            }
+
+            // Set newX, newY based on blocks
+            [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
+
+            obj.x = newX;
+            obj.y = newY;
+
+            if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
+                obj.direction = GAMEOBJECT_DIRECTION.Stopped;
+                commands.agi_set(obj.flagToSetWhenFinished);
+                obj.movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
+            }
+
+            if (obj.x !== obj.oldX || obj.y !== obj.oldY) {
+                if (obj.x <= 0) {
+                    if (no === 0) {
+                        state.variables[VAR.ego_edge_code] = 4;
                     } else {
-                        obj.direction = GAMEOBJECT_DIRECTION.Left;
+                        state.variables[VAR.object_touching_edge] = no;
+                        state.variables[VAR.object_edge_code]     = 4;
                     }
-                } else {
-                    if (obj.moveToY > obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.Down;
-                    } else if (obj.moveToY < obj.y) {
-                        obj.direction = GAMEOBJECT_DIRECTION.Up;
+                } else if (obj.x + cel.width >= 160) {
+                    if (no === 0) {
+                        state.variables[VAR.ego_edge_code] = 2;
+                    } else {
+                        state.variables[VAR.object_touching_edge] = no;
+                        state.variables[VAR.object_edge_code]     = 2;
                     }
-                }
-
-                yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
-                xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
-                break;
-            case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
-                break;
-
-            case GAMEOBJECT_MOVE_FLAGS.Wander:
-                break;
-            default:
-        }
-        let newX = obj.x;
-        let newY = obj.y;
-        if (obj.direction === 1 || obj.direction === 2 || obj.direction === 8) {
-            newY = obj.y - yStep;
-        } else if (obj.direction === 5 || obj.direction === 4 || obj.direction === 6) {
-            newY = obj.y + yStep;
-        }
-
-        if (obj.direction === 7 || obj.direction === 8 || obj.direction === 6) {
-            newX = obj.x - xStep;
-        } else if (obj.direction === 3 || obj.direction === 2 || obj.direction === 4) {
-            newX = obj.x + xStep;
-        }
-
-        // Set newX, newY based on blocks
-        [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
-
-        obj.x = newX;
-        obj.y = newY;
-
-        if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
-            obj.direction = GAMEOBJECT_DIRECTION.Stopped;
-            commands.agi_set(obj.flagToSetWhenFinished);
-            obj.movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
-        }
-
-        if (obj.x !== obj.oldX || obj.y !== obj.oldY) {
-            if (obj.x <= 0) {
-                if (no === 0) {
-                    state.variables[VAR.ego_edge_code] = 4;
-                } else {
-                    state.variables[VAR.object_touching_edge] = no;
-                    state.variables[VAR.object_edge_code]     = 4;
-                }
-            } else if (obj.x + cel.width >= 160) {
-                if (no === 0) {
-                    state.variables[VAR.ego_edge_code] = 2;
-                } else {
-                    state.variables[VAR.object_touching_edge] = no;
-                    state.variables[VAR.object_edge_code]     = 2;
-                }
-            } else if (!obj.ignoreHorizon && obj.y <= state.horizon) {
-                if (no === 0) {
-                    state.variables[VAR.ego_edge_code] = 1;
-                } else {
-                    state.variables[VAR.object_touching_edge] = no;
-                    state.variables[VAR.object_edge_code]     = 1;
-                }
-            } else if (obj.y >= 168) {
-                if (no === 0) {
-                    state.variables[VAR.ego_edge_code] = 3;
-                } else {
-                    state.variables[VAR.object_touching_edge] = no;
-                    state.variables[VAR.object_edge_code]     = 3;
+                } else if (!obj.ignoreHorizon && obj.y <= state.horizon) {
+                    if (no === 0) {
+                        state.variables[VAR.ego_edge_code] = 1;
+                    } else {
+                        state.variables[VAR.object_touching_edge] = no;
+                        state.variables[VAR.object_edge_code]     = 1;
+                    }
+                } else if (obj.y >= 168) {
+                    if (no === 0) {
+                        state.variables[VAR.ego_edge_code] = 3;
+                    } else {
+                        state.variables[VAR.object_touching_edge] = no;
+                        state.variables[VAR.object_edge_code]     = 3;
+                    }
                 }
             }
-        }
 
-        if (!obj.fixedPriority) {
-            if (obj.y < 48) {
-                obj.priority = 4;
-            } else if (obj.y > GAMEOBJECT_MAX_Y) {
-                obj.priority = 15;
-            } else {
-                obj.priority = ((obj.y / 12) | 0) + 1;
-            }
-        }
-
-        if (!obj.fixedLoop) {
-            if (view.loops.length > 1 && view.loops.length < 4) {
-                if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4 ||
-                    obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
-                    obj.loop = 1;
-                }
-            } else if (view.loops.length >= 4) {
-                if (obj.direction === 1) {
-                    obj.loop = 3;
-                } else if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4) {
-                    obj.loop = 0;
-                } else if (obj.direction === 5) {
-                    obj.loop = 2;
-                } else if (obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
-                    obj.loop = 1;
-                }
-            }
-        }
-
-        if (obj.celCycling) {
-            if (obj.nextCycle === 1) {
-                if (obj.reverseCycle) {
-                    obj.cel--;
+            if (!obj.fixedPriority) {
+                if (obj.y < 48) {
+                    obj.priority = 4;
+                } else if (obj.y > GAMEOBJECT_MAX_Y) {
+                    obj.priority = 15;
                 } else {
-                    obj.cel++;
+                    obj.priority = ((obj.y / 12) | 0) + 1;
                 }
+            }
 
-                let endOfLoop = false;
-                if (obj.cel < 0) {
-                    if (obj.callAtEndOfLoop) {
-                        obj.cel = 0;
-                    } else {
-                        obj.cel = view.loops[obj.loop].cels.length - 1;
+            if (!obj.fixedLoop) {
+                if (view.loops.length > 1 && view.loops.length < 4) {
+                    if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4 ||
+                        obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
+                        obj.loop = 1;
                     }
-                    endOfLoop = true;
-                } else if (obj.cel > view.loops[obj.loop].cels.length - 1) {
-                    if (obj.callAtEndOfLoop) {
-                        obj.cel = view.loops[obj.loop].cels.length - 1;
-                    } else {
-                        obj.cel = 0;
+                } else if (view.loops.length >= 4) {
+                    if (obj.direction === 1) {
+                        obj.loop = 3;
+                    } else if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4) {
+                        obj.loop = 0;
+                    } else if (obj.direction === 5) {
+                        obj.loop = 2;
+                    } else if (obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
+                        obj.loop = 1;
                     }
-                    endOfLoop = true;
                 }
+            }
 
-                if (endOfLoop && obj.callAtEndOfLoop) {
-                    obj.celCycling = false;
-                    commands.agi_set(obj.flagToSetWhenFinished);
+            if (obj.celCycling) {
+                if (obj.nextCycle === 1) {
+                    if (obj.reverseCycle) {
+                        obj.cel--;
+                    } else {
+                        obj.cel++;
+                    }
+
+                    let endOfLoop = false;
+                    if (obj.cel < 0) {
+                        if (obj.callAtEndOfLoop) {
+                            obj.cel = 0;
+                        } else {
+                            obj.cel = view.loops[obj.loop].cels.length - 1;
+                        }
+                        endOfLoop = true;
+                    } else if (obj.cel > view.loops[obj.loop].cels.length - 1) {
+                        if (obj.callAtEndOfLoop) {
+                            obj.cel = view.loops[obj.loop].cels.length - 1;
+                        } else {
+                            obj.cel = 0;
+                        }
+                        endOfLoop = true;
+                    }
+
+                    if (endOfLoop && obj.callAtEndOfLoop) {
+                        obj.celCycling = false;
+                        commands.agi_set(obj.flagToSetWhenFinished);
+                    }
+                    obj.nextCycle = obj.cycleTime;
+                } else {
+                    obj.nextCycle--;
                 }
-                obj.nextCycle = obj.cycleTime;
-            } else {
-                obj.nextCycle--;
             }
         }
 
@@ -585,9 +588,8 @@ const cycle = () => {
             if (j === 0) {
                 obj.direction = egoDir;
             }
-            if (obj.update) {
-                updateObject(obj, j);
-            }
+
+            updateObject(obj, j);
         }
 
         break;

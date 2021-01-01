@@ -182,7 +182,6 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
 }
 
 export function bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin) {
-    margin       = Math.min(Math.max(margin, 0), 3);
     const view   = interpreterState.loadedViews[viewNo];
     let cel      = view.loops[loopNo].cels[celNo];
     const mirror = cel.mirrored;
@@ -246,11 +245,8 @@ export function clearOldObjectView(obj) {
 }
 
 export function drawObject(obj) {
-    if (obj.redraw || obj.oldView !== obj.viewNo || obj.oldLoop !== obj.loop || obj.oldCel !== obj.cel || obj.oldDrawX !== obj.x || obj.oldDrawY !== obj.y || obj.oldPriority !== obj.priority) {
-        obj.redraw = false;
-        clearOldObjectView(obj);
-        bltView(obj.viewNo, obj.loop, obj.cel, obj.x, obj.y, obj.priority);
-    }
+    clearOldObjectView(obj);
+    bltView(obj.viewNo, obj.loop, obj.cel, obj.x, obj.y, obj.priority);
 
     obj.oldDrawX    = obj.x;
     obj.oldDrawY    = obj.y;
@@ -264,10 +260,6 @@ export const init = _interpreterState => {
     interpreterState = _interpreterState;
     fontStream       = getFontStream();
 
-    clear();
-};
-
-function clear() {
     for (let i = 320 * 200; i-- > 0;) {
         interpreterState.frameData.data[i * 4]     = 0;
         interpreterState.frameData.data[i * 4 + 1] = 0;
@@ -279,11 +271,10 @@ function clear() {
         interpreterState.debugFrameData.data[i * 4 + 2] = 0;
         interpreterState.debugFrameData.data[i * 4 + 3] = 0xFF;
     }
-}
+};
 
 export default {
     init,
-    clear,
     bltText,
     bltPic,
     bltView,

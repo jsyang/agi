@@ -4,7 +4,6 @@ const TEMPLATE = {
     x:                     0,
     y:                     0,
     draw:                  false,
-    redraw:                false,
     direction:             GAMEOBJECT_DIRECTION.Stopped,
     viewNo:                0,
     loop:                  0,

@@ -214,7 +214,11 @@ export default (state, restart) => {
 
         agi_show_pic: () => {
             screen.bltPic();
-            state.gameObjects.forEach(obj => obj.redraw = true);
+            state.gameObjects.forEach(obj => {
+                if(obj.draw) {
+                    screen.drawObject(obj);
+                }
+            });
         },
 
         agi_discard_pic: (varNo) => {
@@ -229,7 +233,6 @@ export default (state, restart) => {
 
         agi_stop_update: (objNo) => {
             state.gameObjects[objNo].update = false;
-            state.gameObjects[objNo].draw   = false;
         },
 
         // https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.Kernel.cs#L371
@@ -241,11 +244,9 @@ export default (state, restart) => {
             obj.direction     = GAMEOBJECT_DIRECTION.Stopped;
             obj.movementFlag  = GAMEOBJECT_MOVE_FLAGS.Normal;
             obj.update        = true;
-            obj.redraw        = true;
             obj.fixedPriority = false;
         },
 
-        // jsyang: this was used to free mem, nowadays don't need to keep nulling it
         agi_unanimate_all: () => {
             for (let j = 0; j < 16; j++) {
                 const obj = state.gameObjects[j];
@@ -277,8 +278,6 @@ export default (state, restart) => {
             }
 
             obj.cel = 0;
-
-            state.gameObjects[objNo].redraw = true;
         },
 
         agi_set_view_v: (objNo, varNo) => {
@@ -488,7 +487,7 @@ export default (state, restart) => {
         agi_start_update: (objNo) => {
             const obj  = state.gameObjects[objNo];
             obj.update = true;
-            obj.redraw = true;
+            obj.draw   = true;
             screen.drawObject(obj);
         },
 
