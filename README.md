@@ -64,8 +64,9 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
 Progress: 
-Cannot leave 2nd room. Cannot see HOROSCOPE of the first room communicator scene!
-- F10 key not implemented
+- Cannot leave 2nd room
+- Cannot press F10 to leave first room communicator scene
+  - F10 key not implemented
 
 ## AGI Architecture
 
@@ -85,6 +86,13 @@ Logic command implementations from another engine
   - LOOPs are individual frames within an animation sequence
 - SOUNDs are just that, both sound effects along with music
 - [WORDS.TOK](https://wiki.scummvm.org/index.php/AGIWiki/WORDS.TOK) contains words recognized by the game
+
+## AGI details discovered
+
+No support for F11, F12 keys since the AGI engine was made to target IBM PCjrs. Their keyboards only
+have F1 - F10 keys.
+
+![](images/ibm-pcjr-kb.png)
 
 ## Use Emscripten to compile the logic code because JS does not support GOTOs
 

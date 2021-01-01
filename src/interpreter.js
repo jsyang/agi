@@ -14,27 +14,24 @@ import {randomBetween} from './helpers';
 import GameObject from './gameObject';
 
 const state = {
-    programControl:       false,
-    visualBuffer:         null,
-    visualPriorityBuffer: null, // Only for drawing priority
-    priorityBuffer:       null, // Only for obstacles and control priorities
+    programControl:       false,    // Does the game have control over player character (ego)?
+    visualBuffer:         null,     // 2x1 pixels for colored drawing
+    visualPriorityBuffer: null,     // Only for drawing priority
+    priorityBuffer:       null,     // Only for obstacles and control priorities
     scriptSize:           0,
     strings:              [],
     items:                new Uint8Array(256),
     variables:            new Uint8Array(256),
     flags:                new Uint8Array(256),
     controllers:          new Uint8Array(256),
+    keysForControllers:   [],       // For function keys
 
     // For prompt screens
     isTextScreen:       false,
     textScreenMessages: [],
 
-    msgBoxText:  '',
-    msgBoxX:     0,
-    msgBoxY:     0,
-    msgBoxWidth: 128,
-
     gameObjects: [],
+
 
     testSaid:   {},    // List all the said test command queries as options to be chosen
     playerSaid: '',    // Has the player said anything that has matched any of the wordgroups? ex: "3,204"
@@ -121,7 +118,10 @@ const bltDebug = () => {
     document.getElementById('debug').appendChild(imageEl);
 };
 
-const resetControllers = () => state.controllers.fill(0);
+const resetControllers = () => {
+    state.controllers.fill(0);
+    state.keysForControllers = [];
+}
 const resetMenu        = () => {
     state.menu = [];
     while (state.menuContainerElement.children.length > 0) {
@@ -138,7 +138,6 @@ const resetActions = () => {
         );
     }
 };
-
 
 export const commands = logicCommands(state, restart);
 
@@ -220,7 +219,22 @@ const handleInput = () => {
                         break;
                     case 27:  // Escape
                         // Use this to enter in words usually reserved for `said`
+                        break;
 
+                    case 112: // F1
+                    case 113: // F2
+                    case 114: // F3
+                    case 115: // F4
+                    case 116: // F5
+                    case 117: // F6
+                    case 118: // F7
+                    case 119: // F8
+                    case 120: // F9
+                    case 121: // F10
+                        // case 122: // F11 doesn't work
+                        // case 123: // F12 doesn't work
+                        const nCode = key - 53;
+                        console.log('F' + (nCode - 58));
                         break;
                 }
             }

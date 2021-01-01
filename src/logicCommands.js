@@ -792,7 +792,8 @@ export default (state, restart) => {
         },
 
         agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
-            // LLL('agi_clear_text_rect');
+            // jsyang: Doesn't clear anything in our version
+            // We dump all text to an `alert()` window
         },
 
         agi_menu_input: () => {
@@ -800,7 +801,10 @@ export default (state, restart) => {
         },
 
         agi_graphics: () => {
-            state.textScreenMessages = [];
+            if (state.textScreenMessages.length > 0) {
+                alert(state.textScreenMessages.join('\n'));
+                state.textScreenMessages = [];
+            }
         },
 
         agi_show_obj: (objNo) => {

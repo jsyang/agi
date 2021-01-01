@@ -313,3 +313,6 @@ export const GAMEOBJECT_PRIORITY = {
     WATER:                 3,   // DARK GREEN
     TOP:                   15,  // WHITE
 };
+
+export const NCODE_F1  = 59;
+export const NCODE_F10 = 68;
