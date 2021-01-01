@@ -19,7 +19,6 @@ const TEMPLATE = {
     ignoreHorizon:         false,
     ignoreBlocks:          false,
     ignoreObjs:            false,
-    motion:                false,
     stepSize:              1,
     stepTime:              0,
 

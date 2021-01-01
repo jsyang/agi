@@ -1,6 +1,6 @@
 import {getFontStream} from './resources';
 import {BITMAP_HEIGHT, BITMAP_WIDTH} from './bitmap';
-import {palette} from './constants';
+import {GAMEOBJECT_PRIORITY, palette} from './constants';
 
 let interpreterState;
 let fontStream;
@@ -53,9 +53,9 @@ export function bltPic() {
     const {data: _data} = interpreterState.debugFrameData;
     for (let k = 0; k < BITMAP_HEIGHT * BITMAP_WIDTH; k++) {
         let rgb;
-        interpreterState.framePriorityData.data[k] = interpreterState.priorityBuffer.data[k];
-        rgb                                        = palette[interpreterState.visualBuffer.data[k]];
+        interpreterState.framePriorityData.data[k] = interpreterState.visualPriorityBuffer.data[k];
 
+        rgb             = palette[interpreterState.visualBuffer.data[k]];
         data[k * 8]     = (rgb >>> 16) & 0xFF;
         data[k * 8 + 1] = (rgb >>> 8) & 0xFF;
         data[k * 8 + 2] = rgb & 0xFF;
@@ -65,7 +65,7 @@ export function bltPic() {
         data[k * 8 + 6] = rgb & 0xFF;
         data[k * 8 + 7] = 255;
 
-        rgb              = palette[interpreterState.priorityBuffer.data[k]];
+        rgb              = palette[interpreterState.visualPriorityBuffer.data[k]];
         _data[k * 8]     = (rgb >>> 16) & 0xFF;
         _data[k * 8 + 1] = (rgb >>> 8) & 0xFF;
         _data[k * 8 + 2] = rgb & 0xFF;
@@ -107,13 +107,8 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
                 ccx = cel.width - cx - 1;
             }
 
-            let color = cel.pixelData[cy * cel.width + ccx];
-            if (color === cel.transparentColor) {
-                continue;
-            }
-
-            color                                        = interpreterState.visualBuffer.data[idx];
-            interpreterState.framePriorityData.data[idx] = interpreterState.priorityBuffer.data[idx];
+            const color                                        = interpreterState.visualBuffer.data[idx];
+            interpreterState.framePriorityData.data[idx] = interpreterState.visualPriorityBuffer.data[idx];
 
             const rgb         = palette[color];
             data[idx * 8 + 0] = (rgb >>> 16) & 0xFF;
@@ -217,12 +212,13 @@ export function bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin) {
             // http://agi.sierrahelp.com/AGIStudioHelp/Logic/ObjectViewCommands/add.to.pic.html
             // If MARGIN is 0, 1, 2 or 3, the base line of the object (the bottom row of pixels of the cel) is given a priority of MARGIN.
             if (cy === cel.height - 1) {
-                interpreterState.priorityBuffer.data[idx]    = margin;
-                interpreterState.framePriorityData.data[idx] = margin;
-            } else {
-                interpreterState.priorityBuffer.data[idx]    = priority;
-                interpreterState.framePriorityData.data[idx] = priority;
+                if (margin <= GAMEOBJECT_PRIORITY.WATER) {
+                    interpreterState.priorityBuffer.data[idx] = margin;
+                }
             }
+
+            interpreterState.visualPriorityBuffer.data[idx] = priority;
+            interpreterState.framePriorityData.data[idx]    = priority;
 
             const rgb = palette[color];
             data[idx] = color;

@@ -176,29 +176,33 @@ const rectangles = [
 ];
 
 export class Pic {
-    picEnabled = false;
-    priEnabled = false;
-    picColor   = 0;
-    priColor   = 0;
-    visible    = null;
-    priority   = null;
+    picEnabled      = false;
+    priEnabled      = false;
+    picColor        = 0;
+    priColor        = 0;
+    visible         = null;
+    visiblePriority = null;
+    priority        = null;
 
     constructor(stream) {
         this.stream = stream;
     }
 
     setPixel(x, y, drawVis = true, drawPri = true) {
-        const index = y * BITMAP_WIDTH + x;
-
         // Out of bounds
-        if (index < 0 || index >= BITMAP_HEIGHT * BITMAP_HEIGHT) return;
+        if (x < 0 || x >= BITMAP_WIDTH) return;
+        if (y < 0 || y >= BITMAP_HEIGHT) return;
+
+        const index = y * BITMAP_WIDTH + x;
 
         if (this.picEnabled && drawVis) {
             this.visible.data[index] = this.picColor;
         }
 
         if (this.priEnabled && drawPri) {
-            if (this.priority.data[index] !== GAMEOBJECT_PRIORITY.TOP) {
+            if (this.priColor > GAMEOBJECT_PRIORITY.WATER) {
+                this.visiblePriority.data[index] = this.priColor;
+            } else {
                 this.priority.data[index] = this.priColor;
             }
         }
@@ -349,20 +353,24 @@ export class Pic {
             queue.enqueue(startY);
 
             // Visible
-            let pos;
+            let i;
             let x;
             let y;
             while (!queue.isEmpty()) {
                 x = queue.dequeue();
                 y = queue.dequeue();
+                i = y * BITMAP_WIDTH + x;
                 if (this.picEnabled) {
-                    if (this.visible.data[y * BITMAP_WIDTH + x] !== 0x0F) {
+                    if (this.visible.data[i] !== 0x0F) {
                         continue;
                     }
                     this.setPixel(x, y, true, false);
                 }
                 if (this.priEnabled) {
-                    if (this.priority.data[y * BITMAP_WIDTH + x] !== 0x04) {
+                    if (
+                        (this.priColor > GAMEOBJECT_PRIORITY.WATER && this.visiblePriority.data[i] !== 0x04) ||
+                        (this.priColor <= GAMEOBJECT_PRIORITY.WATER && this.priority.data[i] !== 0x04)
+                    ) {
                         continue;
                     }
                     this.setPixel(x, y, false, true);
@@ -466,9 +474,10 @@ export class Pic {
         this.stream.position--;
     }
 
-    draw(visualBuffer, priorityBuffer) {
+    draw(visualBuffer, visualPriorityBuffer, priorityBuffer) {
         this.stream.position = 0;
         this.visible         = visualBuffer;
+        this.visiblePriority = visualPriorityBuffer;
         this.priority        = priorityBuffer;
 
         let processing = true;

@@ -14,15 +14,16 @@ import {randomBetween} from './helpers';
 import GameObject from './gameObject';
 
 const state = {
-    programControl: false,
-    visualBuffer:   null,
-    priorityBuffer: null,
-    scriptSize:     0,
-    strings:        [],
-    items:          new Uint8Array(256),
-    variables:      new Uint8Array(256),
-    flags:          new Uint8Array(256),
-    controllers:    new Uint8Array(256),
+    programControl:       false,
+    visualBuffer:         null,
+    visualPriorityBuffer: null, // Only for drawing priority
+    priorityBuffer:       null, // Only for obstacles and control priorities
+    scriptSize:           0,
+    strings:              [],
+    items:                new Uint8Array(256),
+    variables:            new Uint8Array(256),
+    flags:                new Uint8Array(256),
+    controllers:          new Uint8Array(256),
 
     // For prompt screens
     isTextScreen:       false,
@@ -149,11 +150,12 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
     state.menuContainerElement   = _menuContainerElement;
     state.actionContainerElement = _actionContainerElement;
 
-    state.visualBuffer      = new Bitmap();
-    state.priorityBuffer    = new Bitmap();
-    state.framePriorityData = new Bitmap();
-    state.frameData         = canvasContext.createImageData(320, 200);
-    state.debugFrameData    = canvasContext.createImageData(320, 200);
+    state.visualBuffer         = new Bitmap();
+    state.visualPriorityBuffer = new Bitmap();
+    state.priorityBuffer       = new Bitmap();
+    state.framePriorityData    = new Bitmap();
+    state.frameData            = canvasContext.createImageData(320, 200);
+    state.debugFrameData       = canvasContext.createImageData(320, 200);
 
     state.soundEmulator = new SoundEmulatorTiSn76496a(_audioContext);
 
@@ -267,7 +269,7 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
     if (newY !== obj.y) {
         for (let i = 0; i < cel.width; i++) {
             // Out of bounds
-            if (obj.x + i < 0 || obj.x + i >= 160 || newY * 160 > priorityData.length) {
+            if (obj.x + i < 0 || obj.x + i >= 160 || newY * 160 > priorityData.length || newY < 0) {
                 continue;
             }
 

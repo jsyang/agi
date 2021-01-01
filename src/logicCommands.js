@@ -203,11 +203,12 @@ export default (state, restart) => {
 
         agi_overlay_pic: (varNo) => {
             const picNo = state.variables[varNo];
-            state.loadedPics[picNo].draw(state.visualBuffer, state.priorityBuffer);
+            state.loadedPics[picNo].draw(state.visualBuffer, state.visualPriorityBuffer, state.priorityBuffer);
         },
 
         agi_draw_pic: (varNo) => {
             state.visualBuffer.clear(0x0F);
+            state.visualPriorityBuffer.clear(0x04);
             state.priorityBuffer.clear(0x04);
             commands.agi_overlay_pic(varNo);
         },
@@ -215,7 +216,7 @@ export default (state, restart) => {
         agi_show_pic: () => {
             screen.bltPic();
             state.gameObjects.forEach(obj => {
-                if(obj.draw) {
+                if (obj.draw) {
                     screen.drawObject(obj);
                 }
             });
@@ -534,7 +535,6 @@ export default (state, restart) => {
         },
 
         agi_move_obj: (objNo, x, y, stepSize, flagNo) => {
-
             const obj                 = state.gameObjects[objNo];
             obj.moveToX               = x;
             obj.moveToY               = y;
