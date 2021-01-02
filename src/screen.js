@@ -107,7 +107,14 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
                 ccx = cel.width - cx - 1;
             }
 
-            const color                                        = interpreterState.visualBuffer.data[idx];
+            let color;
+            color = cel.pixelData[cy * cel.width + ccx];
+            if (color === cel.transparentColor) {
+                continue;
+            }
+
+            color = interpreterState.visualBuffer.data[idx];
+
             interpreterState.framePriorityData.data[idx] = interpreterState.visualPriorityBuffer.data[idx];
 
             const rgb         = palette[color];
