@@ -304,12 +304,6 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
             if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
                 shouldMoveY = false;
             }
-
-            // Hit a signal line
-            hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;
-
-            // Is entirely within water
-            isEgoOnWater &&= nextPositionPriority === GAMEOBJECT_PRIORITY.WATER;
         }
     }
 
@@ -327,12 +321,6 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
             if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
                 shouldMoveX = false;
             }
-
-            // Hit a signal line
-            hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;
-
-            // Is entirely within water
-            isEgoOnWater &&= nextPositionPriority === GAMEOBJECT_PRIORITY.WATER;
         }
     }
 
@@ -354,6 +342,21 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
     }
 
     if (no === 0) {
+        for (let i = 0; i < cel.width; i++) {
+            // Out of bounds
+            if (newX + i >= 160 || newX + i < 0 || newY * 160 > priorityData.length || newY < 0) {
+                continue;
+            }
+
+            const nextPositionPriority = priorityData[newY * 160 + newX + i];
+
+            // Hit a signal line
+            hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;
+
+            // Is entirely within water
+            isEgoOnWater &&= nextPositionPriority === GAMEOBJECT_PRIORITY.WATER;
+        }
+
         if (hasHitSignalLine) {
             commands.agi_set(FLAG.ego_touching_signal_line);
         } else {

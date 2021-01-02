@@ -11,9 +11,14 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
 ## Controls
 
 - Click on the red outline to start the game
-- KB controls
-    - `ENTER` to skip most title sequences
+
 - Menus now work (virtual program controller keys are supported, (ex: 21 for "About" menu item)
+
+- TTS upcoming: (For any messages going out to an alert or prompt)
+  - https://codepen.io/SteveJRobertson/pen/emGWaR
+  - Google UK English Male
+  - Rate 12
+  - Pitch 0
 
 ## Background
 
@@ -64,7 +69,7 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
 Progress: 
-- Cannot leave 2nd room
+- Can go into room 3!
 - Cannot press F10 to leave first room communicator scene
   - F10 key not implemented
 
@@ -101,7 +106,4 @@ have F1 - F10 keys.
   - `open /Applications/Python\ 3.8/Install\ Certificates.command`
 
 ## License
-
-Licensed under the GPL version 3. 
-
-This is in no way affiliated with or endorsed by Sierra Entertainment or any other company.
+GPL v3 

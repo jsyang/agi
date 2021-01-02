@@ -374,9 +374,14 @@ export default (state, restart) => {
         },
 
         agi_end_of_loop: (objNo, flagNo) => {
-            state.gameObjects[objNo].callAtEndOfLoop       = true;
-            state.gameObjects[objNo].flagToSetWhenFinished = flagNo;
-            state.gameObjects[objNo].celCycling            = true;
+            commands.agi_reset(flagNo);
+
+            const obj                 = state.gameObjects[objNo];
+            obj.reverseCycle          = false;
+            obj.callAtEndOfLoop       = true;
+            obj.flagToSetWhenFinished = flagNo;
+            obj.celCycling            = true;
+            obj.cel                   = 0;
         },
 
         agi_reverse_cycle: (objNo) => {
@@ -389,7 +394,14 @@ export default (state, restart) => {
         },
 
         agi_reverse_loop: (objNo, flagNo) => {
-            state.gameObjects[objNo].reverseLoop = true;
+            commands.agi_reset(flagNo);
+
+            const obj                 = state.gameObjects[objNo];
+            obj.callAtEndOfLoop       = true;
+            obj.flagToSetWhenFinished = flagNo;
+            obj.reverseCycle          = true;
+            obj.celCycling            = true;
+            obj.cel                   = state.loadedViews[obj.viewNo].loops[obj.loop].cels.length - 1;
         },
 
         agi_stop_motion: (objNo) => {

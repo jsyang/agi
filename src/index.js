@@ -25,12 +25,14 @@ window.AGI = {
         AGI.bltDebug = interpreter.bltDebug;
     },
 
+    getNextCycleTimeMS: () => 1000 / AGI.FPS * Math.max(AGI.state.variables[VAR.cycle_delay], 1),
+
     render: () => {
         if (!AGI.state) return;
         if (AGI.state.hasQuit) return;
 
         interpreter.cycle();
-        renderTimeout = setTimeout(AGI.render, (1000 / AGI.FPS) * AGI.state.variables[VAR.cycle_delay]);
+        renderTimeout = setTimeout(AGI.render, AGI.getNextCycleTimeMS());
     },
 
     togglePause: () => {

@@ -30,7 +30,6 @@ const TEMPLATE = {
     allowedOnLand:  true,
     allowedOnWater: true,
     update:         false,
-    reverseLoop:    false,
     nextCycle:      1,
 
     oldX:        0,
