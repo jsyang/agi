@@ -1,3 +1,5 @@
+export const DECRYPTION_KEY = "Avis Durgan";
+
 export const palette = [
     0x000000,   // BLACK
     0x0000AA,   // DARK BLUE

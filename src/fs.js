@@ -13,6 +13,10 @@ export class ByteStream {
         this.position      = 0;
     }
 
+    checkEndReached() {
+        return this.startPosition + this.position >= this.buffer.byteLength;
+    }
+
     readUint8() {
         return this.buffer[this.startPosition + this.position++];
     }

@@ -59,7 +59,7 @@ export function readAgiResource(type, num) {
 const getASCIIFromWordChar   = byte => byte ^ 0x7F;
 const isWithinLowercaseASCII = v => (v >= 97 && v <= 122);
 
-export function extractWords(/** @type ByteStream */byteStream) {
+function extractWords(/** @type ByteStream */byteStream) {
     byteStream.startPosition = byteStream.readUint16(false);// 26 x 2 bytes for each letter of the alphabet
     byteStream.position      = 0;
 
@@ -93,9 +93,7 @@ export function extractWords(/** @type ByteStream */byteStream) {
         }
         if (byteStream.end <= byteStream.startPosition + byteStream.position) return;
     }
-
 }
-
 
 export async function load(path = 'game/') {
     let downloadedBuffers;

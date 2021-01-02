@@ -1,8 +1,6 @@
-import {AGI_RESOURCE_TYPE, LOGIC_ACTIONS, LOGIC_TESTS} from './constants';
+import {AGI_RESOURCE_TYPE, DECRYPTION_KEY, LOGIC_ACTIONS, LOGIC_TESTS} from './constants';
 import {readAgiResource} from './resources';
 import {commands} from './interpreter';
-
-const DECRYPTION_KEY = "Avis Durgan";
 
 export default class LogicParser {
     /** @type ByteStream */
@@ -38,7 +36,10 @@ export default class LogicParser {
             this.data.position  = pos + msgPtr + 1;
             let msg             = '';
             while (true) {
-                let decrypted = String.fromCharCode(DECRYPTION_KEY[decryptionIndex++].charCodeAt(0) ^ this.data.readUint8());
+                let decrypted = String.fromCharCode(
+                    DECRYPTION_KEY[decryptionIndex++].charCodeAt(0) ^ this.data.readUint8()
+                );
+
                 if (decryptionIndex >= DECRYPTION_KEY.length) {
                     decryptionIndex = 0;
                 }
