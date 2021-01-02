@@ -16,11 +16,21 @@ const INTERPOLATE_VAR = /%v[0-9]+/g;
 const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
 const INTERPOLATE_STR = /%s[0-9]{1,3}/g;
 
+// Logging
+// const LLL = args => console.log(state.logicNo, args);
+const LLL = new Function();
+
+
 export default (state, restart) => {
     let currentMenu;
 
-    // const LLL = args => console.log(state.logicNo, args);
-    const LLL = new Function();
+    // Dialog
+    const _alert = message => {
+        state.soundEmulator.muted = true;
+        AGI.TTS.say(message)
+        alert(message);
+        state.soundEmulator.muted = false;
+    };
 
     const commands = {
         agi_increment: (varNo) => {
@@ -112,9 +122,7 @@ export default (state, restart) => {
         },
 
         agi_print_at: (msgNo, x, y, width) => {
-            const message = commands._agi_get_message(msgNo);
-            AGI.TTS.say(message)
-            alert(message);
+            _alert(commands._agi_get_message(msgNo));
         },
 
         agi_shake_screen: (shakeCount) => {
@@ -821,8 +829,7 @@ export default (state, restart) => {
         agi_graphics: () => {
             if (state.textScreenMessages.length > 0) {
                 const message = state.textScreenMessages.join('\n');
-                AGI.TTS.say(message);
-                alert(message);
+                _alert(message);
                 state.textScreenMessages = [];
             }
         },
@@ -972,9 +979,7 @@ export default (state, restart) => {
         },
 
         agi_print: (msgNo) => {
-            const message = commands._agi_get_message(msgNo);
-            AGI.TTS.say(message);
-            alert(message);
+            _alert(commands._agi_get_message(msgNo));
         },
 
         agi_print_v: (varNo) => {

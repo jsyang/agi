@@ -86,6 +86,7 @@ Progress:
 
 ## AGI Architecture
 
+- http://allowe.com/games/larry/inside-stories/sierra-history.html
 - http://agiwiki.sierrahelp.com/images/f/f5/AGDS.pdf
 - Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
 - http://agiwiki.sierrahelp.com/index.php?title=Actions,_Tests_and_Flags_in_the_Adventure_Game_Interpreter#Flags
@@ -98,8 +99,8 @@ Logic command implementations from another engine
     - Core aspect of the engine
 - PICTURES are background images with visual (displayed as is to user) and priority images (act as primitive z-buffer for clipping and bounding of game objects)
 - VIEWs are animations collections that sit on top of the PICs; e.g. ego, opening doors, portals, etc.
-  - CELs are individual sequences of animations
-  - LOOPs are individual frames within an animation sequence
+  - LOOPs are individual sequences of animations
+  - CELs are individual frames within a LOOP
 - SOUNDs are just that, both sound effects along with music
 - [WORDS.TOK](https://wiki.scummvm.org/index.php/AGIWiki/WORDS.TOK) contains words recognized by the game
 
@@ -109,6 +110,14 @@ No support for F11, F12 keys since the AGI engine was made to target IBM PCjrs. 
 have F1 - F10 keys.
 
 ![](images/ibm-pcjr-kb.png)
+
+## SCI Architecture
+- https://github.com/OmerMor/SCI16
+- http://sci.sierrahelp.com/Documentation/SCISpecifications/08-ResourceFiles.html
+
+## Shivers 2 RE
+
+- https://wiki.multimedia.cx/index.php/Sierra_Audio (SOL file format)
 
 ## Use Emscripten to compile the logic code because JS does not support GOTOs
 

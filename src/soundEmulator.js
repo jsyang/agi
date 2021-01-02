@@ -37,6 +37,7 @@ export const NOISE_VOICE          = 3;
 export const COMPLETE_ATTENUATION = 0xF;
 
 const BASE_FREQUENCY = 111860;
+const MASTER_GAIN    = 0.03;
 
 export default class SoundEmulatorTiSn76496a {
     noiseSourceNode;
@@ -59,7 +60,7 @@ export default class SoundEmulatorTiSn76496a {
         this.lastInputBit       = 0;
         this.noiseOutputBit     = 0;
         this.masterGain         = this.audioContext.createGain();
-        this.masterGain.gain.setValueAtTime(0.05, this.audioContext.currentTime);
+        this.masterGain.gain.setValueAtTime(MASTER_GAIN, this.audioContext.currentTime);
         this.masterGain.connect(this.audioContext.destination);
 
         // Create noise effect node

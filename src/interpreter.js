@@ -420,6 +420,34 @@ const updateObject = (obj, no) => {
                     xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
                     break;
                 case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
+                    const egoX = state.gameObjects[0].x;
+                    const egoY = state.gameObjects[0].y;
+                    if (egoX > obj.x) {
+                        if (egoY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.DownRight;
+                        } else if (egoY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.UpRight;
+                        } else {
+                            obj.direction = GAMEOBJECT_DIRECTION.Right;
+                        }
+                    } else if (egoX < obj.x) {
+                        if (egoY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
+                        } else if (egoY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
+                        } else {
+                            obj.direction = GAMEOBJECT_DIRECTION.Left;
+                        }
+                    } else {
+                        if (egoY > obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.Down;
+                        } else if (egoY < obj.y) {
+                            obj.direction = GAMEOBJECT_DIRECTION.Up;
+                        }
+                    }
+
+                    yStep = Math.min(yStep, Math.abs(obj.y - egoY));
+                    xStep = Math.min(xStep, Math.abs(obj.x - egoX));
                     break;
 
                 case GAMEOBJECT_MOVE_FLAGS.Wander:
