@@ -1,6 +1,7 @@
 import {load} from './resources';
 import interpreter from './interpreter';
 import {VAR} from './constants'
+import TTS from './tts';
 
 let renderTimeout;
 
@@ -9,6 +10,7 @@ window.AGI = {
     state:    null,
     commands: null,
     canvasEl: null,
+    TTS:      null,
 
     start: async (canvasEl, audioContext, menuContainerElement, actionContainerElement) => {
         if (AGI.state) return;
@@ -16,6 +18,7 @@ window.AGI = {
         AGI.canvasEl        = canvasEl;
         const canvasContext = canvasEl.getContext("2d");
 
+        TTS.init();
         await load();
 
         interpreter.init(canvasContext, audioContext, menuContainerElement, actionContainerElement);
@@ -23,6 +26,7 @@ window.AGI = {
         AGI.commands = interpreter.commands;
         AGI.cycle    = interpreter.cycle;
         AGI.bltDebug = interpreter.bltDebug;
+        AGI.TTS      = TTS;
     },
 
     getNextCycleTimeMS: () => 1000 / AGI.FPS * Math.max(AGI.state.variables[VAR.cycle_delay], 1),

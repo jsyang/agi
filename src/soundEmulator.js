@@ -45,6 +45,7 @@ export default class SoundEmulatorTiSn76496a {
     noiseFeedbackType;
     voiceNodes   = [];
     gains        = [];
+    masterGain   = null;
     lastInputBit;
     noiseOutputBit;
     muted        = false;
@@ -57,6 +58,9 @@ export default class SoundEmulatorTiSn76496a {
         this.noiseShiftRegister = 0x0000;
         this.lastInputBit       = 0;
         this.noiseOutputBit     = 0;
+        this.masterGain         = this.audioContext.createGain();
+        this.masterGain.gain.setValueAtTime(0.05, this.audioContext.currentTime);
+        this.masterGain.connect(this.audioContext.destination);
 
         // Create noise effect node
         this.noiseGenerator = this.audioContext.createScriptProcessor(4096);
@@ -74,7 +78,7 @@ export default class SoundEmulatorTiSn76496a {
             this.voiceNodes.push(voiceNode);
             gain = this.audioContext.createGain();
             gain.gain.setValueAtTime(0, this.audioContext.currentTime);
-            gain.connect(this.audioContext.destination);
+            gain.connect(this.masterGain);
             this.gains.push(gain);
             if (voice === NOISE_VOICE) {
                 this.noiseGenerator.connect(gain);

@@ -19,7 +19,8 @@ const INTERPOLATE_STR = /%s[0-9]{1,3}/g;
 export default (state, restart) => {
     let currentMenu;
 
-    const LLL = args => console.log(state.logicNo, args);
+    // const LLL = args => console.log(state.logicNo, args);
+    const LLL = new Function();
 
     const commands = {
         agi_increment: (varNo) => {
@@ -111,7 +112,9 @@ export default (state, restart) => {
         },
 
         agi_print_at: (msgNo, x, y, width) => {
-            alert(commands._agi_get_message(msgNo));
+            const message = commands._agi_get_message(msgNo);
+            AGI.TTS.say(message)
+            alert(message);
         },
 
         agi_shake_screen: (shakeCount) => {
@@ -817,7 +820,9 @@ export default (state, restart) => {
 
         agi_graphics: () => {
             if (state.textScreenMessages.length > 0) {
-                alert(state.textScreenMessages.join('\n'));
+                const message = state.textScreenMessages.join('\n');
+                AGI.TTS.say(message);
+                alert(message);
                 state.textScreenMessages = [];
             }
         },
@@ -967,7 +972,9 @@ export default (state, restart) => {
         },
 
         agi_print: (msgNo) => {
-            alert(commands._agi_get_message(msgNo));
+            const message = commands._agi_get_message(msgNo);
+            AGI.TTS.say(message);
+            alert(message);
         },
 
         agi_print_v: (varNo) => {

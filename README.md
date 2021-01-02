@@ -8,6 +8,10 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
 2. Run `yarn play`
 3. Open http://localhost:3000
 
+## How it works
+
+- If you turn on TTS, the dialogs will be spoken.
+
 ## Controls
 
 - Click on the red outline to start the game
@@ -19,6 +23,8 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
   - Google UK English Male
   - Rate 12
   - Pitch 0
+
+- Use https://github.com/cthackers/adm-zip to access the files
 
 ## Background
 
@@ -73,6 +79,10 @@ Progress:
 - Game object should be able to collide with other game objects
 - Cannot press F10 to leave first room communicator scene
   - F10 key not implemented
+- print.at and text.screen not really working properly
+
+- Need to filter buttons by keywords
+- Mouse control? Or virtual joystick control?
 
 ## AGI Architecture
 
