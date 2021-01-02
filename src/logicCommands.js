@@ -256,6 +256,9 @@ export default (state, restart) => {
                     commands.agi_erase(j);
                 }
                 obj.update          = false;
+                obj.ignoreHorizon   = false;
+                obj.ignoreBlocks    = false;
+                obj.ignoreObjs      = false;
                 obj.callAtEndOfLoop = false;
                 obj.fixedPriority   = false;
                 obj.fixedLoop       = false;

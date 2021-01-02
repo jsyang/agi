@@ -69,7 +69,8 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
 Progress: 
-- Can go into room 3!
+- Can go into room 3 and beyond!
+- Game object should be able to collide with other game objects
 - Cannot press F10 to leave first room communicator scene
   - F10 key not implemented
 
