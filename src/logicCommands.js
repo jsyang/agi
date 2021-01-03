@@ -8,7 +8,7 @@ import Sound from './sound';
 import {View} from './view';
 import {
     VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
-    GAMEOBJECT_MOVE_FLAGS
+    GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS
 } from './constants';
 import {commands} from './interpreter';
 
@@ -29,6 +29,7 @@ export default (state, restart) => {
         state.soundEmulator.muted = true;
         AGI.TTS.say(message)
         alert(message);
+        AGI.TTS.stop();
         state.soundEmulator.muted = false;
     };
 
@@ -260,7 +261,7 @@ export default (state, restart) => {
         },
 
         agi_unanimate_all: () => {
-            for (let j = 0; j < 16; j++) {
+            for (let j = 0; j < MAX_GAMEOBJECTS; j++) {
                 const obj = state.gameObjects[j];
 
                 if (obj.draw) {

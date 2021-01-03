@@ -307,6 +307,8 @@ export const AGI_RESOURCE_TYPE = {
 // http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
 export const GAMEOBJECT_MAX_Y = 167;
 
+export const MAX_GAMEOBJECTS = 16;
+
 // Corresponds to palette
 export const GAMEOBJECT_PRIORITY = {
     UNCONDITIONAL_BARRIER: 0,   // BLACK

@@ -74,7 +74,7 @@ export default class SoundEmulatorTiSn76496a {
             voice++
         ) {
             voiceNode      = this.audioContext.createOscillator();
-            voiceNode.type = 'square';
+            voiceNode.type = 'sawtooth';
             voiceNode.start(0);
             this.voiceNodes.push(voiceNode);
             gain = this.audioContext.createGain();

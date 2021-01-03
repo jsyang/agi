@@ -111,9 +111,12 @@ have F1 - F10 keys.
 
 ![](images/ibm-pcjr-kb.png)
 
+- http://www.lainenooney.com/research.html
+
 ## SCI Architecture
 - https://github.com/OmerMor/SCI16
 - http://sci.sierrahelp.com/Documentation/SCISpecifications/08-ResourceFiles.html
+- http://sci.sierrahelp.com/Documentation/Documentation.html
 
 ## Shivers 2 RE
 

@@ -4,6 +4,7 @@ import {
     GAMEOBJECT_MAX_Y,
     GAMEOBJECT_MOVE_FLAGS,
     GAMEOBJECT_PRIORITY,
+    MAX_GAMEOBJECTS,
     VAR
 } from './constants';
 import {Bitmap} from './bitmap';
@@ -30,8 +31,7 @@ const state = {
     isTextScreen:       false,
     textScreenMessages: [],
 
-    gameObjects: [],
-
+    gameObjects: [],    // Characters, animated sprites, etc.
 
     testSaid:   {},    // List all the said test command queries as options to be chosen
     playerSaid: '',    // Has the player said anything that has matched any of the wordgroups? ex: "3,204"
@@ -97,7 +97,7 @@ const restart = () => {
     state.flags[FLAG.noise_enabled] = 1;
     state.flags[FLAG.new_room]      = 1;
 
-    for (let i = 16; i-- > 0;) {
+    for (let i = MAX_GAMEOBJECTS; i-- > 0;) {
         state.gameObjects[i] = GameObject();
     }
     commands.agi_load_logic(0);
@@ -267,69 +267,92 @@ const updateScore = () => {
     scoreEl.innerHTML = `Score: ${state.variables[VAR.score]} / ${state.variables[VAR.max_score]}`;
 }
 
+const getObjBaselinesTouching = (o1, o2, dx = 0, dy = 0) => {
+    if (o1.y + dy !== o2.y) return false;
+
+    const o1View = state.loadedViews[o1.viewNo];
+    const o1Cel  = o1View.loops[o1.loop].cels[o1.cel];
+
+    const o2View = state.loadedViews[o2.viewNo];
+    const o2Cel  = o2View.loops[o2.loop].cels[o2.cel];
+
+    const finalO1XStart = o1.x + dx;
+    const finalO1XEnd   = o1.x + dx + o1Cel.width;
+
+    const finalO2XStart = o2.x;
+    const finalO2XEnd   = o2.x + o2Cel.width;
+
+    return (
+        (finalO1XStart >= finalO2XStart && finalO1XEnd <= finalO2XEnd) ||       // O1 entirely inside O2
+        (finalO1XStart < finalO2XStart && finalO1XEnd >= finalO1XStart) ||      // O1 touching O2 from left
+        (finalO1XStart > finalO2XStart && finalO1XStart <= finalO2XStart) ||    // O1 touching O2 from right
+        (finalO2XStart >= finalO1XStart && finalO2XEnd <= finalO1XEnd)          // O2 entirely inside O1
+    );
+};
+
 // http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/ControllingObstacles.html
 const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
-    // todo: consider other objects (16 checks first)
-
     const view         = state.loadedViews[obj.viewNo];
     const cel          = view.loops[obj.loop].cels[obj.cel];
     const priorityData = state.priorityBuffer.data;
-    let shouldMoveX    = true;
-    let shouldMoveY    = true;
 
+    let shouldMove       = true;
     let hasHitSignalLine = false;
     let isEgoOnWater     = no === 0;
 
-    if (newY !== obj.y) {
+    // Reached edges of the screen
+    if (newY > GAMEOBJECT_MAX_Y || newY < 0 || newX < 0 || newX > 160) {
+        shouldMove = false;
+    }
+
+    if (shouldMove) {
+        // Hit the horizon
+        if (!obj.ignoreHorizon) {
+            shouldMove &&= newY >= state.horizon;
+        }
+
         for (let i = 0; i < cel.width; i++) {
-            // Out of bounds
-            if (obj.x + i < 0 || obj.x + i >= 160 || newY * 160 > priorityData.length || newY < 0) {
+            if (!shouldMove) break;
+
+            const nextPositionPriority = priorityData[newY * 160 + newX + i];
+
+            // Out of range
+            if (nextPositionPriority === undefined) {
                 continue;
             }
 
-            const nextPositionPriority = priorityData[newY * 160 + obj.x + i];
-
-            // Reached bottom of the screen
-            if (newY > GAMEOBJECT_MAX_Y) {
-                shouldMoveY = false;
-            }
-
-            // Hit the horizon
-            if (!obj.ignoreHorizon) {
-                shouldMoveY &&= newY >= state.horizon;
-            }
-
-            shouldMoveY &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
+            shouldMove &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
 
             if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
-                shouldMoveY = false;
+                shouldMove = false;
             }
         }
     }
 
-    if (newX !== obj.x) {
-        for (let i = 0; i < cel.width; i++) {
-            // Out of bounds
-            if (newX + i >= 160 || newX + i < 0) {
-                continue;
-            }
+    // Check for collisions with other GameObjects
+    if (shouldMove && !obj.ignoreObjs) {
+        for (let i = 0; i < MAX_GAMEOBJECTS; i++) {
+            if (i === no) continue;
 
-            const nextPositionPriority = priorityData[obj.y * 160 + newX + i];
+            const otherObj = state.gameObjects[i];
 
-            shouldMoveX &&= nextPositionPriority !== GAMEOBJECT_PRIORITY.UNCONDITIONAL_BARRIER;
+            // Only check if the objects are being drawn
+            if (otherObj.draw) {
+                const isTouching = getObjBaselinesTouching(obj, otherObj, newX - obj.x, newY - obj.y);
 
-            if (!obj.ignoreBlocks && nextPositionPriority === GAMEOBJECT_PRIORITY.CONDITIONAL_BARRIER) {
-                shouldMoveX = false;
+                if (isTouching) {
+                    shouldMove = false;
+                    break;
+                }
             }
         }
     }
-
-    // Only move if should move
-    newX = shouldMoveX ? newX : obj.x;
-    newY = shouldMoveY ? newY : obj.y;
 
     // Hit a stop somewhere
-    if (!shouldMoveY || !shouldMoveX) {
+    if (!shouldMove) {
+        newX = obj.x;
+        newY = obj.y;
+
         obj.direction = GAMEOBJECT_DIRECTION.Stopped;
 
         if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.Wander) {
@@ -343,12 +366,12 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 
     if (no === 0) {
         for (let i = 0; i < cel.width; i++) {
-            // Out of bounds
-            if (newX + i >= 160 || newX + i < 0 || newY * 160 > priorityData.length || newY < 0) {
+            const nextPositionPriority = priorityData[newY * 160 + newX + i];
+
+            // Out of range
+            if (nextPositionPriority === undefined) {
                 continue;
             }
-
-            const nextPositionPriority = priorityData[newY * 160 + newX + i];
 
             // Hit a signal line
             hasHitSignalLine ||= nextPositionPriority === GAMEOBJECT_PRIORITY.SIGNAL;

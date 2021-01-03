@@ -52,6 +52,8 @@ function selectVoiceByName(n) {
     localStorage.setItem('tts', JSON.stringify(selected));
 }
 
+const stop = () => speechSynthesis.cancel();
+
 function say(t) {
     if (!isNativeTTSSupported) return;
 
@@ -61,7 +63,7 @@ function say(t) {
     utterance.pitch  = selected.pitch;
     utterance.volume = 1;
 
-    speechSynthesis.cancel();
+    stop();
     speechSynthesis.speak(utterance);
 }
 
@@ -72,4 +74,5 @@ export default {
     getVoices,
     selectVoiceByName,
     say,
+    stop,
 }
