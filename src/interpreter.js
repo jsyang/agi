@@ -93,7 +93,7 @@ const restart = () => {
     state.variables[VAR.sound_volume]  = 15;
     state.variables[VAR.max_input_len] = 41;
 
-    state.flags[FLAG.sound_on]      = 0; // jsyang: turn off sound for now
+    state.flags[FLAG.sound_on]      = 1;
     state.flags[FLAG.noise_enabled] = 1;
     state.flags[FLAG.new_room]      = 1;
 

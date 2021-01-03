@@ -16,13 +16,12 @@ const INTERPOLATE_VAR = /%v[0-9]+/g;
 const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
 const INTERPOLATE_STR = /%s[0-9]{1,3}/g;
 
-// Logging
-// const LLL = args => console.log(state.logicNo, args);
-const LLL = new Function();
-
-
 export default (state, restart) => {
     let currentMenu;
+
+    // Logging
+    // const LLL = new Function();
+    const LLL = args => console.log(state.logicNo, args);
 
     // Dialog
     const _alert = message => {
@@ -284,7 +283,7 @@ export default (state, restart) => {
         },
 
         agi_set_view: (objNo, viewNo) => {
-            LLL(`agi_set_view(${objNo},${viewNo})`);
+            // LLL(`agi_set_view(${objNo},${viewNo})`);
 
             const obj = state.gameObjects[objNo];
 
@@ -438,7 +437,7 @@ export default (state, restart) => {
         },
 
         agi_step_size: (objNo, varNo) => {
-            LLL(`agi_step_size(${objNo}, ${varNo})`);
+            // LLL(`agi_step_size(${objNo}, ${varNo})`);
             state.gameObjects[objNo].stepSize = state.variables[varNo];
         },
 
@@ -541,7 +540,7 @@ export default (state, restart) => {
         },
 
         agi_add_to_pic: (viewNo, loopNo, celNo, x, y, priority, margin) => {
-            LLL(`agi_add_to_pic(${viewNo}, ${loopNo}, ${celNo}, ${x}, ${y}, ${priority}, ${margin})`);
+            // LLL(`agi_add_to_pic(${viewNo}, ${loopNo}, ${celNo}, ${x}, ${y}, ${priority}, ${margin})`);
             screen.bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin);
         },
 
@@ -602,12 +601,12 @@ export default (state, restart) => {
         },
 
         agi_ignore_blocks: (objNo) => {
-            LLL(`agi_ignore_blocks(${objNo})`);
+            // LLL(`agi_ignore_blocks(${objNo})`);
             state.gameObjects[objNo].ignoreBlocks = true;
         },
 
         agi_observe_blocks: (objNo) => {
-            LLL(`agi_observe_blocks(${objNo})`);
+            // LLL(`agi_observe_blocks(${objNo})`);
             state.gameObjects[objNo].ignoreBlocks = false;
         },
 
@@ -703,6 +702,8 @@ export default (state, restart) => {
                     const sNum = parseFloat(match.replace('%s', ''));
                     return state.strings[sNum];
                 });
+            } else {
+                throw 'Could not get message!';
             }
 
             return interpolated;
@@ -857,6 +858,7 @@ export default (state, restart) => {
         },
 
         _agi_get_state: () => {
+            // todo: this doesn't work properly yet
             return {
                 items:     state.items,
                 variables: state.variables,
@@ -878,8 +880,6 @@ export default (state, restart) => {
         },
 
         agi_restore_game: () => {
-            if (!confirm('Your current game will be lost if you restore. Continue?')) return;
-
             let savedState;
             try {
                 savedState = JSON.parse(localStorage.getItem('agi_savegame_1'));
@@ -905,6 +905,8 @@ export default (state, restart) => {
 
                     state.allowInput                = true;
                     state.flags[FLAG.game_restored] = true;
+
+                    commands.agi_new_room(state.variables[VAR.room_no]);
                 }
             } catch (e) {
                 alert('Restore game failed!');
