@@ -11,6 +11,26 @@ let fontStream;
 
 export const wordGroups = [];
 
+// todo: Handle AGI V3 files
+// http://agi.sierrahelp.com/Documentation/Specifications/3-1-Files.html
+/*
+In the case of version 3 of the AGI interpreter, the LOGDIR, PICDIR, VIEWDIR, and SNDDIR are concatenated together in that order with an eight byte header giving the starting offset of each directory.
+
+Header
+
+Byte	0	1	2	3	4	5	6	7
+ 	L	L	P	P	V	V	S	S
+L = offset of LOGDIR
+P = offset of PICDIR
+V = offset of VIEWDIR
+S = offset of SNDDIR
+
+Each offset is two bytes in length where the first byte is the low byte and the second byte is the high byte as is the case in the whole AGI system. For example, the first two bytes will always be 0x0800 since the header is a fixed size of eight bytes.
+
+The format of each of the individual directory sections then follows as above for AGI v2.
+ */
+
+
 function parseDirfile(buffer, records) {
     const length = buffer.length / 3;
     for (let i = 0; i < length; i++) {

@@ -18,12 +18,6 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
 
 - Menus now work (virtual program controller keys are supported, (ex: 21 for "About" menu item)
 
-- TTS upcoming: (For any messages going out to an alert or prompt)
-  - https://codepen.io/SteveJRobertson/pen/emGWaR
-  - Google UK English Male
-  - Rate 12
-  - Pitch 0
-
 - Use https://github.com/cthackers/adm-zip to access the files
 
 ## Background
@@ -76,16 +70,17 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 
 Progress: 
 - Can go into room 3 and beyond!
-- Game object should be able to collide with other game objects
 - Cannot press F10 to leave first room communicator scene
   - F10 key not implemented
 - print.at and text.screen not really working properly
-
+- save / restore should correctly function but do not
+- Need an inventory screen / parse inventory item names correctly
 - Need to filter buttons by keywords
 - Mouse control? Or virtual joystick control?
 
 ## AGI Architecture
 
+- https://gamicus.gamepedia.com/Adventure_Game_Interpreter
 - http://allowe.com/games/larry/inside-stories/sierra-history.html
 - http://agiwiki.sierrahelp.com/images/f/f5/AGDS.pdf
 - Main reference: http://www.agidev.com/articles/agispec/agispecs.html#toc10
@@ -114,8 +109,10 @@ have F1 - F10 keys.
 - http://www.lainenooney.com/research.html
 
 ## SCI Architecture
+- https://gamicus.gamepedia.com/Sierra_Creative_Interpreter
 - https://github.com/OmerMor/SCI16
 - http://sci.sierrahelp.com/Documentation/SCISpecifications/08-ResourceFiles.html
+- Design documents, etc
 - http://sci.sierrahelp.com/Documentation/Documentation.html
 
 ## Shivers 2 RE
