@@ -2,6 +2,8 @@ import {load} from './resources';
 import interpreter from './interpreter';
 import {VAR} from './constants'
 import TTS from './tts';
+import state from './state';
+import {commands} from './logicCommands';
 
 let renderTimeout;
 
@@ -22,8 +24,8 @@ window.AGI = {
         await load();
 
         interpreter.init(canvasContext, audioContext, menuContainerElement, actionContainerElement);
-        AGI.state    = interpreter.state;
-        AGI.commands = interpreter.commands;
+        AGI.state    = state;
+        AGI.commands = commands;
         AGI.cycle    = interpreter.cycle;
         AGI.bltDebug = interpreter.bltDebug;
         AGI.TTS      = TTS;

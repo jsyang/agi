@@ -1,8 +1,8 @@
 import {AGI_RESOURCE_TYPE, DECRYPTION_KEY, LOGIC_ACTIONS, LOGIC_TESTS} from './constants';
 import {readAgiResource} from './resources';
-import {commands} from './interpreter';
+import {commands} from './logicCommands';
 
-export default class LogicParser {
+export default class Logic {
     /** @type ByteStream */
     data       = null;
     scanStart  = 0;
