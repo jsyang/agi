@@ -2,7 +2,7 @@ import {FLAG, MAX_GAMEOBJECTS, VAR} from './constants';
 import GameObject from './gameObject';
 import {commands} from './logicCommands';
 
-const state = {
+export const state = {
     programControl:       false,    // Does the game have control over player character (ego)?
     visualBuffer:         null,     // 2x1 pixels for colored drawing
     visualPriorityBuffer: null,     // Only for drawing priority
@@ -105,4 +105,6 @@ export function restart() {
     commands.agi_load_logic(0);
 }
 
-export default state;
+export function updateSound() {
+    state.soundEmulator.muted = !state.flags[FLAG.sound_on];
+}

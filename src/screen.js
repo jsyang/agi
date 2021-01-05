@@ -1,7 +1,7 @@
 import {getFontStream} from './resources';
 import {BITMAP_HEIGHT, BITMAP_WIDTH} from './bitmap';
 import {GAMEOBJECT_PRIORITY, palette} from './constants';
-import state from './state';
+import {state} from './state';
 
 let fontStream;
 

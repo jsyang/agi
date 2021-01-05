@@ -2,7 +2,7 @@ import {load} from './resources';
 import interpreter from './interpreter';
 import {VAR} from './constants'
 import TTS from './tts';
-import state from './state';
+import {state} from './state';
 import {commands} from './logicCommands';
 
 let renderTimeout;

@@ -10,8 +10,8 @@ import {
     VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
     GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS
 } from './constants';
-import state, {restart} from './state';
-import {saveGame, restoreGame} from './persist'
+import {state, restart} from './state';
+import {restoreNextCycle, saveNextCycle} from './interpreter';
 
 const INTERPOLATE_VAR = /%v[0-9]+/g;
 const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
@@ -80,15 +80,15 @@ export const commands = {
     },
 
     agi_set: (flagNo) => {
-        state.flags[flagNo] = true;
+        state.flags[flagNo] = 1;
     },
 
     agi_reset: (flagNo) => {
-        state.flags[flagNo] = false;
+        state.flags[flagNo] = 0;
     },
 
     agi_toggle: (flagNo) => {
-        state.flags[flagNo] = !state.flags[flagNo];
+        state.flags[flagNo] = state.flags[flagNo] ? 0 : 1;
     },
 
     agi_set_v: (varNo) => {
@@ -122,7 +122,11 @@ export const commands = {
     },
 
     agi_print_at: (msgNo, x, y, width) => {
-        _alert(commands._agi_get_message(msgNo));
+        const message = commands._agi_get_message(msgNo);
+
+        if (message) {
+            _alert(message);
+        }
     },
 
     agi_shake_screen: (shakeCount) => {
@@ -249,7 +253,7 @@ export const commands = {
 
     // https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Interpreter/AgiInterpreter.Kernel.cs#L371
     agi_animate_obj: (objNo) => {
-        LLL(`agi_animate_obj(${objNo})`);
+        // LLL(`agi_animate_obj(${objNo})`);
         const obj = state.gameObjects[objNo];
 
         obj.celCycling    = true;
@@ -629,7 +633,7 @@ export const commands = {
     },
 
     agi_load_logic: (logNo) => {
-        // LLL(`agi_load_logic(${logNo})`);
+        LLL(`agi_load_logic(${logNo})`);
 
         if (state.loadedLogics[logNo]) {
             state.loadedLogics[logNo].data.position = state.loadedLogics[logNo].entryPoint;
@@ -702,8 +706,6 @@ export const commands = {
                 const sNum = parseFloat(match.replace('%s', ''));
                 return state.strings[sNum];
             });
-        } else {
-            throw 'Could not get message!';
         }
 
         return interpolated;
@@ -857,8 +859,8 @@ export const commands = {
         state.loadedSounds[soundNo] = null;
     },
 
-    agi_save_game:    saveGame,
-    agi_restore_game: restoreGame,
+    agi_save_game:    saveNextCycle,
+    agi_restore_game: restoreNextCycle,
     agi_restart_game: restart,
 
     agi_quit: (n1) => {

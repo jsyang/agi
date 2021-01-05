@@ -12,7 +12,8 @@ import screen from './screen';
 import {commands} from './logicCommands';
 import SoundEmulatorTiSn76496a from './soundEmulator';
 import {randomBetween} from './helpers';
-import state, {resetControllers, restart} from './state';
+import {state, resetControllers, restart, updateSound} from './state';
+import {restoreGame, saveGame} from './persist';
 
 let canvasContext;
 let audioContext;
@@ -145,7 +146,7 @@ const handleInput = () => {
             } else if (key === 8 && state.inputBuffer.length > 0) { // Backspace
                 state.inputBuffer = state.inputBuffer.substr(0, state.inputBuffer.length - 1);
             } else if (key === 13) {
-                state.flags[FLAG.input_received] = true; // The player has entered a command
+                state.flags[FLAG.input_received] = 1; // The player has entered a command
                 state.keyboardCharBuffer         = [];
                 break;
             }
@@ -500,9 +501,6 @@ const updateObject = (obj, no) => {
     }
 }
 
-// todo: this doesn't work
-const updateSound = () => state.soundEmulator.muted = !state.flags[FLAG.sound_on];
-
 // SQ2 specific
 const discardCommon = /^(clock|restore|restore game|restart|restart game|fastest|normal|slow|fast|quit|pause game|explore pocket|check out|rescue|rescue game|inv|check out inv)$/;
 
@@ -525,7 +523,26 @@ const updateSaidSystem = () => {
     state.playerSaid = '';
 };
 
+// User intention to save / restore
+// Cannot do it within the same cycle because it will always set the controller
+// for save/restore within current state which will cause a call stack overflow
+let isNextCycleSaveGame    = false;
+let isNextCycleRestoreGame = false;
+
+const handleSaveRestore = () => {
+    if (isNextCycleSaveGame) {
+        saveGame();
+    } else if (isNextCycleRestoreGame) {
+        restoreGame();
+    }
+
+    // Reset this otherwise it will save/restore for every subsequent cycle once set!
+    isNextCycleSaveGame    = false;
+    isNextCycleRestoreGame = false;
+};
+
 const cycle = () => {
+    handleSaveRestore();
     handleInput();
 
     let egoDir = state.variables[VAR.ego_dir];
@@ -568,6 +585,13 @@ const cycle = () => {
     resetControllers();
 }
 
+export function saveNextCycle() {
+    isNextCycleSaveGame = true;
+}
+
+export function restoreNextCycle() {
+    isNextCycleRestoreGame = true;
+}
 
 export default {
     bltDebug,
