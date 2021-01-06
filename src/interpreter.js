@@ -139,10 +139,9 @@ const handleInput = () => {
 
         while (state.keyboardCharBuffer.length > 0) {
             const key = state.keyboardCharBuffer.shift();
+
             if (key >= 32 && key < 127 && state.inputBuffer.length < state.variables[VAR.max_input_len]) {
                 state.inputBuffer += String.fromCharCode(key);
-            } else if (key === 8 && state.inputBuffer.length > 0) { // Backspace
-                state.inputBuffer = state.inputBuffer.substr(0, state.inputBuffer.length - 1);
             } else if (key === 8 && state.inputBuffer.length > 0) { // Backspace
                 state.inputBuffer = state.inputBuffer.substr(0, state.inputBuffer.length - 1);
             } else if (key === 13) {

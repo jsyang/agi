@@ -78,9 +78,16 @@ export function bltPic() {
 }
 
 export function clearView(viewNo, loopNo, celNo, x, y, priority) {
-    const view   = state.loadedViews[viewNo];
-    let cel      = view.loops[loopNo].cels[celNo];
+    // Don't try clearing if the view doesn't exist
+    const view = state.loadedViews[viewNo];
+    if (!view) return;
+    let cel = view.loops[loopNo];
+    if (!cel) return;
+    cel = cel.cels[celNo];
+
+
     const mirror = cel.mirrored;
+
     if (cel.mirrored) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
     }

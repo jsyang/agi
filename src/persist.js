@@ -90,6 +90,9 @@ export const restoreGame = () => {
             // todo: this isn't quite working the way I wanted it
             // the ego doesn't return to the original spot and I have to run
             // one cycle with the new_room flag to get things working
+
+            // Use the script buffer
+            // http://agi.sierrahelp.com/AGIStudioHelp/Logic/ScriptBuffer.html
             commands.agi_set(FLAG.new_room);
 
             // Execution jumps to the start of logic 0
