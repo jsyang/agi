@@ -11,6 +11,7 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
 ## How it works
 
 - If you turn on TTS, the dialogs will be spoken.
+- TODO: Load ZIP files with AGI content and it will start playing
 
 ## Controls
 
@@ -69,12 +70,12 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 
 Progress: 
-- Can go into room 3 and beyond!
+- Can't go beyond apemen planet start room!
 - Cannot press F10 to leave first room communicator scene
   - F10 key not implemented
 - print.at and text.screen not really working properly
-- save / restore should correctly function but do not
 - Need an inventory screen / parse inventory item names correctly
+    - Just a text list of items
 - Need to filter buttons by keywords
 - Mouse control? Or virtual joystick control?
 

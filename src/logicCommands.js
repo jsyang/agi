@@ -674,7 +674,9 @@ export const commands = {
 
     },
 
-    agi_set_key: (num1, num2, num3) => {
+    // todo: implement set keys so that AGI demos can work
+    // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MenuIOCommands/set.key.html
+    agi_set_key: (nCODE1,CODE2,cA) => {
 
     },
 

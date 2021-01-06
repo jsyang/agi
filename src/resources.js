@@ -11,9 +11,15 @@ let fontStream;
 
 export const wordGroups = [];
 
+// todo: handle zip file "PACKS" for all the games / demos
+// http://www.thealmightyguru.com/Wiki/index.php?title=Sierra_AGI_Demos
+
+
 // todo: Handle AGI V3 files
 // http://agi.sierrahelp.com/Documentation/Specifications/3-1-Files.html
 /*
+http://www.agidev.com/articles/agispec/agispecs-5.html#ss5.2
+
 In the case of version 3 of the AGI interpreter, the LOGDIR, PICDIR, VIEWDIR, and SNDDIR are concatenated together in that order with an eight byte header giving the starting offset of each directory.
 
 Header
