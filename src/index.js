@@ -18,27 +18,31 @@ window.AGI = {
     start: async () => {
         if (AGI.state) return;
 
-        AGI.hasStarted = true;
-        AGI.canvasEl   = document.getElementById('canvas');
+        try {
+            await load(
+                location.hash ? location.hash.slice(1) : undefined
+            );
 
-        TTS.init();
+            AGI.hasStarted = true;
+            AGI.canvasEl   = document.getElementById('canvas');
 
-        await load(
-            location.hash ? location.hash.slice(1) : undefined
-        );
+            TTS.init();
 
-        interpreter.init(
-            AGI.canvasEl.getContext("2d"),
-            new AudioContext(),
-            document.getElementById('menu'),
-            document.getElementById('actions')
-        );
+            interpreter.init(
+                AGI.canvasEl.getContext("2d"),
+                new AudioContext(),
+                document.getElementById('menu'),
+                document.getElementById('actions')
+            );
 
-        AGI.state    = state;
-        AGI.commands = commands;
-        AGI.cycle    = interpreter.cycle;
-        AGI.bltDebug = interpreter.bltDebug;
-        AGI.TTS      = TTS;
+            AGI.state    = state;
+            AGI.commands = commands;
+            AGI.cycle    = interpreter.cycle;
+            AGI.bltDebug = interpreter.bltDebug;
+            AGI.TTS      = TTS;
+        } catch (e) {
+            alert(e);
+        }
     },
 
     getNextCycleTimeMS: () => 1000 / AGI.FPS * Math.max(AGI.state.variables[VAR.cycle_delay], 1),
