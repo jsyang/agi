@@ -73,6 +73,7 @@
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
     <div id="actions"></div>
+
 </div>
 <div id="debug"></div>
 <script src="game/index.js"></script>
@@ -80,12 +81,14 @@
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");
 
-    canvas.onmousemove = e => {
-        const {left, top} = canvas.getBoundingClientRect();
-        document.title    = `(${(e.clientX - left) >> 2}, ${(e.clientY +1 - top) >> 1})`;
-    };
+    /*
+        canvas.onmousemove = e => {
+            const {left, top} = canvas.getBoundingClientRect();
+            document.title    = `(${(e.clientX - left) >> 2}, ${(e.clientY +1 - top) >> 1})`;
+        };
+     */
 
-    canvas.onclick = () => {
+    canvas.onclick = async () => {
         if (hasStarted) {
             AGI.togglePause();
             return;

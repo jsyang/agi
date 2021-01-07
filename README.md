@@ -10,16 +10,14 @@ Adventure Game Interpreter (AGI) for Sierra's classic 80's adventure games writt
 
 ## How it works
 
-- If you turn on TTS, the dialogs will be spoken.
-- TODO: Load ZIP files with AGI content and it will start playing
+- With TTS turned on, all text dialog will be spoken aloud
+- Load ZIP files with AGI content and it will start playing
 
 ## Controls
 
 - Click on the red outline to start the game
 
 - Menus now work (virtual program controller keys are supported, (ex: 21 for "About" menu item)
-
-- Use https://github.com/cthackers/adm-zip to access the files
 
 ## Background
 
@@ -63,6 +61,10 @@ Array.from(document.querySelectorAll('dt')).forEach(v=>v.click())
 ```
 
 ## Game Specific References
+
+AGI homebrew games on archive.org:
+- https://archive.org/search.php?query=%28AGI%29&and[]=mediatype%3A%22software%22
+- http://www.thealmightyguru.com/Wiki/index.php?title=Sierra_AGI_Demos
 
 ### SQ2
 - https://www.youtube.com/watch?v=eVsF_FZ54O0

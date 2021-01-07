@@ -1,5 +1,5 @@
 import {CommandMask, COMPLETE_ATTENUATION, NOISE_VOICE} from './soundEmulator';
-import {ByteStream} from './fs';
+import {ByteBuffer} from './bytebuffer';
 
 const VOICE_END         = 0xFFFF;
 const TICK_MILLISECONDS = 16;
@@ -14,10 +14,10 @@ export default class Sound {
         let prevOffset = stream.startPosition + stream.readUint16();
         for (let i = 0; i < 3; i++) {
             const offset = stream.startPosition + stream.readUint16();
-            this.voicesData.push(new ByteStream(stream.buffer, prevOffset, offset));
+            this.voicesData.push(new ByteBuffer(stream.buffer, prevOffset, offset));
             prevOffset = offset;
         }
-        this.voicesData.push(new ByteStream(stream.buffer, prevOffset, stream.startPosition + stream.length));
+        this.voicesData.push(new ByteBuffer(stream.buffer, prevOffset, stream.startPosition + stream.length));
     }
 
     play(soundEmulator, onFinished) {

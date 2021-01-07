@@ -3,7 +3,7 @@ import {readAgiResource} from './resources';
 import {commands} from './logicCommands';
 
 export default class Logic {
-    /** @type ByteStream */
+    /** @type ByteBuffer */
     data       = null;
     scanStart  = 0;
     no         = 0;

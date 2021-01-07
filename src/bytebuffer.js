@@ -1,4 +1,4 @@
-export class ByteStream {
+export class ByteBuffer {
     constructor(buffer, startPosition = 0, end = 0) {
         this.buffer = buffer;
 
@@ -13,7 +13,7 @@ export class ByteStream {
         this.position      = 0;
     }
 
-    checkEndReached() {
+    hasReachedEnd() {
         return this.startPosition + this.position >= this.buffer.byteLength;
     }
 
@@ -42,18 +42,4 @@ export class ByteStream {
 
         return ((((b1 << 8) | b2) << 16) >> 16);
     }
-}
-
-export async function downloadAllFiles(path, files) {
-    const buffers = {};
-
-    await Promise.all(files.map(file =>
-        fetch(path + file)
-            .then(res => res.arrayBuffer())
-            .then(buffer => {
-                buffers[file] = new ByteStream(new Uint8Array(buffer));
-            }))
-    );
-
-    return buffers;
 }

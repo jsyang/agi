@@ -13,6 +13,7 @@
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "express": "^4.17.1",
+    "jszip": "^3.5.0",
     "parcel": "^2.0.0-beta.1",
     "typescript": "^4.1.3"
   },

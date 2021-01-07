@@ -93,6 +93,7 @@ export const restoreGame = () => {
 
             // Use the script buffer
             // http://agi.sierrahelp.com/AGIStudioHelp/Logic/ScriptBuffer.html
+            // http://agiwiki.sierrahelp.com/index.php?title=AGI_Specifications:_Chapter_10_-_Savegame_Files
             commands.agi_set(FLAG.new_room);
 
             // Execution jumps to the start of logic 0
