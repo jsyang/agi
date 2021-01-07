@@ -8,22 +8,32 @@ import {commands} from './logicCommands';
 let renderTimeout;
 
 window.AGI = {
-    FPS:      40,
-    state:    null,
-    commands: null,
-    canvasEl: null,
-    TTS:      null,
+    hasStarted: false,
+    FPS:        40,
+    state:      null,
+    commands:   null,
+    canvasEl:   null,
+    TTS:        null,
 
-    start: async (canvasEl, audioContext, menuContainerElement, actionContainerElement) => {
+    start: async () => {
         if (AGI.state) return;
 
-        AGI.canvasEl        = canvasEl;
-        const canvasContext = canvasEl.getContext("2d");
+        AGI.hasStarted = true;
+        AGI.canvasEl   = document.getElementById('canvas');
 
         TTS.init();
-        await load();
 
-        interpreter.init(canvasContext, audioContext, menuContainerElement, actionContainerElement);
+        await load(
+            location.hash ? location.hash.slice(1) : undefined
+        );
+
+        interpreter.init(
+            AGI.canvasEl.getContext("2d"),
+            new AudioContext(),
+            document.getElementById('menu'),
+            document.getElementById('actions')
+        );
+
         AGI.state    = state;
         AGI.commands = commands;
         AGI.cycle    = interpreter.cycle;

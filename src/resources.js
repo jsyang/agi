@@ -147,7 +147,9 @@ export async function downloadZip(file) {
 
     const unzipped = unzipSync(buffer);
 
-    const isAGIv2Resource = unzipped['logdir'] || unzipped['picdir'] || unzipped['snddir'] || unzipped['viewdir'];
+    const isAGIv2Resource = Object.keys(unzipped)
+        .map(f => f.toLowerCase())
+        .some(f => IS_DIRFILE.test(f));
 
     const dirFiles = [];
     const volFiles = [];

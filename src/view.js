@@ -1,23 +1,22 @@
-export class Cel {
-    /** @type Uint8Array */
-    pixelData = null;
-
-    constructor(width, height, transparentColor, mirrored, mirroredLoop) {
-        this.width            = width;
-        this.height           = height;
-        this.transparentColor = transparentColor;
-        this.mirroredLoop     = mirroredLoop;
-        this.mirrored         = mirrored;
-    }
+/*
+"Cel"
+{
+    width:              uint
+    height:             uint
+    transparentColor:   uint
+    mirrored:           boolean
+    mirroredLoop:       int
+    pixelData:          Uint8Array
 }
 
-export class Loop {
-    cels = [];
+"Loop"
+{
+    cels:               Cel[]
 }
+*/
 
 export class View {
     loops = [];
-    description;
 
     constructor(data) {
         const unk1              = data.readUint8();
@@ -26,7 +25,7 @@ export class View {
         const descriptionOffset = data.readUint16();
         for (let i = 0; i < numLoops; i++) {
             // Loop header
-            const loop          = new Loop();
+            const loop          = {cels: []};
             const loopOffset    = data.readUint16();
             const streamPosLoop = data.position;
             data.position       = loopOffset;
@@ -46,7 +45,14 @@ export class View {
                     celMirrored = false;
                 }
 
-                const cel = new Cel(celWidth, celHeight, celTransparentColor, celMirrored, celMirrorLoop);
+                const cel = {
+                    width:            celWidth,
+                    height:           celHeight,
+                    transparentColor: celTransparentColor,
+                    mirrored:         celMirrored,
+                    mirroredLoop:     celMirrorLoop,
+                };
+
                 if (!celMirrored) {
                     cel.pixelData = new Uint8Array(cel.width * cel.height);
                     for (let k = 0; k < cel.pixelData.length; k++) {

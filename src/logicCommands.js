@@ -676,7 +676,7 @@ export const commands = {
 
     // todo: implement set keys so that AGI demos can work
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MenuIOCommands/set.key.html
-    agi_set_key: (nCODE1,CODE2,cA) => {
+    agi_set_key: (nCODE1, CODE2, cA) => {
 
     },
 
@@ -1002,6 +1002,26 @@ export const commands = {
     agi_test_posn: (objNo, x1, y1, x2, y2) => {
         const obj = state.gameObjects[objNo];
         return obj.x >= x1 && obj.x <= x2 && obj.y >= y1 && obj.y <= y2;
+    },
+
+    agi_test_right_posn: (objNo, x1, y1, x2, y2) => {
+        const obj      = state.gameObjects[objNo];
+        const view     = state.loadedViews[obj.viewNo];
+        const celWidth = view.loops[obj.loop].cels[obj.cel].width;
+
+        const rightPosn = obj.x + celWidth;
+
+        return rightPosn >= x1 && rightPosn <= x2 && obj.y >= y1 && obj.y <= y2;
+    },
+
+    agi_test_center_posn: (objNo, x1, y1, x2, y2) => {
+        const obj      = state.gameObjects[objNo];
+        const view     = state.loadedViews[obj.viewNo];
+        const celWidth = view.loops[obj.loop].cels[obj.cel].width;
+
+        const centerPosn = obj.x + celWidth >> 1;
+
+        return centerPosn >= x1 && centerPosn <= x2 && obj.y >= y1 && obj.y <= y2;
     },
 
     agi_test_controller: (ctrNo) => {
