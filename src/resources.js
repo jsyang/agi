@@ -1,6 +1,6 @@
 import {ByteBuffer} from './bytebuffer';
 import {AGI_RESOURCE_TYPE} from './constants';
-import JSZip from 'jszip';
+import {unzipSync} from 'fflate';
 
 let logdirRecords  = [];
 let picdirRecords  = [];
@@ -129,9 +129,9 @@ const IS_WORDSTOK = /^words\.tok$/i;
 const IS_OBJECT   = /^object$/i;
 const IS_ICON     = /^[a-z0-9]+.ico$/i;
 
-const getDecompressedFile = async zipObject => ({
-    name:       zipObject.name.toLowerCase(),
-    byteBuffer: new ByteBuffer(await zipObject.async('uint8array'))
+const getDecompressedFile = (name, uint8a) => ({
+    name:       name.toLowerCase(),
+    byteBuffer: new ByteBuffer(uint8a)
 });
 
 async function downloadFont(file = 'font.bin') {
@@ -141,11 +141,13 @@ async function downloadFont(file = 'font.bin') {
 }
 
 export async function downloadZip(file) {
-    const buffer = await fetch(file).then(res => res.arrayBuffer());
+    const buffer = new Uint8Array(
+        await fetch(file).then(res => res.arrayBuffer())
+    );
 
-    const zip = await JSZip.loadAsync(buffer);
+    const unzipped = unzipSync(buffer);
 
-    const isAGIv2Resource = zip.files['logdir'] || zip.files['picdir'] || zip.files['snddir'] || zip.files['viewdir'];
+    const isAGIv2Resource = unzipped['logdir'] || unzipped['picdir'] || unzipped['snddir'] || unzipped['viewdir'];
 
     const dirFiles = [];
     const volFiles = [];
@@ -153,29 +155,29 @@ export async function downloadZip(file) {
     let objectFile;
     let iconFile;
 
-    Object.values(zip.files).forEach(zipObject => {
-        const {name} = zipObject;
+    Object.keys(unzipped).forEach(name => {
+        const uint8array = unzipped[name];
 
         if (IS_DIRFILE.test(name)) {
-            dirFiles.push(getDecompressedFile(zipObject));
+            dirFiles.push(getDecompressedFile(name, uint8array));
         } else if (IS_VOLFILE.test(name)) {
-            volFiles.push(getDecompressedFile(zipObject));
+            volFiles.push(getDecompressedFile(name, uint8array));
         } else if (IS_WORDSTOK.test(name)) {
-            wordsTokFile = getDecompressedFile(zipObject);
+            wordsTokFile = getDecompressedFile(name, uint8array);
         } else if (IS_OBJECT.test(name)) {
-            objectFile = getDecompressedFile(zipObject);
+            objectFile = getDecompressedFile(name, uint8array);
         } else if (IS_ICON.test(name)) {
-            iconFile = getDecompressedFile(zipObject);
+            iconFile = getDecompressedFile(name, uint8array);
         }
     });
 
     return {
         isAGIv2Resource,
-        dirFiles:     await Promise.all(dirFiles),
-        volFiles:     await Promise.all(volFiles),
-        wordsTokFile: await wordsTokFile,
-        objectFile:   await objectFile,
-        iconFile:     await iconFile,
+        dirFiles,
+        volFiles,
+        wordsTokFile,
+        objectFile,
+        iconFile,
     };
 }
 
