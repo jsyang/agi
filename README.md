@@ -66,21 +66,6 @@ AGI homebrew games on archive.org:
 - https://archive.org/search.php?query=%28AGI%29&and[]=mediatype%3A%22software%22
 - http://www.thealmightyguru.com/Wiki/index.php?title=Sierra_AGI_Demos
 
-### SQ2
-- https://www.youtube.com/watch?v=eVsF_FZ54O0
-- http://sarien.net/spacequest2#outsidexos4
-- http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
-
-Progress: 
-- Can't go beyond apemen planet start room!
-- Cannot press F10 to leave first room communicator scene
-  - F10 key not implemented
-- print.at and text.screen not really working properly
-- Need an inventory screen / parse inventory item names correctly
-    - Just a text list of items
-- Need to filter buttons by keywords
-- Mouse control? Or virtual joystick control?
-
 ## AGI Architecture
 
 - https://gamicus.gamepedia.com/Adventure_Game_Interpreter

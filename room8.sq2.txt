@@ -1,0 +1,389 @@
+if (isset(f5)) {
+  set.horizon(10);
+  if (v1 < 45) {
+    program.control();
+  }
+  load.view(40);
+  load.view(42);
+  load.view(88);
+  load.sound(7);
+  load.sound(8);
+  load.sound(9);
+  if (v1 < 45) {
+    load.view(41);
+    load.view(6);
+  }
+  else {
+    load.view(25);
+    load.view(98);
+    load.sound(44);
+  }
+  load.pic(v0);
+  draw.pic(v0);
+  animate.obj(o1);
+  set.view(o1,40);
+  set.priority(o1,9);
+  ignore.blocks(o1);
+  step.size(o1,v87);
+  if (v1 < 9) {
+    set.cel(o1,0);
+    position(o1,59,43);
+    move.obj(o1,59,84,0,f30);
+    v30 = 1;
+    sound(7,f36);
+  }
+  else {
+    set.cel(o1,2);
+    position(o1,59,99);
+    v30 = 4;
+  }
+  draw(o1);
+  stop.cycling(o1);
+  if (v1 < 45) {
+    animate.obj(o2);
+    set.view(o2,41);
+    set.loop(o2,0);
+    set.cel(o2,0);
+    set.priority(o2,9);
+    ignore.objs(o2);
+    ignore.blocks(o2);
+    position(o2,96,96);
+    animate.obj(o3);
+    set.view(o3,41);
+    set.loop(o3,1);
+    set.cel(o3,3);
+    set.priority(o3,9);
+    ignore.objs(o3);
+    ignore.blocks(o3);
+    position(o3,51,96);
+    animate.obj(o5);
+    set.view(o5,41);
+    set.loop(o5,2);
+    fix.loop(o5);
+    set.cel(o5,0);
+    ignore.blocks(o5);
+    set.priority(o5,15);
+    position(o5,100,150);
+    step.size(o5,v87);
+    draw(o5);
+    stop.update(o5);
+  }
+  animate.obj(o4);
+  set.view(o4,42);
+  set.loop(o4,0);
+  set.cel(o4,0);
+  position(o4,90,91);
+  animate.obj(o6);
+  set.view(o6,88);
+  ignore.blocks(o6);
+  ignore.objs(o6);
+  set.priority(o6,5);
+  if (v1 != 45) {
+    set.cel(o6,1);
+    position(o6,123,106);
+    draw(o6);
+    stop.update(o6);
+  }
+  else {
+    set.cel(o6,0);
+    position(o6,123,140);
+    draw(o6);
+    stop.cycling(o6);
+    move.obj(o6,123,106,0,f34);
+    v35 = 1;
+  }
+  if (v1 < 9) {
+    set.view(o0,6);
+    position(o0,90,92);
+    set.loop(o0,0);
+  }
+  if (v1 == 46) {
+    position(o0,92,93);
+    draw(o0);
+  }
+  show.pic();
+  reset(f3);
+}
+if (v1 < 45) {
+  if (v69 == 1) {
+    v69 = 0;
+    erase(o0);
+    print.at("After touching down on a giant"
+             "landing platform, you are ushered to"
+             "a hovercraft waiting to transport"
+             "you to the mining site. Utter"
+             "despair sets in.",2,3,35);
+  }
+  if (v69 == 2) {
+    v69 = 0;
+    erase(o4);
+  }
+  if ((v30 == 1 ||
+      v30 == 2)) {
+    if ((isset(f36) ||
+        isset(f65))) {
+      sound(7,f36);
+    }
+  }
+  if ((v32 == 2 ||
+      v32 == 3)) {
+    if ((isset(f37) ||
+        isset(f65))) {
+      sound(9,f37);
+    }
+  }
+  v31--;
+  if (v31 == 1) {
+    if (v32 == 2) {
+      move.obj(o5,66,124,0,f31);
+      sound(9,f37);
+    }
+    else {
+      if (v30 == 4) {
+        draw(o2);
+        draw(o3);
+      }
+      if (v30 == 3) {
+        add.to.pic(40,0,2,59,99,9,1);
+        erase(o1);
+        start.update(o5);
+        stop.cycling(o5);
+        move.obj(o5,100,124,0,f31);
+        v32 = 1;
+        v30 = 4;
+        v31 = 18;
+      }
+    }
+  }
+  if (isset(f31)) {
+    reset(f31);
+    if (v32 == 3) {
+      erase(o5);
+      new.room(9);
+    }
+    if (v32 == 2) {
+      move.obj(o5,0,58,0,f31);
+      v32 = 3;
+    }
+    if (v32 == 1) {
+      stop.update(o5);
+      draw(o0);
+      move.obj(o0,101,92,0,f32);
+    }
+  }
+  if (isset(f32)) {
+    reset(f32);
+    program.control();
+    v33++;
+    if (v33 == 1) {
+      move.obj(o0,106,97,0,f32);
+      draw(o4);
+      move.obj(o4,99,91,0,f33);
+      start.cycling(o4);
+    }
+    if (v33 == 2) {
+      move.obj(o0,106,114,0,f32);
+    }
+    if (v33 == 3) {
+      set.cel(o5,1);
+      force.update(o5);
+      v69 = 1;
+    }
+  }
+  if (isset(f33)) {
+    reset(f33);
+    v34++;
+    if (v34 == 1) {
+      move.obj(o4,114,106,0,f33);
+    }
+    if (v34 == 2) {
+      move.obj(o4,114,105,0,f33);
+    }
+    if (v34 == 3) {
+      start.update(o5);
+      set.cel(o5,2);
+      stop.cycling(o5);
+      v31 = 18;
+      v32 = 2;
+      v69 = 2;
+    }
+  }
+  if (isset(f30)) {
+    reset(f30);
+    if (v30 == 2) {
+      v30 = 3;
+      sound(8,f61);
+      v31 = 3;
+    }
+    if (v30 == 1) {
+      set.cel(o1,1);
+      step.size(o1,v86);
+      v30 = 2;
+      move.obj(o1,59,99,0,f30);
+    }
+  }
+}
+if (v1 > 8) {
+  if (v69 == 1) {
+    v69 = 0;
+    set(f15);
+    stop.sound();
+    print("Ugghh!");
+    shake.screen(1);
+  }
+  if (isset(f3)) {
+    if (!isset(f53)) {
+      set(f53);
+      get.posn(o0,v51,v52);
+      if (v52 < 97) {
+        set.priority(o0,4);
+      }
+      program.control();
+      set.view(o0,25);
+      set.cel(o0,0);
+      stop.cycling(o0);
+      set(f50);
+      v53 = 10;
+      step.size(o0,v53);
+      v52 = 167;
+      move.obj.v(o0,v51,v52,89,f35);
+      sound(44,f61);
+    }
+  }
+  if (isset(f35)) {
+    reset(f35);
+    erase(o0);
+    v31 = 18;
+    v69 = 1;
+  }
+  v31--;
+  if (v31 == 1) {
+    print("After surviving to this point, you are"
+          "still prone to acts typical of the"
+          "mentally absent.");
+    v67 = 1;
+  }
+  if (isset(f34)) {
+    reset(f34);
+    if (v35 == 1) {
+      position(o0,126,103);
+      set.view(o0,0);
+      set.loop(o0,3);
+      set.cel(o0,0);
+      start.motion(o0);
+      draw(o0);
+      set.cel(o6,1);
+      stop.update(o6);
+      force.update(o6);
+      v35 = 3;
+    }
+    if (v35 == 2) {
+      print("You head back down to the lower"
+            "level. Unfortunately, you are met by"
+            "an armed guard. You have been quite a"
+            "headache. To make it up to them, you"
+            "are strung between two hovercraft. On"
+            "the command \"GO\", life leaves you"
+            "(in two different directions).");
+      v67 = 1;
+    }
+  }
+  if (posn(o0,124,102,129,104)) {
+    if (v35 != 3 &&
+        v35 != 2) {
+      erase(o0);
+      start.update(o6);
+      set.cel(o6,0);
+      stop.cycling(o6);
+      move.obj(o6,123,140,0,f34);
+      v35 = 2;
+    }
+  }
+  else {
+    if (v35 == 3) {
+      v35 = 0;
+    }
+  }
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","base") ||
+      said("check out","area"))) {
+    if (v1 == 7) {
+      print.at("You are at some kind of landing"
+               "platform. The guards are"
+               "transferring you to another mode"
+               "of transportation for the"
+               "remainder of the trip to the mine.",2,3,35);
+    }
+    else {
+      print.at("You are on a landing platform. A"
+               "shuttle sits quietly nearby. You"
+               "see lush growth all around.",2,3,35);
+    }
+  }
+  if (said("check out","craft")) {
+    print("It looks just like the shuttle that"
+          "brought you here.");
+  }
+  if (said("look in","craft")) {
+    if (posn(o0,59,100,92,104)) {
+      print("Through the heavily tinted viewport"
+            "you see two empty pilot seats.");
+    }
+    else {
+      print("You don't have a clear view from here.");
+    }
+  }
+  if ((said("climb in","craft") ||
+      said("open","craft") ||
+      said("climb in") ||
+      said("open","door"))) {
+    if (posn(o0,76,91,90,93)) {
+      set.priority(o0,4);
+      set.view(o0,98);
+      v16 = 98;
+      erase(o0);
+      set(f15);
+      print("You open the hatch and head on in.");
+      new.room(46);
+    }
+    else {
+      print("You recall from when you landed, the"
+            "entry hatch being on  the rear-left"
+            "of the shuttle. You'll have to move a"
+            "little.");
+    }
+  }
+  if ((said("check out","forest") ||
+      said("check out","down") ||
+      said("check out","snag"))) {
+    print("You can't see the forest for the trees.");
+  }
+  if ((said("check out","sky") ||
+      said("check out","above"))) {
+    print("The sky is quite clear and blue.");
+  }
+  if ((said("check out","brush") ||
+      said("look down","brush"))) {
+    print("Things look small down there.");
+  }
+}
+return();
+
+// Messages
+#message 1 "You head back down to the lower level. Unfortunately, you are met by an armed guard. You have been quite a headache. To make it up to them, you are strung between two hovercraft. On the command \"GO\", life leaves you (in two different directions)."
+#message 2 "After surviving to this point, you are still prone to acts typical of the mentally absent."
+#message 3 "Ugghh!"
+#message 4 "You can't do that from here."
+#message 5 "You are at some kind of landing platform. The guards are transferring you to another mode of transportation for the remainder of the trip to the mine."
+#message 6 "You are on a landing platform. A shuttle sits quietly nearby. You see lush growth all around."
+#message 7 "After touching down on a giant landing platform, you are ushered to a hovercraft waiting to transport you to the mining site. Utter despair sets in."
+#message 8 "You recall from when you landed, the entry hatch being on  the rear-left of the shuttle. You'll have to move a little."
+#message 9 "It looks just like the shuttle that brought you here."
+#message 10 "You open the hatch and head on in."
+#message 11 "Through the heavily tinted viewport you see two empty pilot seats."
+#message 12 "You don't have a clear view from here."
+#message 13 "You can't see the forest for the trees."
+#message 14 "Things look small down there."
+#message 15 "The sky is quite clear and blue."

@@ -123,10 +123,11 @@ function extractWords(/** @type ByteBuffer */byteBuffer) {
 
 export const getFontStream = () => fontStream;
 
-const IS_DIRFILE  = /^((log|pic|snd|view)|[a-zA-Z0-9]+)dir$/i;
+const IS_DIRFILE  = /^((log|pic|snd|view)|[a-z0-9]+)dir$/i;
 const IS_VOLFILE  = /^vol\.[0-9]$/i;
 const IS_WORDSTOK = /^words\.tok$/i;
 const IS_OBJECT   = /^object$/i;
+const IS_ICON     = /^[a-z0-9]+.ico$/i;
 
 const getDecompressedFile = async zipObject => ({
     name:       zipObject.name.toLowerCase(),
@@ -150,6 +151,7 @@ export async function downloadZip(file) {
     const volFiles = [];
     let wordsTokFile;
     let objectFile;
+    let iconFile;
 
     Object.values(zip.files).forEach(zipObject => {
         const {name} = zipObject;
@@ -162,6 +164,8 @@ export async function downloadZip(file) {
             wordsTokFile = getDecompressedFile(zipObject);
         } else if (IS_OBJECT.test(name)) {
             objectFile = getDecompressedFile(zipObject);
+        } else if (IS_ICON.test(name)) {
+            iconFile = getDecompressedFile(zipObject);
         }
     });
 
@@ -171,13 +175,32 @@ export async function downloadZip(file) {
         volFiles:     await Promise.all(volFiles),
         wordsTokFile: await wordsTokFile,
         objectFile:   await objectFile,
+        iconFile:     await iconFile,
     };
+}
+
+function setBufferAsFavicon(buffer) {
+    const blob = new Blob([buffer]);
+
+    const reader = new FileReader();
+
+    reader.onload = e => {
+        const base64 = e.target.result.split('base64,')[1];
+
+        document.getElementById('favicon').href = 'data:image/vnd.microsoft.icon;base64,' + base64;
+    };
+
+    reader.readAsDataURL(blob);
 }
 
 export async function load(gameZip = '/game/agi/sq2.zip') {
     await downloadFont();
 
     const gameFiles = await downloadZip(gameZip);
+
+    if (gameFiles.iconFile) {
+        setBufferAsFavicon(gameFiles.iconFile.byteBuffer.buffer);
+    }
 
     if (gameFiles.isAGIv2Resource) {
         parseDirfile(gameFiles.dirFiles.find(f => f.name === 'logdir').byteBuffer, logdirRecords);

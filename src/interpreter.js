@@ -236,7 +236,7 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
             if (otherObj.draw) {
                 const isTouching = getObjBaselinesTouching(obj, otherObj, newX - obj.x, newY - obj.y);
 
-                if (isTouching) {
+                if (isTouching && !otherObj.ignoreObjs) {
                     shouldMove = false;
                     break;
                 }
