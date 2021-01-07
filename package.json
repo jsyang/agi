@@ -4,6 +4,7 @@
   "description": "Sierra AGI",
   "scripts": {
     "watch": "parcel watch --no-hmr src/index.js --dist-dir ./game",
+    "build": "parcel build src/index.js --dist-dir ./game --no-source-maps",
     "play": "node ."
   },
   "repository": {
