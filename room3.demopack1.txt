@@ -1,0 +1,195 @@
+if ((isset(f5) ||
+    isset(f220))) {
+  reset(f220);
+  clear.text.rect(0,0,24,39,0);
+  if (isset(f35)) {
+    reset(f36);
+    reset(f37);
+    reset(f38);
+    reset(f39);
+    v57 = 0;
+    v30 = 99;
+    load.pic(v30);
+    draw.pic(v30);
+    load.view(89);
+    set.view(o1,89);
+    add.to.pic(89,0,0,0,25,15,15);
+    add.to.pic(89,0,1,42,45,15,15);
+    add.to.pic(89,0,2,61,45,15,15);
+    add.to.pic(89,0,3,69,45,15,15);
+    add.to.pic(89,0,4,86,45,15,15);
+    add.to.pic(89,0,4,104,45,15,15);
+    add.to.pic(89,0,5,122,45,15,15);
+    show.pic();
+    set.text.attribute(0,15);
+    clear.text.rect(8,4,17,35,15);
+    display(8,5,"Preview samples of Sierra's");
+    display(9,5,"award-winning software:");
+    display(11,7,"1) Space Quest");
+    display(13,7,"2) Donald Duck's Playground");
+    display(15,7,"3) King's Quest III");
+    display(17,7,"4) Leisure Suit Larry");
+    clear.text.rect(19,4,20,35,15);
+    display(19,6,"#1-4 = Toggle the selection");
+    display(20,6,"F1 = Help ;  F9 = Run demo(s)");
+    set(f35);
+  }
+}
+if (isset(f35)) {
+  if (controller(c22)) {
+    if (isset(f36)) {
+      set.text.attribute(0,15);
+    }
+    else {
+      set.text.attribute(15,0);
+    }
+    toggle(f36);
+    display(11,7,"1) Space Quest");
+  }
+  if (controller(c23)) {
+    if (isset(f37)) {
+      set.text.attribute(0,15);
+    }
+    else {
+      set.text.attribute(15,0);
+    }
+    display(13,7,"2) Donald Duck's Playground");
+    toggle(f37);
+  }
+  if (controller(c24)) {
+    if (isset(f38)) {
+      set.text.attribute(0,15);
+    }
+    else {
+      set.text.attribute(15,0);
+    }
+    display(15,7,"3) King's Quest III");
+    toggle(f38);
+  }
+  if (controller(c25)) {
+    if (isset(f39)) {
+      set.text.attribute(0,15);
+    }
+    else {
+      set.text.attribute(15,0);
+    }
+    display(17,7,"4) Leisure Suit Larry");
+    toggle(f39);
+  }
+}
+if (controller(c6) &&
+    !isset(f41)) {
+  if ((isset(f36) ||
+      isset(f37) ||
+      isset(f38) ||
+      isset(f39))) {
+    set(f41);
+    v57 = 0;
+  }
+}
+if (controller(c4) &&
+    !isset(f41)) {
+  if ((isset(f36) ||
+      isset(f37) ||
+      isset(f38) ||
+      isset(f39))) {
+    v57 = 0;
+    set(f42);
+    set(f41);
+  }
+}
+if (isset(f41)) {
+  set.text.attribute(15,0);
+  v57 += 1;
+  reset(f35);
+  if (v57 == 1) {
+    if (isset(f36)) {
+      new.room(69);
+    }
+    else {
+      v57 += 1;
+    }
+  }
+  if (v57 == 2) {
+    if (isset(f37)) {
+      new.room(4);
+    }
+    else {
+      v57 += 1;
+    }
+  }
+  if (v57 == 3) {
+    if (isset(f38)) {
+      new.room(68);
+    }
+    else {
+      v57 += 1;
+    }
+  }
+  if (v57 == 4) {
+    if (isset(f39)) {
+      new.room(1);
+    }
+    else {
+      v57 += 1;
+    }
+  }
+  if (v57 == 5) {
+    if (!isset(f42)) {
+      set(f35);
+      reset(f41);
+      set(f220);
+    }
+    else {
+      v57 = 0;
+    }
+  }
+}
+if ((controller(c5) ||
+    controller(c1) ||
+    controller(c16) ||
+    controller(c2))) {
+  set.text.attribute(0,15);
+  reset(f41);
+  if ((controller(c2) ||
+      controller(c1))) {
+    clear.text.rect(8,4,17,35,15);
+    display(8,5,"Preview samples of Sierra's");
+    display(9,5,"award-winning software:");
+    set.text.attribute(0,15);
+    if (isset(f38)) {
+      set.text.attribute(15,0);
+    }
+    display(15,7,"3) King's Quest III");
+    set.text.attribute(0,15);
+    if (isset(f39)) {
+      set.text.attribute(15,0);
+    }
+    display(17,7,"4) Leisure Suit Larry");
+  }
+  else {
+    clear.text.rect(10,4,14,35,15);
+  }
+  set.text.attribute(0,15);
+  if (isset(f36)) {
+    set.text.attribute(15,0);
+  }
+  display(11,7,"1) Space Quest");
+  set.text.attribute(0,15);
+  if (isset(f37)) {
+    set.text.attribute(15,0);
+  }
+  display(13,7,"2) Donald Duck's Playground");
+  set.text.attribute(0,15);
+}
+return();
+
+// Messages
+#message 3 "1) Space Quest"
+#message 4 "2) Donald Duck's Playground"
+#message 5 "3) King's Quest III"
+#message 6 "4) Leisure Suit Larry"
+#message 9 "#1-4 = Toggle the selection"
+#message 10 "F1 = Help ;  F9 = Run demo(s)"
+#message 11 "Preview samples of Sierra's"
+#message 12 "award-winning software:"

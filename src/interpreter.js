@@ -86,6 +86,7 @@ const handleInput = () => {
         while (state.keyboardSpecialBuffer.length > 0) {
             const key = state.keyboardSpecialBuffer.shift();
             if (!state.dialogue) {
+                // Handle special keys for controlling ego
                 switch (key) {
                     case 37: // left
                         setEgoDir(GAMEOBJECT_DIRECTION.Left);
@@ -114,25 +115,6 @@ const handleInput = () => {
                     case 12: // stop
                         setEgoDir(GAMEOBJECT_DIRECTION.Stopped);
                         break;
-                    case 27:  // Escape
-                        // Use this to enter in words usually reserved for `said`
-                        break;
-
-                    case 112: // F1
-                    case 113: // F2
-                    case 114: // F3
-                    case 115: // F4
-                    case 116: // F5
-                    case 117: // F6
-                    case 118: // F7
-                    case 119: // F8
-                    case 120: // F9
-                    case 121: // F10
-                        // case 122: // F11 doesn't work
-                        // case 123: // F12 doesn't work
-                        const nCode = key - 53;
-                        console.log('F' + (nCode - 58));
-                        break;
                 }
             }
         }
@@ -149,6 +131,15 @@ const handleInput = () => {
                 state.keyboardCharBuffer         = [];
                 break;
             }
+        }
+    } else {
+        // Can't control ego and can't enter input for the parser but can still trigger set keys
+        const key = state.keyboardCharBuffer.shift() || state.keyboardSpecialBuffer.shift();
+
+        // Handle the rest if the key is set by game logic to toggle a controller
+        if (state.keysForControllers[key] !== undefined) {
+            state.controllers[state.keysForControllers[key]] = 1;
+            state.variables[VAR.key_pressed] = key;
         }
     }
 

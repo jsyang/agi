@@ -21,7 +21,7 @@ let currentMenu;
 
 // Logging
 // const LLL = new Function();
-const LLL = args => console.log(state.logicNo, args);
+const LLL = (...args) => console.log.apply(console, [state.logicNo, ...args]);
 
 // Dialog
 const _alert = message => {
@@ -104,7 +104,7 @@ export const commands = {
     },
 
     agi_call: (logicNo) => {
-        // LLL(['agi_call', logicNo]);
+        // LLL('agi_call', logicNo);
         state.logicStack.push(state.logicNo);
         state.logicNo = logicNo;
         if (state.loadedLogics[logicNo] != null) {
@@ -674,10 +674,14 @@ export const commands = {
 
     },
 
-    // todo: implement set keys so that AGI demos can work
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MenuIOCommands/set.key.html
-    agi_set_key: (nCODE1, CODE2, cA) => {
-
+    agi_set_key: (nCODE1, nCODE2, cA) => {
+        LLL('agi_set_key', nCODE1, nCODE2, cA);
+        if (nCODE1 > 0) {   // ASCII
+            state.keysForControllers[nCODE1] = cA;
+        } else if (nCODE2 > 0) { // Only support F1 - F10 extended keys for now
+            state.keysForControllers[nCODE2 + 53] = cA;
+        }
     },
 
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/SystemCommands/set.game.id.html
@@ -826,6 +830,7 @@ export const commands = {
     agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
         // jsyang: Doesn't clear anything in our version
         // We dump all text to an `alert()` window
+        LLL('agi_clear_text_rect');
     },
 
     agi_menu_input: () => {
@@ -926,7 +931,7 @@ export const commands = {
     },
 
     agi_parse: (strNo) => {
-        LLL('agi_parse');
+        // LLL('agi_parse');
     },
 
     agi_print: (msgNo) => {
@@ -937,8 +942,10 @@ export const commands = {
         commands.agi_print(state.variables[varNo]);
     },
 
-    agi_set_text_attribute: (fg, bg) => {
-
+    // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.text.attribute.html
+    agi_set_text_attribute: (textFG, textBG) => {
+        state.textFG = textFG;
+        state.textBG = textBG;
     },
 
     /* Handled by Logic.parseLogic

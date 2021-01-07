@@ -7,7 +7,7 @@ let fontStream;
 
 const sRegex = /%s(\d+)/; // "%s123" string regex
 
-export function bltText(row = 0, col = 0, text = '', colorNo = 0) {
+export function bltText(row = 0, col = 0, text = '') {
     let regexResult;
     while ((regexResult = sRegex.exec(text)) !== null) {
         text = text.slice(0, regexResult.index) + state.strings[parseInt(regexResult[1])] + text.slice(regexResult.index + regexResult.length + 1);
@@ -26,9 +26,9 @@ export function bltText(row = 0, col = 0, text = '', colorNo = 0) {
         for (let y = 0; y < 8; y++) {
             let colData = fontStream.readUint8();
             for (let x = 0; x < 8; x++) {
-                let color = palette[colorNo];
+                let color = palette[state.textFG];
                 if ((colData & 0x80) === 0x80) {
-                    color = 0xFF;
+                    color = palette[state.textBG];
                 }
 
                 const index         = (row * 8 + y) * 320 + (col * 8 + x);

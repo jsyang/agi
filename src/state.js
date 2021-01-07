@@ -13,7 +13,7 @@ export const state = {
     variables:            new Uint8Array(256),
     flags:                new Uint8Array(256),
     controllers:          new Uint8Array(256),
-    keysForControllers:   [],       // For function keys
+    keysForControllers:   {},       // For key.set
 
     // For prompt screens
     isTextScreen:       false,
@@ -40,11 +40,13 @@ export const state = {
     soundEmulator: null, // SoundEmulatorTiSn76496a,
     playedSound:   null,
 
-    debugFrameData:        null, // ImageData // For checking various visual / priority aspects
-    frameData:             null, // ImageData
-    framePriorityData:     null, // Bitmap,
-    keyboardSpecialBuffer: [], // number[]
-    keyboardCharBuffer:    [], // number[]
+    textBG:                15,       // For agi_display
+    textFG:                0,      // For agi_display
+    debugFrameData:        null,    // ImageData // For checking various visual / priority aspects
+    frameData:             null,    // ImageData
+    framePriorityData:     null,    // Bitmap,
+    keyboardSpecialBuffer: [],      // number[]
+    keyboardCharBuffer:    [],      // number[]
     inputBuffer:           '',
     allowInput:            true,
     haveKey:               false,
@@ -76,7 +78,6 @@ const resetMenu = () => {
 
 export function resetControllers() {
     state.controllers.fill(0);
-    state.keysForControllers = [];
 }
 
 export function restart() {
@@ -84,6 +85,8 @@ export function restart() {
     state.hasQuit   = false;
 
     resetControllers();
+    state.keysForControllers = {};
+
     resetMenu();
 
     state.variables.fill(0);

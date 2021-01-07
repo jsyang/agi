@@ -1,0 +1,134 @@
+if (v17 > 0) {
+  call(98);
+}
+if (v0 == 0) {
+  configure.screen(1,22,0);
+  status.line.off();
+  set(f7);
+  script.size(1);
+  program.control();
+  prevent.input();
+  set.key(49,0,c22);
+  set.key(50,0,c23);
+  set.key(51,0,c24);
+  set.key(52,0,c25);
+  set.key(0,59,c2);
+  set.key(0,60,c16);
+  set.key(0,62,c5);
+  set.key(0,66,c4);
+  set.key(0,67,c6);
+  set.key(0,68,c7);
+  set.key(27,0,c18);
+  set.key(0,44,c1);
+  set.key(43,0,c20);
+  set.key(44,0,c20);
+  set.key(45,0,c21);
+  set.game.id("DEMO");
+  v57 = 0;
+  set(f35);
+  reset(f41);
+  v10 = 2;
+  new.room(3);
+}
+if (isset(f5)) {
+  v30 = 220;
+Label1:
+  *v30 = 0;
+  reset.v(v30);
+  if (v30 < 254) {
+    v30++;
+    goto(Label1);
+  }
+  load.logics.v(v0);
+  v54 = 0;
+  set(f40);
+}
+if (!isset(f40)) {
+  if (v0 != 3) {
+    if (controller(c18)) {
+      print("Demonstration Paused");
+    }
+  }
+  if (controller(c1)) {
+    stop.sound();
+    quit(0);
+  }
+  else {
+    if (controller(c2)) {
+      print("------ HELP FOR DEMOS ------\nF1  ="
+            "See this help screen\nF2  = Toggle"
+            "sound\nF4  = Toggle speed\nF8  ="
+            "Continuously run\n       selected"
+            "demo(s)\nF9  = Run selected"
+            "demo(s)\nF10 = Return to menu\n   ***"
+            "Alt-Z to quit ***");
+    }
+    else {
+      if (controller(c16)) {
+        toggle(f9);
+        if (isset(f9)) {
+          v21 = 6;
+          print("Sound now On");
+        }
+        else {
+          v21 = 6;
+          print("Sound now Off");
+        }
+      }
+      else {
+        if (controller(c7) &&
+            v0 != 3) {
+          clear.text.rect(0,0,24,40,0);
+          v57 = 0;
+          reset(f42);
+          set(f35);
+          reset(f36);
+          reset(f37);
+          reset(f38);
+          reset(f39);
+          reset(f41);
+          new.room(3);
+        }
+        else {
+          if (controller(c5)) {
+            if (v10 == 2) {
+              print("Fast speed");
+              v10 = 0;
+            }
+            else {
+              print("Normal speed");
+              v10 = 2;
+            }
+          }
+          else {
+            if (controller(c20)) {
+              v23--;
+            }
+            else {
+              if (controller(c21)) {
+                if (v23 < 15) {
+                  v23++;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+else {
+  reset(f40);
+}
+call.v(v0);
+reset(f31);
+return();
+
+// Messages
+#message 1 "Demonstration Paused"
+#message 3 "Sound now Off"
+#message 4 "Sound now On"
+#message 5 "Normal speed"
+#message 6 "Fast speed"
+#message 12 "DEMO"
+#message 13 "------ HELP FOR DEMOS ------\nF1  = See this help screen\nF2  = Toggle sound\nF4  = Toggle speed\nF8  = Continuously run\n       selected demo(s)\nF9  = Run selected demo(s)\nF10 = Return to menu\n   *** Alt-Z to quit ***"
