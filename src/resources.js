@@ -1,6 +1,6 @@
+import {unzipSync} from 'fflate';
 import {ByteBuffer} from './bytebuffer';
 import {AGI_RESOURCE_TYPE} from './constants';
-import {unzipSync} from 'fflate';
 
 let logdirRecords  = [];
 let picdirRecords  = [];
@@ -12,30 +12,8 @@ let fontStream;
 
 export const wordGroups = [];
 
-// todo: handle zip file "PACKS" for all the games / demos
-
-
 // todo: Handle AGI V3 files
 // http://agi.sierrahelp.com/Documentation/Specifications/3-1-Files.html
-/*
-http://www.agidev.com/articles/agispec/agispecs-5.html#ss5.2
-
-In the case of version 3 of the AGI interpreter, the LOGDIR, PICDIR, VIEWDIR, and SNDDIR are concatenated together in that order with an eight byte header giving the starting offset of each directory.
-
-Header
-
-Byte	0	1	2	3	4	5	6	7
- 	L	L	P	P	V	V	S	S
-L = offset of LOGDIR
-P = offset of PICDIR
-V = offset of VIEWDIR
-S = offset of SNDDIR
-
-Each offset is two bytes in length where the first byte is the low byte and the second byte is the high byte as is the case in the whole AGI system. For example, the first two bytes will always be 0x0800 since the header is a fixed size of eight bytes.
-
-The format of each of the individual directory sections then follows as above for AGI v2.
- */
-
 
 function parseDirfile(buffer, records, isAGIv3 = false) {
     const length = buffer.length / 3;
@@ -73,12 +51,35 @@ export function readAgiResource(type, num) {
         default:
             throw "Undefined resource type: " + type;
     }
-    const volStream      = new ByteBuffer(volBuffers[record.volNo].buffer, record.volOffset);
-    const signature      = volStream.readUint16();
-    const volNo          = volStream.readUint8();
-    const resourceLength = volStream.readUint16();
 
-    return new ByteBuffer(volStream.buffer, record.volOffset + 5, record.volOffset + 5 + resourceLength);
+    const volStream              = new ByteBuffer(volBuffers[record.volNo].buffer, record.volOffset);
+    const signature              = volStream.readUint16();
+    const volNo                  = volStream.readUint8();
+    const resourceLength         = volStream.readUint16();
+    let isCompressed             = false;
+    let compressedResourceLength = 0;
+
+    // todo: Handle AGIv3 game resources
+    if (!isAGIv2Resource) {
+        compressedResourceLength = volStream.readUint16();
+        isCompressed             = resourceLength !== compressedResourceLength;
+    }
+
+    if (isCompressed) {
+        // todo: decompress with LZW
+        // https://en.wikipedia.org/wiki/Lempel%E2%80%93Ziv%E2%80%93Welch
+        // // http://www.agidev.com/articles/agispec/agispecs-5.html#ss5.3
+        const buf = volStream.buffer.slice(record.volOffset + 7, record.volOffset + 7 + compressedResourceLength);
+
+        if (type === 0) {
+            console.log(buf.join(','));
+        }
+
+        return new ByteBuffer(volStream.buffer, record.volOffset + 7, record.volOffset + 7 + compressedResourceLength);
+    } else {
+        return new ByteBuffer(volStream.buffer, record.volOffset + 5, record.volOffset + 5 + resourceLength);
+    }
+
 }
 
 // http://www.agidev.com/articles/agispec/agispecs-10.html#ss10.2
@@ -123,11 +124,12 @@ function extractWords(/** @type ByteBuffer */byteBuffer) {
 
 export const getFontStream = () => fontStream;
 
-const IS_DIRFILE  = /^((log|pic|snd|view)|[a-z0-9]+)dir$/i;
-const IS_VOLFILE  = /^vol\.[0-9]$/i;
-const IS_WORDSTOK = /^words\.tok$/i;
-const IS_OBJECT   = /^object$/i;
-const IS_ICON     = /^[a-z0-9]+.ico$/i;
+const IS_DIRFILE_V2 = /^(log|pic|snd|view)dir$/i;
+const IS_DIRFILE    = /^((log|pic|snd|view)|[a-z0-9]+)dir$/i;
+const IS_VOLFILE    = /^[a-z0-9]*vol\.[0-9]{1,2}$/i;
+const IS_WORDSTOK   = /^words\.tok$/i;
+const IS_OBJECT     = /^object$/i;
+const IS_ICON       = /^[a-z0-9]+.ico$/i;
 
 const getDecompressedFile = (name, uint8a) => ({
     name:       name.toLowerCase(),
@@ -140,6 +142,8 @@ async function downloadFont(file = 'font.bin') {
         .then(buffer => new ByteBuffer(new Uint8Array(buffer)));
 }
 
+let isAGIv2Resource;
+
 export async function downloadZip(file) {
     const buffer = new Uint8Array(
         await fetch(file).then(res => res.arrayBuffer())
@@ -147,9 +151,9 @@ export async function downloadZip(file) {
 
     const unzipped = unzipSync(buffer);
 
-    const isAGIv2Resource = Object.keys(unzipped)
+    isAGIv2Resource = Object.keys(unzipped)
         .map(f => f.toLowerCase())
-        .some(f => IS_DIRFILE.test(f));
+        .some(f => IS_DIRFILE_V2.test(f));
 
     const dirFiles = [];
     const volFiles = [];
@@ -174,7 +178,6 @@ export async function downloadZip(file) {
     });
 
     return {
-        isAGIv2Resource,
         dirFiles,
         volFiles,
         wordsTokFile,
@@ -206,13 +209,30 @@ export async function load(gameZip = '/game/agi/sq2.zip') {
         setBufferAsFavicon(gameFiles.iconFile.byteBuffer.buffer);
     }
 
-    if (gameFiles.isAGIv2Resource) {
+    if (isAGIv2Resource) {
         parseDirfile(gameFiles.dirFiles.find(f => f.name === 'logdir').byteBuffer, logdirRecords);
         parseDirfile(gameFiles.dirFiles.find(f => f.name === 'picdir').byteBuffer, picdirRecords);
         parseDirfile(gameFiles.dirFiles.find(f => f.name === 'viewdir').byteBuffer, viewdirRecords);
         parseDirfile(gameFiles.dirFiles.find(f => f.name === 'snddir').byteBuffer, snddirRecords);
     } else {
-        throw 'AGI v3 directory files are not yet supported!';
+        let dirFileBuffer = gameFiles.dirFiles[0].byteBuffer;
+
+        const logdirStart  = dirFileBuffer.readUint16();
+        const picdirStart  = dirFileBuffer.readUint16();
+        const viewdirStart = dirFileBuffer.readUint16();
+        const snddirStart  = dirFileBuffer.readUint16();
+
+        dirFileBuffer = dirFileBuffer.buffer;
+
+        const logBB  = new ByteBuffer(dirFileBuffer.slice(logdirStart, picdirStart));
+        const picBB  = new ByteBuffer(dirFileBuffer.slice(picdirStart, viewdirStart));
+        const viewBB = new ByteBuffer(dirFileBuffer.slice(viewdirStart, snddirStart));
+        const sndBB  = new ByteBuffer(dirFileBuffer.slice(snddirStart));
+
+        parseDirfile(logBB, logdirRecords);
+        parseDirfile(picBB, picdirRecords);
+        parseDirfile(viewBB, viewdirRecords);
+        parseDirfile(sndBB, snddirRecords);
     }
 
     volBuffers = [];
@@ -222,6 +242,7 @@ export async function load(gameZip = '/game/agi/sq2.zip') {
         volBuffers[index] = f.byteBuffer;
     });
 
+    // console.log(gameFiles);
     extractWords(gameFiles.wordsTokFile.byteBuffer);
 }
 

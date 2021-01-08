@@ -18,7 +18,6 @@ window.AGI = {
     start: async () => {
         if (AGI.state) return;
 
-        try {
             await load(
                 location.hash ? location.hash.slice(1) : undefined
             );
@@ -40,9 +39,6 @@ window.AGI = {
             AGI.cycle    = interpreter.cycle;
             AGI.bltDebug = interpreter.bltDebug;
             AGI.TTS      = TTS;
-        } catch (e) {
-            alert(e);
-        }
     },
 
     getNextCycleTimeMS: () => 1000 / AGI.FPS * Math.max(AGI.state.variables[VAR.cycle_delay], 1),
