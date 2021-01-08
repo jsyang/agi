@@ -76,6 +76,14 @@ const setEgoDir = newEgoDir => {
     state.variables[VAR.ego_dir] = egoDir === newEgoDir ? 0 : newEgoDir;
 };
 
+const handleAnySetKeys = key =>{
+    // Handle the rest if the key is set by game logic to toggle a controller
+    if (state.keysForControllers[key] !== undefined) {
+        state.controllers[state.keysForControllers[key]] = 1;
+        state.variables[VAR.key_pressed] = key;
+    }
+};
+
 const handleInput = () => {
     state.isTextScreen = false;
     commands.agi_reset(FLAG.input_received);
@@ -117,6 +125,8 @@ const handleInput = () => {
                         break;
                 }
             }
+
+            handleAnySetKeys(key);
         }
 
         while (state.keyboardCharBuffer.length > 0) {
@@ -131,16 +141,14 @@ const handleInput = () => {
                 state.keyboardCharBuffer         = [];
                 break;
             }
+
+            handleAnySetKeys(key);
         }
     } else {
         // Can't control ego and can't enter input for the parser but can still trigger set keys
         const key = state.keyboardCharBuffer.shift() || state.keyboardSpecialBuffer.shift();
 
-        // Handle the rest if the key is set by game logic to toggle a controller
-        if (state.keysForControllers[key] !== undefined) {
-            state.controllers[state.keysForControllers[key]] = 1;
-            state.variables[VAR.key_pressed] = key;
-        }
+        handleAnySetKeys(key);
     }
 
     state.keyboardCharBuffer    = [];
