@@ -318,5 +318,6 @@ export const GAMEOBJECT_PRIORITY = {
     TOP:                   15,  // WHITE
 };
 
-export const NCODE_F1  = 59;
-export const NCODE_F10 = 68;
+export const SCREEN_HEIGHT_PIXELS = 200;
+export const SCREEN_WIDTH_PIXELS  = 320;
+export const SCREEN_WIDTH_UNITS   = SCREEN_WIDTH_PIXELS >> 1;

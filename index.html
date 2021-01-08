@@ -75,16 +75,36 @@
     #debug img {
         outline: 1px solid blue;
     }
+
+    #overlay {
+        position: fixed;
+        opacity: 0.4;
+    }
 </style>
 <div id="app">
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
     <div id="actions"></div>
-
+    <img id="overlay" src="game/comparison.png"
+         ondragstart="event.preventDefault()"
+         onmousedown="dragX=event.offsetX;dragY=event.offsetY;isDrag=true"
+         onmouseup="isDrag=false"
+    >
 </div>
 <div id="debug"></div>
 <script src="game/index.js"></script>
 <script>
+    let isDrag = false;
+    let dragX  = 0;
+    let dragY  = 0;
+
+    addEventListener('mousemove', e => {
+        if (!isDrag) return;
+        const o      = document.getElementById('overlay');
+        o.style.left = e.clientX - dragX + 'px';
+        o.style.top  = e.clientY - dragY + 'px';
+    });
+
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");
 

@@ -831,6 +831,7 @@ export const commands = {
         // jsyang: Doesn't clear anything in our version
         // We dump all text to an `alert()` window
         LLL('agi_clear_text_rect');
+        screen.clearTextRect(Y1, X1, Y2, X2, COLOR);
     },
 
     agi_menu_input: () => {
@@ -944,8 +945,14 @@ export const commands = {
 
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.text.attribute.html
     agi_set_text_attribute: (textFG, textBG) => {
-        state.textFG = textFG;
         state.textBG = textBG;
+
+        if (textBG === 15) {
+            state.textFG = 0;
+        } else {
+            state.textFG = textFG
+            state.textBG = 0;
+        }
     },
 
     /* Handled by Logic.parseLogic

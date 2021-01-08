@@ -1,16 +1,51 @@
 import {getFontStream} from './resources';
 import {BITMAP_HEIGHT, BITMAP_WIDTH} from './bitmap';
-import {GAMEOBJECT_PRIORITY, palette} from './constants';
+import {GAMEOBJECT_PRIORITY, palette, SCREEN_HEIGHT_PIXELS, SCREEN_WIDTH_PIXELS} from './constants';
 import {state} from './state';
 
 let fontStream;
 
+function clearTextRect(y1, x1, y2, x2, color) {
+    color      = palette[color];
+    const data = state.frameData.data;
+
+    for (let y = y1; y <= y2; y++) {
+        for (let x = x1; x <= x2; x++) {
+            for (let i = -7; i <= 0; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const index         = ((y * 8) + i) * SCREEN_WIDTH_PIXELS + ((x * 8) + j);
+                    data[index * 4]     = color;
+                    data[index * 4 + 1] = color;
+                    data[index * 4 + 2] = color;
+                    data[index * 4 + 3] = 0xFF;
+                }
+            }
+        }
+    }
+}
+
 const sRegex = /%s(\d+)/; // "%s123" string regex
 
-export function bltText(row = 0, col = 0, text = '') {
+function bltText(row = 0, col = 0, text = '') {
     let regexResult;
     while ((regexResult = sRegex.exec(text)) !== null) {
         text = text.slice(0, regexResult.index) + state.strings[parseInt(regexResult[1])] + text.slice(regexResult.index + regexResult.length + 1);
+    }
+
+    let textBGColor;
+    let textFGColor;
+    //http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.text.attribute.html
+    // The background color can only be black (if BG is 0)
+    // or white (if BG is greater than 0). If the background
+    // is white, all text will be displayed with a black
+    // foreground. Otherwise, the text will be displayed
+    // with the foreground specified by FG (0-15).
+    if (state.textBG === 15) {
+        textBGColor = palette[15]; // White BG
+        textFGColor = palette[0] // Black FG
+    } else {
+        textBGColor = 0x00; // Black BG
+        textFGColor = palette[state.textFG] // Color FG
     }
 
     for (let i = 0; i < text.length; i++) {
@@ -23,12 +58,15 @@ export function bltText(row = 0, col = 0, text = '') {
         fontStream.position = chr * 8;
 
         const data = state.frameData.data;
-        for (let y = 0; y < 8; y++) {
+        for (let y = -7; y <= 0; y++) {
             let colData = fontStream.readUint8();
             for (let x = 0; x < 8; x++) {
-                let color = palette[state.textFG];
+                let color;
+
                 if ((colData & 0x80) === 0x80) {
-                    color = palette[state.textBG];
+                    color = textFGColor; // Black FG
+                } else {
+                    color = textBGColor; // White BG
                 }
 
                 const index         = (row * 8 + y) * 320 + (col * 8 + x);
@@ -198,6 +236,20 @@ export function bltViewToPic(viewNo, loopNo, celNo, x, y, priority, margin) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
     }
 
+    // Ensure no part of the view is occluded
+    // https://wiki.scummvm.org/index.php?title=AGIWiki/add.to.pic
+    if (y < cel.height) {
+        y = cel.height;
+    } else if (y > SCREEN_HEIGHT_PIXELS) {
+        y = SCREEN_HEIGHT_PIXELS;
+    }
+
+    if (y < cel.height) {
+        y = cel.height;
+    } else if (y > SCREEN_HEIGHT_PIXELS) {
+        y = SCREEN_HEIGHT_PIXELS;
+    }
+
     const {data}        = state.visualBuffer;
     const {data: _data} = state.frameData;
 
@@ -290,5 +342,6 @@ export default {
     bltViewToPic,
     drawObject,
     clearView,
+    clearTextRect,
     clearOldObjectView,
 };
