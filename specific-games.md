@@ -17,9 +17,6 @@ Progress:
 
 - Now in Room 10!
   
-- Cannot press F10 to leave first room communicator scene
-  - F10 key not implemented
-
 - print.at and text.screen not really working properly
 
 - Need an inventory screen / parse inventory item names correctly
