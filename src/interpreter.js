@@ -76,10 +76,11 @@ const setEgoDir = newEgoDir => {
     state.variables[VAR.ego_dir] = egoDir === newEgoDir ? 0 : newEgoDir;
 };
 
-const handleAnySetKeys = key =>{
+const handleAnySetKeys = key => {
     // Handle the rest if the key is set by game logic to toggle a controller
     if (state.keysForControllers[key] !== undefined) {
         state.controllers[state.keysForControllers[key]] = 1;
+
         state.variables[VAR.key_pressed] = key;
     }
 };
@@ -431,12 +432,31 @@ const updateObject = (obj, no) => {
             }
 
             if (!obj.fixedPriority) {
+                // http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
                 if (obj.y < 48) {
                     obj.priority = 4;
-                } else if (obj.y > GAMEOBJECT_MAX_Y) {
-                    obj.priority = 15;
+                } else if (obj.y < 60) {
+                    obj.priority = 5;
+                } else if (obj.y < 72) {
+                    obj.priority = 6;
+                } else if (obj.y < 84) {
+                    obj.priority = 7;
+                } else if (obj.y < 96) {
+                    obj.priority = 8;
+                } else if (obj.y < 108) {
+                    obj.priority = 9;
+                } else if (obj.y < 120) {
+                    obj.priority = 10;
+                } else if (obj.y < 132) {
+                    obj.priority = 11;
+                } else if (obj.y < 144) {
+                    obj.priority = 12;
+                } else if (obj.y < 156) {
+                    obj.priority = 13;
+                } else if (obj.y <= GAMEOBJECT_MAX_Y) {
+                    obj.priority = 14;
                 } else {
-                    obj.priority = ((obj.y / 12) | 0) + 1;
+                    obj.priority = 15;
                 }
             }
 

@@ -414,6 +414,7 @@ export class Pic {
                 }
             }
 
+
             if (this.priEnabled) {
                 // Priority
                 // Repeated here due to issues with visible and priority flood fills conflating
@@ -422,26 +423,38 @@ export class Pic {
                 // todo: there may be a bug here!
                 queue.enqueue(startX);
                 queue.enqueue(startY);
-                this.visited.fill(0);
+                const startColor     = this.visible.data[startY * BITMAP_WIDTH + startX];
+                const startVPriority = this.visiblePriority.data[startY * BITMAP_WIDTH + startX];
+                const startPriority  = this.priority.data[startY * BITMAP_WIDTH + startX];
 
+                this.visited.fill(0);
                 while (!queue.isEmpty()) {
 
-                    x = queue.dequeue();
-                    y = queue.dequeue();
-                    i = y * BITMAP_WIDTH + x;
+                    let skipEnqueue = false;
+                    x               = queue.dequeue();
+                    y               = queue.dequeue();
+                    i               = y * BITMAP_WIDTH + x;
 
                     this.visited[i] = 1;
 
                     if (
+                        this.visible.data[i] !== startColor ||
                         (this.priColor > GAMEOBJECT_PRIORITY.WATER && this.visiblePriority.data[i] !== 0x04) ||
                         (this.priColor <= GAMEOBJECT_PRIORITY.WATER && this.priority.data[i] !== 0x04)
                     ) {
-                    } else {
-                        this.setPixel(x, y, false, true);
-                        addAdjCoordsToQueue(this.visited, queue, x,y);
+                        skipEnqueue = true;
                     }
+
+                    this.setPixel(x, y, false, true);
+
+                    if (skipEnqueue) {
+                        continue;
+                    }
+
+                    addAdjCoordsToQueue(this.visited, queue, x, y);
                 }
             }
+
         }
         this.stream.position--;
     }
