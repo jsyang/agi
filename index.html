@@ -1,91 +1,92 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="utf-8"/>
     <title>AGI</title>
     <link rel="icon" id="favicon" href="data:;base64,iVBORw0KGgo=">
+    <style>
+        body {
+            background: #666;
+        }
+
+        #app {
+            width: 640px;
+            margin: auto;
+        }
+
+        canvas {
+            outline: 1px solid #aaa;
+            background: #333;
+            width: 640px;
+            height: 400px;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: pixelated;
+        }
+
+        textarea {
+            box-sizing: border-box;
+            width: 100%;
+            height: 300px;
+            font-size: 10px;
+        }
+
+        #menu select {
+            appearance: none;
+            border: none;
+            font-family: monospace;
+            margin: 0;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px;
+        }
+
+        #menu #score {
+            display: inline-block;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 0 0 0 4px;
+            color: white;
+            float: right;
+            line-height: 1.5em;
+        }
+
+        #actions {
+            display: grid;
+            grid-template-columns: 150px 150px 150px 150px;
+            grid-gap: 10px;
+        }
+
+        #actions button {
+            appearance: none;
+            font-family: monospace;
+            font-size: 12px;
+            padding: 2px;
+        }
+
+        #debug {
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+
+        #debug img {
+            outline: 1px solid blue;
+        }
+
+        #overlay {
+            position: fixed;
+            opacity: 0.4;
+        }
+    </style>
 </head>
 <body>
-<style>
-    body {
-        background: #666;
-    }
 
-    #app {
-        width: 640px;
-        margin: auto;
-    }
-
-    canvas {
-        outline: 1px solid #aaa;
-        background: #333;
-        width: 640px;
-        height: 400px;
-        image-rendering: -moz-crisp-edges;
-        image-rendering: pixelated;
-    }
-
-    textarea {
-        box-sizing: border-box;
-        width: 100%;
-        height: 300px;
-        font-size: 10px;
-    }
-
-    #menu select {
-        appearance: none;
-        border: none;
-        font-family: monospace;
-        margin: 0;
-        font-size: 12px;
-        font-weight: bold;
-        padding: 4px;
-    }
-
-    #menu #score {
-        display: inline-block;
-        font-family: monospace;
-        font-size: 12px;
-        margin: 0 0 0 4px;
-        color: white;
-        float: right;
-        line-height: 1.5em;
-    }
-
-    #actions {
-        display: grid;
-        grid-template-columns: 150px 150px 150px 150px;
-        grid-gap: 10px;
-    }
-
-    #actions button {
-        appearance: none;
-        font-family: monospace;
-        font-size: 12px;
-        padding: 2px;
-    }
-
-    #debug {
-        position: absolute;
-        top: 0;
-        right: 0;
-    }
-
-    #debug img {
-        outline: 1px solid blue;
-    }
-
-    #overlay {
-        position: fixed;
-        opacity: 0.4;
-    }
-</style>
 <div id="app">
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
     <div id="actions"></div>
-    <img id="overlay" src="game/comparison.png"
+    <img id="overlay" src="game/comparison.png" alt="GFX comparison overlay"
          ondragstart="event.preventDefault()"
          onmousedown="dragX=event.offsetX;dragY=event.offsetY;isDrag=true"
          onmouseup="isDrag=false"
@@ -108,9 +109,13 @@
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");
 
-    canvas.onclick = async () => {
+    canvas.onclick = async e => {
         if (AGI.hasStarted) {
             AGI.togglePause();
+
+            const {left, top} = canvas.getBoundingClientRect();
+            document.title    = `(${(e.clientX - left) >> 2}, ${(e.clientY + 1 - top) >> 1})`;
+
             return;
         }
 

@@ -107,73 +107,74 @@ const circles    = [
         "   xx   "
     ]
 ];
-const rectangles = [
-    [
-        "p"
-    ],
-    [
-        "xx",
-        "xp",
-        "xx"
-    ],
-    [
-        "xxx",
-        "xxx",
-        "xpx",
-        "xxx",
-        "xxx"
-    ],
-    [
-        "xxxx",
-        "xxxx",
-        "xxxx",
-        "xxpx",
-        "xxxx",
-        "xxxx",
-        "xxxx"
-    ],
-    [
-        "xxxxx",
-        "xxxxx",
-        "xxxxx",
-        "xxxxx",
-        "xxpxx",
-        "xxxxx",
-        "xxxxx",
-        "xxxxx",
-        "xxxxx"
-    ],
-    [
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxpxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx",
-        "xxxxxx"
-    ],
-    [
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxpxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx",
-        "xxxxxxx"
-    ],
-];
+
+// const rectangles = [
+//     [
+//         "p"
+//     ],
+//     [
+//         "xx",
+//         "xp",
+//         "xx"
+//     ],
+//     [
+//         "xxx",
+//         "xxx",
+//         "xpx",
+//         "xxx",
+//         "xxx"
+//     ],
+//     [
+//         "xxxx",
+//         "xxxx",
+//         "xxxx",
+//         "xxpx",
+//         "xxxx",
+//         "xxxx",
+//         "xxxx"
+//     ],
+//     [
+//         "xxxxx",
+//         "xxxxx",
+//         "xxxxx",
+//         "xxxxx",
+//         "xxpxx",
+//         "xxxxx",
+//         "xxxxx",
+//         "xxxxx",
+//         "xxxxx"
+//     ],
+//     [
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxpxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx",
+//         "xxxxxx"
+//     ],
+//     [
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxpxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx",
+//         "xxxxxxx"
+//     ],
+// ];
 
 export class Pic {
     picEnabled      = false;
@@ -185,7 +186,8 @@ export class Pic {
     priority        = null;
 
     constructor(stream) {
-        this.stream = stream;
+        this.stream  = stream;
+        this.visited = new Uint8Array(BITMAP_WIDTH * BITMAP_HEIGHT);
     }
 
     setPixel(x, y, drawVis = true, drawPri = true) {
@@ -349,47 +351,136 @@ export class Pic {
             }
 
             const startY = this.stream.readUint8();
-            queue.enqueue(startX);
-            queue.enqueue(startY);
 
-            // Visible
             let i;
             let x;
             let y;
+            let skipEnqueue;
+
+            // Visible
+            queue.enqueue(startX);
+            queue.enqueue(startY);
+            this.visited.fill(0);
+
             while (!queue.isEmpty()) {
+                skipEnqueue = false;
+
                 x = queue.dequeue();
                 y = queue.dequeue();
                 i = y * BITMAP_WIDTH + x;
+
+                this.visited[i] = 1;
+
                 if (this.picEnabled) {
                     if (this.visible.data[i] !== 0x0F) {
-                        continue;
+                        skipEnqueue = true;
+                    } else {
+                        this.setPixel(x, y, true, false);
                     }
-                    this.setPixel(x, y, true, false);
                 }
+
+                if (skipEnqueue) {
+                    continue;
+                }
+
+                if (x > 0) {
+                    i = y * BITMAP_WIDTH + x - 1;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x - 1);
+                        queue.enqueue(y);
+                    }
+                }
+                if (x < BITMAP_WIDTH - 1) {
+                    i = y * BITMAP_WIDTH + x + 1;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x + 1);
+                        queue.enqueue(y);
+                    }
+                }
+                if (y > 0) {
+                    i = (y - 1) * BITMAP_WIDTH + x;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x);
+                        queue.enqueue(y - 1);
+                    }
+                }
+                if (y < BITMAP_HEIGHT - 1) {
+                    i = (y + 1) * BITMAP_WIDTH + x;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x);
+                        queue.enqueue(y + 1);
+                    }
+                }
+            }
+
+            // Priority
+            // Repeated here due to issues with visible and priority flood fills conflating
+            // skipEnqueue conditions!
+            // see https://wiki.scummvm.org/index.php?title=AGI/Specifications/Pic#0xF8:_Fill
+            // todo: there may be a bug here!
+            queue.enqueue(startX);
+            queue.enqueue(startY);
+            this.visited.fill(0);
+
+            while (!queue.isEmpty()) {
+                skipEnqueue = false;
+
+                x = queue.dequeue();
+                y = queue.dequeue();
+                i = y * BITMAP_WIDTH + x;
+
+                this.visited[i] = 1;
+
                 if (this.priEnabled) {
                     if (
                         (this.priColor > GAMEOBJECT_PRIORITY.WATER && this.visiblePriority.data[i] !== 0x04) ||
                         (this.priColor <= GAMEOBJECT_PRIORITY.WATER && this.priority.data[i] !== 0x04)
                     ) {
-                        continue;
+                        skipEnqueue = true;
+                    } else {
+                        this.setPixel(x, y, false, true);
                     }
-                    this.setPixel(x, y, false, true);
                 }
+
+                if (skipEnqueue) {
+                    continue;
+                }
+
                 if (x > 0) {
-                    queue.enqueue(x - 1);
-                    queue.enqueue(y);
+                    i = y * BITMAP_WIDTH + x - 1;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x - 1);
+                        queue.enqueue(y);
+                    }
                 }
                 if (x < BITMAP_WIDTH - 1) {
-                    queue.enqueue(x + 1);
-                    queue.enqueue(y);
+                    i = y * BITMAP_WIDTH + x + 1;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x + 1);
+                        queue.enqueue(y);
+                    }
                 }
                 if (y > 0) {
-                    queue.enqueue(x);
-                    queue.enqueue(y - 1);
+                    i = (y - 1) * BITMAP_WIDTH + x;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x);
+                        queue.enqueue(y - 1);
+                    }
                 }
                 if (y < BITMAP_HEIGHT - 1) {
-                    queue.enqueue(x);
-                    queue.enqueue(y + 1);
+                    i = (y + 1) * BITMAP_WIDTH + x;
+                    if (!this.visited[i]) {
+                        this.visited[i] = 1;
+                        queue.enqueue(x);
+                        queue.enqueue(y + 1);
+                    }
                 }
             }
         }

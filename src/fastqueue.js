@@ -1,9 +1,13 @@
-﻿const MAX_SIZE = 8000;
+﻿const MAX_SIZE = 4000;
 
 export class FastQueue {
     container = new Uint8Array(MAX_SIZE);
     eIndex    = 0;
     dIndex    = 0;
+
+    empty() {
+        this.eIndex = this.dIndex = 0;
+    }
 
     isEmpty() {
         return this.eIndex === this.dIndex;

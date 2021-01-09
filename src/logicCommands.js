@@ -134,6 +134,10 @@ export const commands = {
     },
 
     agi_reposition: (oA, vDX, vDY) => {
+        // Use variables not absolute value!
+        vDX = state.variables[vDX];
+        vDY = state.variables[vDY];
+
         if (vDX > 127) {
             vDX -= 256;
         }
@@ -660,10 +664,12 @@ export const commands = {
         commands.agi_display(state.variables[varNo1], state.variables[varNo2], state.variables[varNo3]);
     },
 
-    agi_clear_lines: (fromRow, row, colorNo) => {
-        for (let y = fromRow; y < row + 1; y++) {
-            screen.bltText(y, 0, "                                        ", colorNo);
-        }
+    agi_clear_lines: (fromRow, toRow, colorNo) => {
+        LLL('agi_clear_lines');
+        screen.clearTextRect(fromRow, 0, toRow, 40, colorNo);
+        // for (let y = fromRow; y < row + 1; y++) {
+        //     screen.bltText(y, 0, "                                        ", colorNo);
+        // }
     },
 
     agi_script_size: (bytes) => {
@@ -945,6 +951,7 @@ export const commands = {
 
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.text.attribute.html
     agi_set_text_attribute: (textFG, textBG) => {
+        LLL('agi_set_text_attribute');
         state.textBG = textBG;
 
         if (textBG === 15) {

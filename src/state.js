@@ -40,8 +40,8 @@ export const state = {
     soundEmulator: null, // SoundEmulatorTiSn76496a,
     playedSound:   null,
 
-    textBG:                15,       // For agi_display
-    textFG:                0,      // For agi_display
+    textBG:                0,       // For agi_display
+    textFG:                15,      // For agi_display
     debugFrameData:        null,    // ImageData // For checking various visual / priority aspects
     frameData:             null,    // ImageData
     framePriorityData:     null,    // Bitmap,

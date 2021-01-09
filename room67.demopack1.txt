@@ -1,0 +1,71 @@
+if (isset(f33)) {
+  set.horizon(10);
+  animate.obj(o1);
+  set.view(o1,110);
+  position(o1,23,23);
+  set.priority(o1,10);
+  animate.obj(o2);
+  set.view(o2,111);
+  set.loop(o2,0);
+  set.cel(o2,0);
+  position(o2,45,146);
+  set.priority(o2,15);
+  show.pic();
+  clear.lines(22,24,0);
+  v220 = 18;
+  v225 = 3;
+}
+v225--;
+if (v225 == 1) {
+  sound(60,f231);
+}
+v220--;
+if (v220 == 1) {
+  draw(o2);
+  end.of.loop(o2,f221);
+}
+if (isset(f221)) {
+  reset(f221);
+  v31 = 234;
+  v32 = 255;
+  reposition(o2,v31,v32);
+  set.loop(o2,1);
+  set.cel(o2,0);
+  stop.cycling(o2);
+  draw(o1);
+  move.obj(o1,23,137,6,f220);
+}
+if (isset(f220)) {
+  reset(f220);
+  if (v222 > 0) {
+    erase(o1);
+    v221 = 47;
+  }
+  if (v222 <= 0) {
+    erase(o1);
+    end.of.loop(o2,f222);
+  }
+}
+if (isset(f222)) {
+  reset(f222);
+  if (v222 > 0) {
+    position(o1,23,137);
+    draw(o1);
+    move.obj(o1,23,23,6,f220);
+  }
+  if (v222 <= 0) {
+    display(22,7,"By Two Guys From Andromeda");
+    display(23,5,"(C) 1987  Sierra On-Line, Inc.");
+    reverse.loop(o2,f222);
+    v222 = 1;
+  }
+}
+v221--;
+if (v221 == 2) {
+  v35 = 43;
+}
+return();
+
+// Messages
+#message 1 "By Two Guys From Andromeda"
+#message 2 "(C) 1987  Sierra On-Line, Inc."

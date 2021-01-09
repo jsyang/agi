@@ -1,0 +1,100 @@
+if (isset(f5)) {
+  load.logics(67);
+  load.logics(43);
+  load.logics(60);
+  load.logics(93);
+  load.logics(22);
+  load.logics(70);
+  load.logics(42);
+  load.view(110);
+  load.view(111);
+  load.sound(60);
+  load.view(140);
+  load.view(149);
+  load.view(112);
+  load.view(113);
+  load.view(114);
+  load.view(116);
+  load.view(115);
+  load.view(104);
+  load.view(105);
+  load.view(46);
+  load.sound(32);
+  load.view(118);
+  load.view(119);
+  load.view(120);
+  load.view(121);
+  load.view(123);
+  load.sound(61);
+  load.view(124);
+  load.view(125);
+  load.view(126);
+  load.view(127);
+  load.sound(22);
+  load.sound(33);
+  v30 = 43;
+  load.pic(v30);
+  v30 = 60;
+  load.pic(v30);
+  v30 = 93;
+  load.pic(v30);
+  v30 = 22;
+  load.pic(v30);
+  v30 = 70;
+  load.pic(v30);
+  v30 = 42;
+  load.pic(v30);
+  v30 = 67;
+  load.pic(v30);
+  v35 = 67;
+  v36 = 0;
+}
+if (v35 != v36) {
+  if (v36 == 67) {
+    v30 = 67;
+    discard.pic(v30);
+  }
+  v30 = 1;
+  cycle.time(o1,v30);
+  cycle.time(o2,v30);
+  cycle.time(o3,v30);
+  cycle.time(o4,v30);
+  cycle.time(o5,v30);
+  cycle.time(o6,v30);
+  cycle.time(o7,v30);
+  step.time(o1,v30);
+  step.time(o2,v30);
+  step.time(o3,v30);
+  step.time(o4,v30);
+  step.time(o5,v30);
+  step.time(o6,v30);
+  step.time(o7,v30);
+  step.size(o1,v30);
+  step.size(o2,v30);
+  step.size(o3,v30);
+  step.size(o4,v30);
+  step.size(o5,v30);
+  step.size(o6,v30);
+  step.size(o7,v30);
+  if (v36 != 0) {
+    unanimate.all();
+  }
+  set(f33);
+  v36 = v35;
+  v30 = 220;
+Label1:
+  *v30 = 0;
+  reset.v(v30);
+  if (v30 < 254) {
+    v30++;
+    goto(Label1);
+  }
+  draw.pic(v35);
+}
+v0 = v35;
+call.v(v35);
+v0 = 69;
+reset(f33);
+return();
+
+// Messages
