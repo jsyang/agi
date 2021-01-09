@@ -27,7 +27,7 @@ export const PIC_OPCODE = {
     End:         0xFF,
 }
 
-const circles    = [
+const circles = [
     [
         "p"
     ],
@@ -175,6 +175,44 @@ const circles    = [
 //         "xxxxxxx"
 //     ],
 // ];
+
+// Enqueue for flood fill
+const addAdjCoordsToQueue = (visited, queue, x, y) => {
+    let i;
+    if (x > 0) {
+        i = y * BITMAP_WIDTH + x - 1;
+        if (!visited[i]) {
+            visited[i] = 1;
+            queue.enqueue(x - 1);
+            queue.enqueue(y);
+        }
+    }
+    if (x < BITMAP_WIDTH - 1) {
+        i = y * BITMAP_WIDTH + x + 1;
+        if (!visited[i]) {
+            visited[i] = 1;
+            queue.enqueue(x + 1);
+            queue.enqueue(y);
+        }
+    }
+    if (y > 0) {
+        i = (y - 1) * BITMAP_WIDTH + x;
+        if (!visited[i]) {
+            visited[i] = 1;
+            queue.enqueue(x);
+            queue.enqueue(y - 1);
+        }
+    }
+    if (y < BITMAP_HEIGHT - 1) {
+        i = (y + 1) * BITMAP_WIDTH + x;
+        if (!visited[i]) {
+            visited[i] = 1;
+            queue.enqueue(x);
+            queue.enqueue(y + 1);
+        }
+    }
+};
+
 
 export class Pic {
     picEnabled      = false;
@@ -355,131 +393,52 @@ export class Pic {
             let i;
             let x;
             let y;
-            let skipEnqueue;
 
-            // Visible
-            queue.enqueue(startX);
-            queue.enqueue(startY);
-            this.visited.fill(0);
+            if (this.picEnabled) {
+                // Visible
+                queue.enqueue(startX);
+                queue.enqueue(startY);
+                this.visited.fill(0);
 
-            while (!queue.isEmpty()) {
-                skipEnqueue = false;
+                while (!queue.isEmpty()) {
+                    x = queue.dequeue();
+                    y = queue.dequeue();
+                    i = y * BITMAP_WIDTH + x;
 
-                x = queue.dequeue();
-                y = queue.dequeue();
-                i = y * BITMAP_WIDTH + x;
+                    this.visited[i] = 1;
 
-                this.visited[i] = 1;
-
-                if (this.picEnabled) {
-                    if (this.visible.data[i] !== 0x0F) {
-                        skipEnqueue = true;
-                    } else {
+                    if (this.visible.data[i] === 0x0F) {
                         this.setPixel(x, y, true, false);
-                    }
-                }
-
-                if (skipEnqueue) {
-                    continue;
-                }
-
-                if (x > 0) {
-                    i = y * BITMAP_WIDTH + x - 1;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x - 1);
-                        queue.enqueue(y);
-                    }
-                }
-                if (x < BITMAP_WIDTH - 1) {
-                    i = y * BITMAP_WIDTH + x + 1;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x + 1);
-                        queue.enqueue(y);
-                    }
-                }
-                if (y > 0) {
-                    i = (y - 1) * BITMAP_WIDTH + x;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x);
-                        queue.enqueue(y - 1);
-                    }
-                }
-                if (y < BITMAP_HEIGHT - 1) {
-                    i = (y + 1) * BITMAP_WIDTH + x;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x);
-                        queue.enqueue(y + 1);
+                        addAdjCoordsToQueue(this.visited, queue, x, y);
                     }
                 }
             }
 
-            // Priority
-            // Repeated here due to issues with visible and priority flood fills conflating
-            // skipEnqueue conditions!
-            // see https://wiki.scummvm.org/index.php?title=AGI/Specifications/Pic#0xF8:_Fill
-            // todo: there may be a bug here!
-            queue.enqueue(startX);
-            queue.enqueue(startY);
-            this.visited.fill(0);
+            if (this.priEnabled) {
+                // Priority
+                // Repeated here due to issues with visible and priority flood fills conflating
+                // skipEnqueue conditions!
+                // see https://wiki.scummvm.org/index.php?title=AGI/Specifications/Pic#0xF8:_Fill
+                // todo: there may be a bug here!
+                queue.enqueue(startX);
+                queue.enqueue(startY);
+                this.visited.fill(0);
 
-            while (!queue.isEmpty()) {
-                skipEnqueue = false;
+                while (!queue.isEmpty()) {
 
-                x = queue.dequeue();
-                y = queue.dequeue();
-                i = y * BITMAP_WIDTH + x;
+                    x = queue.dequeue();
+                    y = queue.dequeue();
+                    i = y * BITMAP_WIDTH + x;
 
-                this.visited[i] = 1;
+                    this.visited[i] = 1;
 
-                if (this.priEnabled) {
                     if (
                         (this.priColor > GAMEOBJECT_PRIORITY.WATER && this.visiblePriority.data[i] !== 0x04) ||
                         (this.priColor <= GAMEOBJECT_PRIORITY.WATER && this.priority.data[i] !== 0x04)
                     ) {
-                        skipEnqueue = true;
                     } else {
                         this.setPixel(x, y, false, true);
-                    }
-                }
-
-                if (skipEnqueue) {
-                    continue;
-                }
-
-                if (x > 0) {
-                    i = y * BITMAP_WIDTH + x - 1;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x - 1);
-                        queue.enqueue(y);
-                    }
-                }
-                if (x < BITMAP_WIDTH - 1) {
-                    i = y * BITMAP_WIDTH + x + 1;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x + 1);
-                        queue.enqueue(y);
-                    }
-                }
-                if (y > 0) {
-                    i = (y - 1) * BITMAP_WIDTH + x;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x);
-                        queue.enqueue(y - 1);
-                    }
-                }
-                if (y < BITMAP_HEIGHT - 1) {
-                    i = (y + 1) * BITMAP_WIDTH + x;
-                    if (!this.visited[i]) {
-                        this.visited[i] = 1;
-                        queue.enqueue(x);
-                        queue.enqueue(y + 1);
+                        addAdjCoordsToQueue(this.visited, queue, x,y);
                     }
                 }
             }
