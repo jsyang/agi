@@ -239,9 +239,6 @@ function extractInventoryObjects(byteBuffer) {
 
         inventoryObjects.push({name, room});
     }
-
-
-    window.GOO = inventoryObjects;
 }
 
 export async function load(gameZip = '/game/agi/sq2.zip') {

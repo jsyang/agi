@@ -1,6 +1,7 @@
 import {FLAG, MAX_GAMEOBJECTS, VAR} from './constants';
 import GameObject from './gameObject';
 import {commands} from './logicCommands';
+import {inventoryObjects} from './resources';
 
 export const state = {
     programControl:       false,    // Does the game have control over player character (ego)?
@@ -110,4 +111,16 @@ export function restart() {
 
 export function updateSound() {
     state.soundEmulator.muted = !state.flags[FLAG.sound_on];
+}
+
+export function getInventoryItems() {
+    const carriedItems = [];
+
+    for (let i = 0; i < state.items.length; i++) {
+        if (state.items[i] === 255) {
+            carriedItems.push('  - ' + inventoryObjects[i].name);
+        }
+    }
+
+    return carriedItems;
 }

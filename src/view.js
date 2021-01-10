@@ -16,7 +16,8 @@
 */
 
 export class View {
-    loops = [];
+    loops       = [];
+    description = '';
 
     constructor(data) {
         const unk1              = data.readUint8();

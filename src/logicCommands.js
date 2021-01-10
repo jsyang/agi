@@ -10,7 +10,7 @@ import {
     VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
     GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS
 } from './constants';
-import {state, restart} from './state';
+import {state, restart, getInventoryItems} from './state';
 import {restoreNextCycle, saveNextCycle} from './interpreter';
 
 const INTERPOLATE_VAR = /%v[0-9]+/g;
@@ -830,7 +830,8 @@ export const commands = {
     },
 
     agi_status: () => {
-
+        // Text based - inventory screen.
+        _alert(`You are carrying:\n\n${getInventoryItems().join('\n')}`);
     },
 
     agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
@@ -850,12 +851,19 @@ export const commands = {
         }
     },
 
-    agi_show_obj: (objNo) => {
-        console.log('agi_show_obj');
+    agi_show_obj: (viewNo) => {
+        // Display the inventory item
+        // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/show.obj.html
+
+        commands.agi_load_view(viewNo);
+        // screen.bltView(viewNo,0,0,0,0,15);
+        // todo: should be a View.getDataURL()
+        _alert(state.loadedViews[viewNo].description);
+        // screen.clearView(viewNo,0,0,0,0,15);
     },
 
     agi_show_obj_v: (varNo) => {
-        console.log('agi_show_obj_v');
+        commands.agi_show_obj(state.variables[varNo]);
     },
 
     agi_get: (itemNo) => {
