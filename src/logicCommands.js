@@ -856,10 +856,13 @@ export const commands = {
         // http://agi.sierrahelp.com/AGIStudioHelp/Logic/InventoryItemCommands/show.obj.html
 
         commands.agi_load_view(viewNo);
-        // screen.bltView(viewNo,0,0,0,0,15);
-        // todo: should be a View.getDataURL()
-        _alert(state.loadedViews[viewNo].description);
-        // screen.clearView(viewNo,0,0,0,0,15);
+        const view         = state.loadedViews[viewNo];
+        const canvasEl     = view.getDisplay();
+        canvasEl.className = 'item';
+        canvasEl.title     = view.description;
+        canvasEl.onclick   = () => document.body.removeChild(canvasEl);
+        document.body.append(canvasEl);
+        _alert(view.description);
     },
 
     agi_show_obj_v: (varNo) => {

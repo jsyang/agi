@@ -16,12 +16,22 @@
         }
 
         canvas {
-            outline: 1px solid #aaa;
             background: #333;
-            width: 640px;
-            height: 400px;
             image-rendering: -moz-crisp-edges;
             image-rendering: pixelated;
+        }
+
+        canvas#canvas {
+            outline: 1px solid #aaa;
+            width: 640px;
+            height: 400px;
+        }
+
+        canvas.item {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
 
         textarea {
@@ -75,6 +85,7 @@
         }
 
         #overlay {
+            display: none;
             position: fixed;
             opacity: 0.4;
         }
@@ -95,16 +106,16 @@
 <div id="debug"></div>
 <script src="game/index.js"></script>
 <script>
-    let isDrag = false;
-    let dragX  = 0;
-    let dragY  = 0;
-
-    addEventListener('mousemove', e => {
-        if (!isDrag) return;
-        const o      = document.getElementById('overlay');
-        o.style.left = e.clientX - dragX + 'px';
-        o.style.top  = e.clientY - dragY + 'px';
-    });
+    // let isDrag = false;
+    // let dragX  = 0;
+    // let dragY  = 0;
+    //
+    // addEventListener('mousemove', e => {
+    //     if (!isDrag) return;
+    //     const o      = document.getElementById('overlay');
+    //     o.style.left = e.clientX - dragX + 'px';
+    //     o.style.top  = e.clientY - dragY + 'px';
+    // });
 
     let hasStarted = false;
     const canvas   = document.getElementById("canvas");

@@ -15,6 +15,8 @@
 }
 */
 
+import {palette} from './constants';
+
 export class View {
     loops       = [];
     description = '';
@@ -93,5 +95,45 @@ export class View {
             }
             this.description += String.fromCharCode(chr);
         }
+    }
+
+    // Only works in the browser atm
+    getDisplay(loopNo = 0, celNo = 0) {
+        const cel = this.loops[loopNo].cels[celNo];
+
+        const canvasEl        = document.createElement('canvas');
+        canvasEl.width        = cel.width * 2;
+        canvasEl.height       = cel.height;
+        canvasEl.style.width  = canvasEl.width * 2 + 'px';
+        canvasEl.style.height = canvasEl.height * 2 + 'px';
+        const ctx             = canvasEl.getContext('2d');
+
+        const imageData = ctx.createImageData(cel.width * 2, cel.height);
+        const {data}    = imageData;
+
+        for (let y = 0; y < cel.height; y++) {
+            for (let x = 0; x < cel.width; x++) {
+                const i   = y * cel.width + x;
+                const rgb = palette[cel.pixelData[i]];
+
+                const R = (rgb >>> 16) & 0xFF;
+                const G = (rgb >>> 8) & 0xFF;
+                const B = rgb & 0xFF;
+                const A = 0xFF;
+
+                data[i * 8]     = R;
+                data[i * 8 + 1] = G;
+                data[i * 8 + 2] = B;
+                data[i * 8 + 3] = A;
+                data[i * 8 + 4] = R;
+                data[i * 8 + 5] = G;
+                data[i * 8 + 6] = B;
+                data[i * 8 + 7] = A;
+            }
+        }
+
+        ctx.putImageData(imageData, 0, 0);
+
+        return canvasEl;
     }
 }
