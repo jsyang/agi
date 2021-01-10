@@ -62,8 +62,11 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
         const {which} = e;
         state.keyboardSpecialBuffer.push(which);
 
-        // Arrow keys
-        if (which >= 37 && which <= 40) {
+        // Stop native behavior when pressing certain keys
+        if (
+            (which >= 37 && which <= 40) || // Arrow keys
+            (which >= 112 && which <= 121)  // Function keys F1 - F10
+        ) {
             e.preventDefault();
         }
     }

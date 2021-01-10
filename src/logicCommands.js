@@ -665,7 +665,7 @@ export const commands = {
     },
 
     agi_clear_lines: (fromRow, toRow, colorNo) => {
-        LLL('agi_clear_lines');
+        /// LLL('agi_clear_lines');
         screen.clearTextRect(fromRow, 0, toRow, 40, colorNo);
         // for (let y = fromRow; y < row + 1; y++) {
         //     screen.bltText(y, 0, "                                        ", colorNo);
@@ -682,7 +682,7 @@ export const commands = {
 
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/MenuIOCommands/set.key.html
     agi_set_key: (nCODE1, nCODE2, cA) => {
-        LLL('agi_set_key', nCODE1, nCODE2, cA);
+        // LLL('agi_set_key', nCODE1, nCODE2, cA);
         if (nCODE1 > 0) {   // ASCII
             state.keysForControllers[nCODE1] = cA;
         } else if (nCODE2 > 0) { // Only support F1 - F10 extended keys for now
@@ -834,9 +834,7 @@ export const commands = {
     },
 
     agi_clear_text_rect: (Y1, X1, Y2, X2, COLOR) => {
-        // jsyang: Doesn't clear anything in our version
-        // We dump all text to an `alert()` window
-        LLL('agi_clear_text_rect');
+        // LLL('agi_clear_text_rect');
         screen.clearTextRect(Y1, X1, Y2, X2, COLOR);
     },
 
@@ -951,7 +949,7 @@ export const commands = {
 
     // http://agi.sierrahelp.com/AGIStudioHelp/Logic/DisplayCommands/set.text.attribute.html
     agi_set_text_attribute: (textFG, textBG) => {
-        LLL('agi_set_text_attribute');
+        // LLL('agi_set_text_attribute');
         state.textBG = textBG;
 
         if (textBG === 15) {

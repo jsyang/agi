@@ -1,6 +1,6 @@
 import {unzipSync} from 'fflate';
 import {ByteBuffer} from './bytebuffer';
-import {AGI_RESOURCE_TYPE} from './constants';
+import {AGI_RESOURCE_TYPE, DECRYPTION_KEY} from './constants';
 
 let logdirRecords  = [];
 let picdirRecords  = [];
@@ -10,7 +10,8 @@ let volBuffers     = [];
 let availableVols  = [];
 let fontStream;
 
-export const wordGroups = [];
+export const inventoryObjects = [];
+export const wordGroups       = [];
 
 // todo: Handle AGI V3 files
 // http://agi.sierrahelp.com/Documentation/Specifications/3-1-Files.html
@@ -200,6 +201,49 @@ function setBufferAsFavicon(buffer) {
     reader.readAsDataURL(blob);
 }
 
+
+// todo
+// ref: https://github.com/huguesv/AgiPlayer/blob/ced9361b910e6ad391c86380c6e17c73ea01064f/src/Woohoo.Agi.Interpreter/Resources/Serialization/InventoryDecoder.cs#L94
+function getIsObjectFileEncrypted(byteBuffer) {
+}
+
+function extractInventoryObjects(byteBuffer) {
+    const decryptedBuffer     = new Uint8Array(byteBuffer.buffer.length);
+    const decryptedByteBuffer = new ByteBuffer(decryptedBuffer);
+
+
+    let decryptionIndex = 0;
+    while (!byteBuffer.hasReachedEnd()) {
+        decryptedBuffer[byteBuffer.position] = DECRYPTION_KEY[decryptionIndex++].charCodeAt(0) ^ byteBuffer.readUint8();
+
+        if (decryptionIndex >= DECRYPTION_KEY.length) {
+            decryptionIndex = 0;
+        }
+    }
+
+    const objNamesOffset     = decryptedByteBuffer.readUint16();
+    const maxAnimatedObjects = decryptedByteBuffer.readUint8(); // ???
+
+    while (decryptedByteBuffer.position <= objNamesOffset) {
+        const nameOffset = decryptedByteBuffer.readUint16();
+        const room       = decryptedByteBuffer.readUint8();
+
+        let i    = 0;
+        let name = '';
+        while (true) {
+            const char = String.fromCharCode(decryptedBuffer[nameOffset + i + 3]); // + 4 if padded (Amiga version)
+            if (char === '\0') break;
+            name += char;
+            i++;
+        }
+
+        inventoryObjects.push({name, room});
+    }
+
+
+    window.GOO = inventoryObjects;
+}
+
 export async function load(gameZip = '/game/agi/sq2.zip') {
     await downloadFont();
 
@@ -242,7 +286,7 @@ export async function load(gameZip = '/game/agi/sq2.zip') {
         volBuffers[index] = f.byteBuffer;
     });
 
-    // console.log(gameFiles);
+    extractInventoryObjects(gameFiles.objectFile.byteBuffer);
     extractWords(gameFiles.wordsTokFile.byteBuffer);
 }
 
