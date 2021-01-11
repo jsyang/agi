@@ -11,6 +11,8 @@ Missing features
 
 Issues:
 
+- Possible ego edge code error 
+  - Cannot leave the root monster room!
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 

@@ -1,0 +1,417 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  load.view(57);
+  load.view(15);
+  load.view(50);
+  load.view(56);
+  load.view(19);
+  load.view(17);
+  load.sound(14);
+  load.logics(106);
+  draw.pic(v0);
+  animate.obj(o1);
+  set.view(o1,57);
+  set.loop(o1,0);
+  position(o1,59,96);
+  draw(o1);
+  animate.obj(o10);
+  set.view(o10,15);
+  if (v94 > 1 &&
+      !isset(f83)) {
+    animate.obj(o9);
+    set.view(o9,56);
+    set.loop(o9,2);
+    ignore.blocks(o9);
+    position(o9,94,72);
+    step.size(o9,v88);
+    cycle.time(o9,v87);
+    draw(o9);
+    v32 = 1;
+    v33 = 15;
+  }
+  get.posn(o0,v70,v71);
+  v70 += 40;
+  v71 = 166;
+  position.v(o0,v70,v71);
+  draw(o0);
+  show.pic();
+}
+if (v34 > 0) {
+  program.control();
+}
+if (isset(f87)) {
+  v33--;
+  if (v33 == 1) {
+    if (v32 == 1) {
+      set.view(o9,50);
+      set.loop(o9,0);
+      move.obj(o9,115,72,0,f33);
+      v32 = 2;
+    }
+  }
+}
+if (isset(f33)) {
+  reset(f33);
+  if (v32 == 4) {
+    erase(o9);
+    v32 = 0;
+    set(f83);
+  }
+  if (v32 == 3) {
+    step.size(o9,v88);
+    move.obj(o9,151,71,0,f33);
+    v32 = 4;
+  }
+  if (v32 == 2) {
+    step.size(o9,v86);
+    move.obj(o9,116,71,0,f33);
+    v32 = 3;
+  }
+}
+if (posn(o0,35,93,46,97)) {
+  current.view(o0,v53);
+  ignore.blocks(o0);
+  if (v53 != 19) {
+    set.view(o0,19);
+    v96 = 3;
+  }
+  current.loop(o0,v66);
+  if (v6 > 0 &&
+      v35 != v6) {
+    if ((v6 == 2 ||
+        v6 == 1 ||
+        v6 == 8)) {
+      set.loop(o0,1);
+    }
+    else {
+      if (v6 > 3 &&
+          v6 < 7) {
+        set.loop(o0,0);
+      }
+    }
+    fix.loop(o0);
+    v35 = v6;
+  }
+}
+else {
+  observe.blocks(o0);
+  current.view(o0,v53);
+  if (v53 == 19) {
+    set.view(o0,0);
+    v96 = 0;
+    release.loop(o0);
+  }
+}
+if (isset(f3) &&
+    !isset(f82)) {
+  set(f82);
+  v96 = 50;
+  get.posn(o0,v70,v71);
+  position.v(o10,v70,v71);
+  set.loop(o10,0);
+  set.cel(o10,0);
+  draw(o10);
+  erase(o0);
+  end.of.loop(o10,f30);
+}
+if (isset(f30)) {
+  reset(f30);
+  set.loop(o10,1);
+  cycle.time(o10,v87);
+  start.cycling(o10);
+  sound(14,f36);
+  ignore.objs(o1);
+  set.loop(o1,1);
+  fix.loop(o1);
+  get.posn(o10,v51,v52);
+  if (v52 > 95) {
+    move.obj(o1,59,102,0,f31);
+  }
+  else {
+    move.obj(o1,59,95,0,f31);
+  }
+  v31 = 1;
+}
+if (v31 > 0 &&
+    (isset(f36) ||
+    isset(f65))) {
+  sound(14,f36);
+}
+if (isset(f31)) {
+  reset(f31);
+  if (v31 == 3) {
+    stop.sound();
+    set.loop(o1,0);
+    print("Good. You've succeeded in establishing"
+          "contact with one of this planet's life"
+          "forms, and it looks like you'll get to"
+          "examine it up close and personal. The"
+          "giant root-looking thing is giving you"
+          "a guided tour of it's digestive system.");
+    print("What you experience next is too"
+          "horrible to describe. Let's just say"
+          "that you die as a result. You are dead."
+          "Trust me.");
+    print("It may please you to know that, during"
+          "the night, you didn't digest well. For"
+          "awhile, gastric distress made it"
+          "extremely unpopular with the other root"
+          "monsters.");
+    v67 = 1;
+  }
+  if (v31 == 2) {
+    erase(o10);
+    v30 = 18;
+  }
+  if (v31 == 1) {
+    get.posn(o10,v51,v52);
+    if (v51 > 132) {
+      v51 = 132;
+    }
+    else {
+      if (v51 < 10) {
+        v51 = 0;
+      }
+      else {
+        v51 -= 10;
+      }
+    }
+    v52 += 2;
+    move.obj.v(o1,v51,v52,89,f31);
+    v31 = 2;
+    set(f32);
+  }
+}
+if (isset(f32)) {
+  distance(o10,o1,v53);
+  if (v53 < 15) {
+    reset(f32);
+    set.loop(o10,2);
+    set.priority(o10,4);
+  }
+}
+v30--;
+if (v30 == 1) {
+  move.obj(o1,59,96,0,f31);
+  v31 = 3;
+}
+v34--;
+if (v34 == 1) {
+  set.view(o0,0);
+  start.motion(o0);
+  set.loop(o0,2);
+  reset(f59);
+  get("berries");
+  print("You snag some of the odoriferous red"
+        "berries.");
+  player.control();
+  start.motion(o0);
+  v34 = 0;
+}
+if (!isset(f204)) {
+  if (isset(f34) &&
+      posn(o0,72,150,86,150)) {
+    set(f204);
+    v3 += 4;
+  }
+}
+if (!isset(f34) &&
+    posn(o0,26,93,57,94)) {
+  set(f34);
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","forest") ||
+      said("check out","area"))) {
+    print("You are in another clearing in the"
+          "forest. This one seems to be occupied"
+          "by a type of growth you are not"
+          "familiar with.");
+  }
+  if (v32 > 0) {
+    if ((said("check out","ape") ||
+        said("check out","animal") ||
+        said("check out","alien"))) {
+      if (v32 == 1) {
+        print("You can see a little guy across the"
+              "clearing picking some sort of"
+              "berries from a bush.");
+      }
+      else {
+        print("The odd little pink dude is running"
+              "away.");
+      }
+    }
+    if ((said("ask","ape") ||
+        said("ask","animal") ||
+        said("ask","alien"))) {
+      if (v32 == 1) {
+        set.view(o9,50);
+        set.loop(o9,0);
+        move.obj(o9,115,72,0,f33);
+        v32 = 2;
+        print("You startle the small creature"
+              "causing him to bolt into the"
+              "underbrush.");
+        v33 = 0;
+      }
+      else {
+        print("The odd little pink dude is running"
+              "away.");
+      }
+    }
+  }
+  if ((said("duck") ||
+      said("crawl"))) {
+    print("Get closer.");
+  }
+  if (said("acquire","berrie")) {
+    if (posn(o0,57,70,107,73)) {
+      if (!has("berries")) {
+        program.control();
+        set.view(o0,17);
+        set.loop(o0,0);
+        start.motion(o0);
+        set(f59);
+        v34 = 36;
+        if (!isset(f203)) {
+          set(f203);
+          v3 += 4;
+        }
+      }
+      else {
+        print("You already bear a quantity of the"
+              "pungent foliage.");
+      }
+    }
+    else {
+      print("You are not in a suitable location"
+            "for that.");
+    }
+  }
+  if ((said("check out","growth") ||
+      said("check out","appendage") ||
+      said("check out","thing") ||
+      said("check out","alien") ||
+      said("check out","animal"))) {
+    print("It appears to be some kind of"
+          "over-developed root. There is a"
+          "pulsating growth near the middle which"
+          "is connected to several meters of"
+          "root-like appendages.");
+  }
+  if ((said("acquire","growth") ||
+      said("acquire","thing") ||
+      said("acquire","alien") ||
+      said("acquire","animal") ||
+      said("move","growth"))) {
+    print("Get real.");
+  }
+  if (has("berries")) {
+    if ((said("give","animal","berrie") ||
+        said("give","growth","animal","berrie") ||
+        said("give","alien","berrie") ||
+        said("give","animal","berrie") ||
+        said("give","berrie","animal") ||
+        said("give","berrie","growth","animal") ||
+        said("give","berrie","alien") ||
+        said("give","berrie","animal") ||
+        said("cast","animal","berrie") ||
+        said("cast","growth","animal","berrie") ||
+        said("cast","alien","berrie") ||
+        said("cast","animal","berrie") ||
+        said("cast","berrie","animal") ||
+        said("cast","berrie","growth","animal") ||
+        said("cast","berrie","alien") ||
+        said("feed","animal") ||
+        said("feed","growth","animal") ||
+        said("feed","berrie","alien") ||
+        said("bury","berrie") ||
+        said("cast","berrie","animal"))) {
+      print("That's a waste of time.");
+    }
+  }
+  if ((said("ask","growth") ||
+      said("ask","thing") ||
+      said("ask","alien") ||
+      said("ask","animal"))) {
+    print("It doesn't respond.");
+  }
+  if ((said("attack","growth") ||
+      said("attack","thing") ||
+      said("attack","alien") ||
+      said("attack","animal"))) {
+    print("You should be more specific about how"
+          "you want to do that.");
+  }
+  if ((said("jump") ||
+      said("jump","growth") ||
+      said("step","growth") ||
+      said("step","growth","animal") ||
+      said("jump","growth","animal") ||
+      said("jump","growth","animal"))) {
+    print("That would be too hazardous.");
+  }
+  if (said("check out","brush")) {
+    print("All the bushes look the same except for"
+          "the one at the far end of the clearing"
+          "which has small berries growing on it.");
+  }
+  if (!has("berries")) {
+    if (said("check out","berrie")) {
+      get.posn(o0,v51,v52);
+      if (v52 > 84) {
+        print("They look like ordinary berries"
+              "from here.");
+      }
+      else {
+        print("The berries hanging on the bush"
+              "look quite juicy and smell very"
+              "pungent.");
+      }
+    }
+  }
+}
+if ((v2 == 4 ||
+    v2 == 2)) {
+  if (!isset(f35) &&
+      v96 <= 0) {
+    set(f35);
+    print("The foliage here is much too dense for"
+          "you to pass through.");
+  }
+}
+if (isset(f35) &&
+    v2 != 4 &&
+    v2 != 2) {
+  reset(f35);
+}
+if (v2 == 3) {
+  new.room(20);
+}
+call(106);
+return();
+
+// Messages
+#message 1 "Good. You've succeeded in establishing contact with one of this planet's life forms, and it looks like you'll get to examine it up close and personal. The giant root-looking thing is giving you a guided tour of it's digestive system."
+#message 2 "What you experience next is too horrible to describe. Let's just say that you die as a result. You are dead. Trust me."
+#message 3 "It may please you to know that, during the night, you didn't digest well. For awhile, gastric distress made it extremely unpopular with the other root monsters."
+#message 4 "You are not in a suitable location for that."
+#message 5 "You snag some of the odoriferous red berries."
+#message 6 "You already bear a quantity of the pungent foliage."
+#message 7 "You are in another clearing in the forest. This one seems to be occupied by a type of growth you are not familiar with."
+#message 8 "All the bushes look the same except for the one at the far end of the clearing which has small berries growing on it."
+#message 9 "The berries hanging on the bush look quite juicy and smell very pungent."
+#message 10 "It appears to be some kind of over-developed root. There is a pulsating growth near the middle which is connected to several meters of root-like appendages."
+#message 11 "Get real."
+#message 12 "You should be more specific about how you want to do that."
+#message 13 "The foliage here is much too dense for you to pass through."
+#message 14 "You can see a little guy across the clearing picking some sort of berries from a bush."
+#message 15 "You startle the small creature causing him to bolt into the underbrush."
+#message 16 "The odd little pink dude is running away."
+#message 17 "They look like ordinary berries from here."
+#message 18 "It doesn't respond."
+#message 19 "That would be too hazardous."
+#message 20 "That's a waste of time."
+#message 21 "Get closer."

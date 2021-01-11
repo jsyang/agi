@@ -79,7 +79,7 @@ export const restoreGame = () => {
                 commands.agi_load_logic(i);
             }
 
-            state.strings = savedState.strings;
+            state.strings = savedState.strings || [];
 
             for (let i = 0; i < 256; i++) {
                 state.variables[i] = savedState.variables[i];
