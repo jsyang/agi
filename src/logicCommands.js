@@ -229,7 +229,7 @@ export const commands = {
                 ego.y = state.horizon;
                 break;
             case 4:
-                const celWidth = state.loadedViews[ego.viewNo].cels[ego.cel].width;
+                const celWidth = state.loadedViews[ego.viewNo].loops[ego.loop].cels[ego.cel].width;
                 ego.x          = SCREEN_WIDTH_UNITS - celWidth - 1;
                 break;
         }

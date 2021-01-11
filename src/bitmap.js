@@ -382,7 +382,9 @@ export class Pic {
 
     opFillFastQueue() {
         while (true) {
-            const queue  = new FastQueue();
+            const queuePic = new FastQueue();
+            const queuePri = new FastQueue();
+
             const startX = this.stream.readUint8();
             if (startX >= 0xF0) {
                 break;
@@ -394,64 +396,62 @@ export class Pic {
             let x;
             let y;
 
-            if (this.picEnabled) {
-                // Visible
-                queue.enqueue(startX);
-                queue.enqueue(startY);
-                this.visited.fill(0);
+            queuePic.enqueue(startX);
+            queuePic.enqueue(startY);
 
-                while (!queue.isEmpty()) {
-                    x = queue.dequeue();
-                    y = queue.dequeue();
-                    i = y * BITMAP_WIDTH + x;
+            i = startY * BITMAP_WIDTH + startX;
 
-                    this.visited[i] = 1;
+            this.visited.fill(0);
 
-                    if (this.visible.data[i] === 0x0F) {
-                        this.setPixel(x, y, true, false);
-                        addAdjCoordsToQueue(this.visited, queue, x, y);
-                    }
+            while (!queuePic.isEmpty()) {
+                x = queuePic.dequeue();
+                y = queuePic.dequeue();
+                i = y * BITMAP_WIDTH + x;
+
+                this.visited[i] = 1;
+
+                if (this.visible.data[i] === 0x0F) {
+                    this.setPixel(x, y, true, false);
+                    addAdjCoordsToQueue(this.visited, queuePic, x, y);
                 }
             }
 
+            queuePri.enqueue(startX);
+            queuePri.enqueue(startY);
 
-            if (this.priEnabled) {
-                // Priority
-                // Repeated here due to issues with visible and priority flood fills conflating
-                // skipEnqueue conditions!
-                // see https://wiki.scummvm.org/index.php?title=AGI/Specifications/Pic#0xF8:_Fill
-                // todo: there may be a bug here!
-                queue.enqueue(startX);
-                queue.enqueue(startY);
-                const startColor     = this.visible.data[startY * BITMAP_WIDTH + startX];
-                const startVPriority = this.visiblePriority.data[startY * BITMAP_WIDTH + startX];
-                const startPriority  = this.priority.data[startY * BITMAP_WIDTH + startX];
+            i = startY * BITMAP_WIDTH + startX;
 
-                this.visited.fill(0);
-                while (!queue.isEmpty()) {
+            const startingPriorityVis = this.visiblePriority.data[i];
+            const startingPriority    = this.priority.data[i];
+            const startingColor       = this.visible.data[i];
 
-                    let skipEnqueue = false;
-                    x               = queue.dequeue();
-                    y               = queue.dequeue();
-                    i               = y * BITMAP_WIDTH + x;
+            this.visited.fill(0);
 
-                    this.visited[i] = 1;
+            while (!queuePri.isEmpty()) {
+                let shouldDraw = false;
+                x              = queuePri.dequeue();
+                y              = queuePri.dequeue();
+                i              = y * BITMAP_WIDTH + x;
 
-                    if (
-                        this.visible.data[i] !== startColor ||
-                        (this.priColor > GAMEOBJECT_PRIORITY.WATER && this.visiblePriority.data[i] !== 0x04) ||
-                        (this.priColor <= GAMEOBJECT_PRIORITY.WATER && this.priority.data[i] !== 0x04)
-                    ) {
-                        skipEnqueue = true;
-                    }
+                this.visited[i] = 1;
 
+                if (
+                    (this.visiblePriority.data[i] === startingPriorityVis && this.priority.data[i] === startingPriority)
+                    // (this.visiblePriority.data[i] === 0x04 && this.priority.data[i] === 0x04)
+                ) {
+                    shouldDraw = true;
+                    // if (this.picEnabled) {
+                    //     if (this.visible.data[i] === startingColor || this.visible.data[i] === 0x0F ) {
+                    //         shouldDraw = true;
+                    //     }
+                    // } else {
+                    // }
+                }
+
+                // Enqueue if all ok
+                if (shouldDraw) {
                     this.setPixel(x, y, false, true);
-
-                    if (skipEnqueue) {
-                        continue;
-                    }
-
-                    addAdjCoordsToQueue(this.visited, queue, x, y);
+                    addAdjCoordsToQueue(this.visited, queuePri, x, y);
                 }
             }
 
