@@ -62,16 +62,41 @@
         }
 
         #actions {
-            display: grid;
-            grid-template-columns: 150px 150px 150px 150px;
-            grid-gap: 10px;
+            overflow: auto;
+            white-space: nowrap;
+            width: 640px;
+            scroll-snap-type: x proximity;
+            overscroll-behavior-x: contain;
         }
 
-        #actions button {
+        #actions .list {
+            vertical-align: top;
+            scroll-snap-align: start;
+            display: inline-block;
+            width: 140px;
+            overflow-y: auto;
+            max-height: calc(100vh - 400px - 80px);
+        }
+
+        #actions .list button {
+            background: #222;
+            border: none;
+            border-right: #888 2px solid;
+            color: white;
+            text-align: left;
+            display: block;
             appearance: none;
             font-family: monospace;
             font-size: 12px;
-            padding: 2px;
+            padding: 4px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            white-space: normal;
+            width: 100%;
+        }
+
+        #actions .list button:hover {
+            color: #d31;
         }
 
         #debug {
@@ -107,6 +132,7 @@
                 transform: translate(0px, 0px);
             }
         }
+
 
     </style>
 </head>

@@ -529,23 +529,41 @@ const updateObject = (obj, no) => {
     }
 }
 
-// SQ2 specific
-const discardCommon = /^(clock|restore|restore game|restart|restart game|fastest|normal|slow|fast|quit|pause game|explore pocket|check out|rescue|rescue game|inv|check out inv)$/;
-
 const setSaid = e => state.playerSaid = e.target.getAttribute('data-word-groups');
 
+let previousActionCount = 0;
+
 const updateSaidSystem = () => {
-    const actionNames = Object.keys(state.testSaid).filter(k => !discardCommon.test(k));
-    if (state.actionContainerElement.children.length !== actionNames.length) {
+    const actionNames = Object.keys(state.testSaid);
+
+    if (previousActionCount !== actionNames.length) {
         resetActions();
+        const actionsByAlpha = [];
 
         actionNames.forEach(act => {
+            act = act.toLowerCase();
+
+            const actionsListIndex = act.charCodeAt(0) - 97;
+
+            let list = actionsByAlpha[actionsListIndex];
+
+            if (!list) {
+                list = document.createElement('div');
+                list.classList.add('list');
+            }
+
             const buttonEl = document.createElement('button');
             buttonEl.setAttribute('data-word-groups', state.testSaid[act]);
             buttonEl.onclick   = setSaid;
             buttonEl.innerHTML = act;
-            state.actionContainerElement.appendChild(buttonEl);
+
+            list.appendChild(buttonEl);
+            actionsByAlpha[actionsListIndex] = list;
         });
+
+        actionsByAlpha.forEach(listEl => state.actionContainerElement.appendChild(listEl));
+
+        previousActionCount = actionNames.length;
     }
 
     state.playerSaid = '';

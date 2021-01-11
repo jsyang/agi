@@ -1,0 +1,88 @@
+if (isset(f5)) {
+  set.horizon(10);
+  set.string(s0," ");
+  set.cursor.char(" ");
+  accept.input();
+  disable.item(c3);
+  disable.item(c18);
+  disable.item(c16);
+  disable.item(c22);
+  disable.item(c15);
+  disable.item(c12);
+  disable.item(c24);
+  disable.item(c28);
+  disable.item(c23);
+  disable.item(c25);
+  load.sound(60);
+  load.view(26);
+  v53 = 141;
+  load.pic(v53);
+  draw.pic(v53);
+  if (isset(f68)) {
+    v3 = 255;
+    add.to.pic(26,0,0,66,62,0,4);
+    add.to.pic(26,0,1,66,88,0,4);
+  }
+  show.pic();
+  if (isset(f68)) {
+    v30 = 36;
+    sound(60,f61);
+  }
+  else {
+    v67 = 2;
+    if (v116 == 1) {
+      print("More bad news, %s1. The asteroid's"
+            "orbit has finally decayed to the"
+            "point where contact with the"
+            "molecular contents of Labion's upper"
+            "atmosphere has been achieved.");
+      print("The result of this friction is a"
+            "tremendous heat build-up. Despite"
+            "being a very dense chunk of matter,"
+            "the asteroid flames out, broiling you"
+            "with it. Another victim in the"
+            "heartless universe of adventure.");
+    }
+    if (v116 == 2) {
+      print("Bad news, %s1. The clone launch has"
+            "progressed flawlessly. Life is now"
+            "hopeless, your civilization doomed."
+            "There is no need to go on.");
+    }
+    if (v116 == 3) {
+      print("Keep up the good work, %s1.");
+    }
+    if (v1 == 46) {
+      print("Because you are terminally weak above"
+            "the shoulders, you guide the ship"
+            "into the ground.");
+    }
+  }
+}
+v30--;
+if (v30 == 1) {
+  if (isset(f68)) {
+    print("Congratulations!!! You're the most"
+          "bitchen adventure game player in the"
+          "world! No, make that the entire"
+          "Universe!! While all those other silly"
+          "saps struggle and toil through puzzle"
+          "after puzzle, you have found a way to"
+          "cheat yourself to the end. Is America"
+          "great, or what?!");
+    sound(60,f61);
+  }
+  display(23,1,"Thank you for playing Space Quest"
+          "][");
+}
+return();
+
+// Messages
+#message 1 "Congratulations!!! You're the most bitchen adventure game player in the world! No, make that the entire Universe!! While all those other silly saps struggle and toil through puzzle after puzzle, you have found a way to cheat yourself to the end. Is America great, or what?!"
+#message 2 "Thank you for playing Space Quest ]["
+#message 3 " "
+#message 4 "Bad news, %s1. The clone launch has progressed flawlessly. Life is now hopeless, your civilization doomed. There is no need to go on."
+#message 5 "More bad news, %s1. The asteroid's orbit has finally decayed to the point where contact with the molecular contents of Labion's upper atmosphere has been achieved."
+#message 6 "The result of this friction is a tremendous heat build-up. Despite being a very dense chunk of matter, the asteroid flames out, broiling you with it. Another victim in the heartless universe of adventure."
+#message 7 "Keep up the good work, %s1."
+#message 8 "Because you are terminally weak above the shoulders, you guide the ship into the ground."
