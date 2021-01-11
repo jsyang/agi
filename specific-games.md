@@ -4,12 +4,14 @@
 
 Issues:
 
+- Being eaten by a mushroom in Room 47 does not end the game!
+  
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 
 References:
 
-- https://www.youtube.com/watch?v=eVsF_FZ54O0
+- https://youtu.be/eVsF_FZ54O0?t=820
 - http://sarien.net/spacequest2#outsidexos4
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 

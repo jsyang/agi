@@ -1,0 +1,453 @@
+if (isset(f5)) {
+  set.horizon(96);
+  load.pic(v0);
+  load.view(59);
+  load.view(45);
+  load.view(0);
+  if (v1 < 10) {
+    load.view(46);
+    prevent.input();
+  }
+  load.sound(12);
+  load.logics(106);
+  load.logics(108);
+  call(108);
+  draw.pic(v0);
+  add.to.pic(45,0,0,67,146,13,1);
+  if (v1 < 10) {
+    animate.obj(o2);
+    set.view(o2,46);
+    set.loop(o2,2);
+    set.priority(o2,13);
+    position(o2,80,131);
+    ignore.objs(o2);
+    draw(o2);
+    animate.obj(o1);
+    set.view(o1,45);
+    set.loop(o1,1);
+    set.cel(o1,0);
+    cycle.time(o1,v87);
+    set.priority(o1,12);
+    position(o1,43,134);
+    draw(o1);
+    stop.cycling(o1);
+    v30 = 27;
+    sound(12,f33);
+  }
+  else {
+    add.to.pic(45,2,0,43,134,12,1);
+  }
+  animate.obj(o14);
+  set.view(o14,59);
+  set.cel(o14,0);
+  set.priority(o14,4);
+  ignore.objs(o14);
+  position(o14,120,130);
+  draw(o14);
+  stop.update(o14);
+  if (v1 == 47) {
+    get.posn(o0,v51,v52);
+    if (v52 == 97) {
+      v52 = 99;
+      position.v(o0,v51,v52);
+    }
+  }
+  if (v1 < 10) {
+    set.view(o0,0);
+    set.loop(o0,2);
+    position(o0,50,131);
+  }
+  else {
+    draw(o0);
+  }
+  show.pic();
+  if (v1 < 10) {
+    status.line.on();
+    reset(f129);
+  }
+  if (!isset(f84)) {
+    sound(12,f33);
+  }
+}
+if (v96 <= 0 &&
+    posn(o0,122,126,126,130)) {
+  v96 = 7;
+  erase(o0);
+  start.update(o14);
+  end.of.loop(o14,f31);
+}
+if (isset(f31)) {
+  reset(f31);
+  shake.screen(2);
+  v32 = 18;
+}
+v32--;
+if (v32 == 1) {
+  print("Aaaghh! You fall to the bottom of a"
+        "concealed pit. You might have survived"
+        "the fall had you not come in contact with"
+        "the several 30 centimeter long spikes"
+        "planted vertically along the bottom of"
+        "the pit.");
+  v67 = 1;
+}
+v30--;
+if (v30 == 1) {
+  end.of.loop(o1,f30);
+}
+if (isset(f30)) {
+  reset(f30);
+  v31 = 18;
+}
+v31--;
+if (v31 == 1) {
+  print("Good thing that guard broke your fall. He"
+        "doesn't look too happy about it, though.");
+  v6 = 0;
+  draw(o0);
+  add.to.pic(45,2,0,43,134,12,1);
+  erase(o1);
+  accept.input();
+}
+if (!isset(f84) &&
+    (isset(f33) ||
+    isset(f65))) {
+  sound(12,f33);
+}
+if (v96 <= 0) {
+  if ((said("check out","area") ||
+      said("check out","forest") ||
+      said("check out"))) {
+    print("%m2 Nearby are the bodies of your"
+          "former captors.");
+  }
+  if ((said("explore","craft") ||
+      said("look in","craft") ||
+      said("explore","wreck") ||
+      said("look in","wreck"))) {
+    if (posn(o0,59,140,93,150)) {
+      if (isset(f84)) {
+        print("Everything inside is twisted and"
+              "bent.");
+      }
+      else {
+        print("%m15 You do notice a button with a"
+              "flashing light next to it. It seems"
+              "to be emitting a high pitched beep.");
+      }
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if ((said("check out","craft") ||
+      said("check out","wreck"))) {
+    print("The hovercraft has been reduced to a"
+          "mound of twisted wreckage. Everything"
+          "that was straight is bent. Everything"
+          "that was bent is benter. There appear"
+          "to be no salvageable parts.");
+  }
+  if ((said("acquire","craft") ||
+      said("move","craft") ||
+      said("lift","craft") ||
+      said("acquire","wreck") ||
+      said("move","wreck") ||
+      said("lift","wreck"))) {
+    if (posn(o0,59,140,93,150)) {
+      print("You attempt to lift the hovercraft."
+            "As you heave and grunt you feel"
+            "something give way in the groin"
+            "region. You wisely give up.");
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if ((said("climb in","craft") ||
+      said("board","craft") ||
+      said("climb in","wreck") ||
+      said("board","wreck"))) {
+    if (posn(o0,59,140,93,150)) {
+      print("The hovercraft is a twisted wreck."
+            "Jagged metal protrudes in such a way"
+            "that entry would be hazardous.");
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if (said("press","button")) {
+    if (posn(o0,59,140,93,150)) {
+      if (!isset(f84)) {
+        set(f84);
+        v3 += 1;
+        print("%m17 The light goes dark and you no"
+              "longer notice the high pitched beep.");
+        stop.sound();
+      }
+      else {
+        print("%m17 Nothing happens.");
+      }
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if ((said("check out","glow") ||
+      said("check out","button"))) {
+    if (posn(o0,59,140,93,150)) {
+      if (isset(f84)) {
+        print("%m20 off.");
+      }
+      else {
+        print("%m20 on. You didn't notice it"
+              "during the flight. It must have"
+              "come on as a result of the crash.");
+      }
+    }
+    else {
+      print("You can't see that from here.");
+    }
+  }
+  if (said("read","button")) {
+    print("There is nothing there to read.");
+  }
+  if (v1 < 10) {
+    if ((said("check out","smoke") ||
+        said("check out","smoke"))) {
+      print("You notice that some smoke is"
+            "escaping from a fractured energy cell"
+            "in the wrecked hovercraft.");
+    }
+  }
+  if ((said("smell","smoke") ||
+      said("smell","smoke"))) {
+    print("The smoke smells like something that"
+          "might be emitted from a burning object.");
+  }
+  if ((said("smell") ||
+      said("smell","air") ||
+      said("smell","ape") ||
+      said("smell","bodies"))) {
+    print("You detect no unusual fragrance, at"
+          "least not yet. Soon though, these"
+          "bodies may be generating some serious"
+          "bouquet.");
+  }
+  if (said("acquire","glow")) {
+    print("That isn't necessary.");
+  }
+  if ((said("check out","ape") ||
+      said("check out","alien") ||
+      said("check out","bodies"))) {
+    if (posn(o0,34,129,67,138)) {
+      print("The guard appears to be less thick"
+            "than you remember him. Many of his"
+            "formerly contained body fluids seem"
+            "to be at large.");
+    }
+    else {
+      if (posn(o0,59,140,93,150)) {
+        print("This guard's body has been fatally"
+              "damaged by the fall.");
+      }
+      else {
+        print("You are not where you should be to"
+              "do that.");
+      }
+    }
+  }
+  if ((said("acquire","ape") ||
+      said("acquire","alien") ||
+      said("acquire","bodies"))) {
+    print("You aren't strong enough to carry the"
+          "guard. Besides, in his present state,"
+          "it would be quite a challenge.");
+  }
+  if ((said("move","ape") ||
+      said("move","alien") ||
+      said("move","bodies") ||
+      said("roll","bodies","a") ||
+      said("roll","ape","a") ||
+      said("roll","alien","a"))) {
+    if ((posn(o0,34,129,67,138) ||
+        posn(o0,59,140,93,150))) {
+      print("Not necessary. There is nothing"
+            "important under him.");
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if ((said("kiss","ape") ||
+      said("kiss","alien") ||
+      said("kiss","bodies"))) {
+    print("What an amusing idea. Pardon me while I"
+          "liberate my most recent meal.");
+  }
+  if ((said("strip","ape") ||
+      said("strip","alien") ||
+      said("acquire","ape","attire") ||
+      said("acquire","alien","attire") ||
+      said("acquire","attire","bodies") ||
+      said("strip","bodies"))) {
+    if ((posn(o0,34,129,67,138) ||
+        posn(o0,59,140,93,150))) {
+      print("You have no need for the uniform as"
+            "it is damaged beyond use. Many of the"
+            "seams are split and most of the"
+            "fabric is soaked with a generous"
+            "cross section of body fluids.");
+    }
+    else {
+      print("You are not where you should be to do"
+            "that.");
+    }
+  }
+  if ((said("asshole","ape") ||
+      said("asshole","alien") ||
+      said("asshole","bodies"))) {
+    if ((posn(o0,34,129,67,138) ||
+        posn(o0,59,140,93,150))) {
+      print("You're one twisted mofo. The only"
+            "other person I know who would try"
+            "that is Mark Crowe.");
+    }
+    else {
+      print("Get closer!");
+    }
+  }
+  if ((said("ask","ape") ||
+      said("ask","alien") ||
+      said("ask","bodies"))) {
+    print("The sounds of escaping gases are the"
+          "only audible offerings from these two.");
+  }
+  if ((said("explore","bodies") ||
+      said("explore","ape") ||
+      said("explore","ape","attire") ||
+      said("explore","alien","attire") ||
+      said("explore","ape","pocket") ||
+      said("explore","alien","pocket") ||
+      said("explore","alien"))) {
+    if (posn(o0,34,129,67,138)) {
+      if (!has("keycard")) {
+        print("%m11 a small, thin magnetic card."
+              "It looks like a keycard. You seem"
+              "to recall seeing one somewhere in"
+              "the past.");
+      }
+      else {
+        print("%m11 nothing.");
+      }
+    }
+    else {
+      if (posn(o0,59,140,93,150)) {
+        print("%m11 nothing.");
+      }
+      else {
+        print("You are not where you should be to"
+              "do that.");
+      }
+    }
+  }
+  if (said("acquire","card")) {
+    if (posn(o0,34,129,67,138)) {
+      if (!has("keycard")) {
+        v3 += 3;
+        get("keycard");
+        print("Ok.");
+      }
+      else {
+        print("That's not here.");
+      }
+    }
+    else {
+      print("That's not here.");
+    }
+  }
+  if (!isset(f84)) {
+    if ((said("listen") ||
+        said("listen","sound"))) {
+      print("You hear a high pitched beep. It"
+            "seems to be emanating from the"
+            "wrecked hovercraft.");
+    }
+  }
+  if (said("check out","trap")) {
+    print("Trap? Trap? What trap? I don't see a"
+          "trap! Hey, do you guys see a trap? I"
+          "didn't think so! You must be mistaken!"
+          "None of us sees a trap!");
+  }
+}
+if (v2 > 0 &&
+    v2 != 1 &&
+    v2 != 2) {
+  if (!isset(f32)) {
+    set(f32);
+    print("The foliage here is much too dense for"
+          "you to pass through.");
+  }
+}
+if (isset(f32) &&
+    v2 <= 0) {
+  reset(f32);
+}
+if (v2 == 2) {
+  new.room(47);
+}
+if (v2 == 1) {
+  new.room(11);
+}
+call(106);
+call(108);
+return();
+
+// Messages
+#message 1 "Good thing that guard broke your fall. He doesn't look too happy about it, though."
+#message 2 "You seem to be in a rather exotic forest. The growth here is unlike anything you are used to. On the ground lies the wreckage of the hovercraft you crashed in."
+#message 3 "%m2 Nearby are the bodies of your former captors."
+#message 4 "The hovercraft has been reduced to a mound of twisted wreckage. Everything that was straight is bent. Everything that was bent is benter. There appear to be no salvageable parts."
+#message 5 "The guard appears to be less thick than you remember him. Many of his formerly contained body fluids seem to be at large."
+#message 6 "You notice that some smoke is escaping from a fractured energy cell in the wrecked hovercraft."
+#message 7 "The smoke smells like something that might be emitted from a burning object."
+#message 8 "You attempt to lift the hovercraft. As you heave and grunt you feel something give way in the groin region. You wisely give up."
+#message 9 "You aren't strong enough to carry the guard. Besides, in his present state, it would be quite a challenge."
+#message 10 "What an amusing idea. Pardon me while I liberate my most recent meal."
+#message 11 "You search the grotesque body and find"
+#message 12 "%m11 a small, thin magnetic card. It looks like a keycard. You seem to recall seeing one somewhere in the past."
+#message 14 "%m11 nothing."
+#message 15 "Everything inside is twisted and bent."
+#message 16 "%m15 You do notice a button with a flashing light next to it. It seems to be emitting a high pitched beep."
+#message 17 "You press the button."
+#message 18 "%m17 Nothing happens."
+#message 19 "%m17 The light goes dark and you no longer notice the high pitched beep."
+#message 20 "You see a normal button and light. The light is currently"
+#message 21 "%m20 on. You didn't notice it during the flight. It must have come on as a result of the crash."
+#message 22 "%m20 off."
+#message 23 "You are not where you should be to do that."
+#message 24 "This guard's body has been fatally damaged by the fall."
+#message 25 "You can't see that from here."
+#message 26 "You have no need for the uniform as it is damaged beyond use. Many of the seams are split and most of the fabric is soaked with a generous cross section of body fluids."
+#message 27 "Not necessary. There is nothing important under him."
+#message 28 "The hovercraft is a twisted wreck. Jagged metal protrudes in such a way that entry would be hazardous."
+#message 29 "Aaaghh! You fall to the bottom of a concealed pit. You might have survived the fall had you not come in contact with the several 30 centimeter long spikes planted vertically along the bottom of the pit."
+#message 30 "The foliage here is much too dense for you to pass through."
+#message 31 "Ok."
+#message 32 "That's not here."
+#message 33 "Ok. To save time later, you turn it on."
+#message 34 "You hear a high pitched beep. It seems to be emanating from the wrecked hovercraft."
+#message 35 "Get closer!"
+#message 36 "You're one twisted mofo. The only other person I know who would try that is Mark Crowe."
+#message 37 "The sounds of escaping gases are the only audible offerings from these two."
+#message 38 "Trap? Trap? What trap? I don't see a trap! Hey, do you guys see a trap? I didn't think so! You must be mistaken! None of us sees a trap!"
+#message 39 "You detect no unusual fragrance, at least not yet. Soon though, these bodies may be generating some serious bouquet."
+#message 40 "That isn't necessary."
+#message 41 "There is nothing there to read."

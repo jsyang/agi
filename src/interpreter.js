@@ -431,6 +431,13 @@ const updateObject = (obj, no) => {
                         state.variables[VAR.object_touching_edge] = no;
                         state.variables[VAR.object_edge_code]     = 3;
                     }
+                } else {
+                    // Not touching any edges
+                    if (no === 0) {
+                        state.variables[VAR.ego_edge_code] = 0;
+                    } else {
+                        state.variables[VAR.object_edge_code] = 0;
+                    }
                 }
             }
 

@@ -8,7 +8,7 @@ import Sound from './sound';
 import {View} from './view';
 import {
     VAR, AGI_RESOURCE_TYPE, FLAG, GAMEOBJECT_DIRECTION,
-    GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS
+    GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS, GAMEOBJECT_MAX_Y, SCREEN_WIDTH_UNITS
 } from './constants';
 import {state, restart, getInventoryItems} from './state';
 import {restoreNextCycle, saveNextCycle} from './interpreter';
@@ -130,7 +130,14 @@ export const commands = {
     },
 
     agi_shake_screen: (shakeCount) => {
+        const canvas = document.getElementById('canvas');
 
+        canvas.style.animation = '';
+
+        // Trigger reflow to reset iteration count
+        void canvas.offsetWidth;
+
+        canvas.style.animation = 'screenshake 0.1s linear 0s ' + shakeCount;
     },
 
     agi_reposition: (oA, vDX, vDY) => {
@@ -200,6 +207,32 @@ export const commands = {
         // The logic for the new room is loaded (logic ROOMNO)
         // state.logicStack = [];
         commands.agi_load_logic(roomNo);
+
+        // If ego was touching an edge of the screen, it is placed on the opposite side
+        const ego = state.gameObjects[0];
+
+        switch (state.variables[VAR.ego_edge_code]) {
+            // Which edge of the screen ego is touching
+            // 0: not touching edge
+            // 1: horizon
+            // 2: right edge
+            // 3: bottom edge
+            // 4: left edge
+            case 1:
+                ego.y = GAMEOBJECT_MAX_Y;
+                break;
+            case 2:
+                ego.x = 1;
+                break;
+            case 3:
+                // todo: maybe a bug here! not sure this is correct!
+                ego.y = state.horizon;
+                break;
+            case 4:
+                const celWidth = state.loadedViews[ego.viewNo].cels[ego.cel].width;
+                ego.x          = SCREEN_WIDTH_UNITS - celWidth - 1;
+                break;
+        }
 
         // Flag 5 (new_room) is set (this is reset after the first cycle in the new room)
         commands.agi_set(FLAG.new_room);
