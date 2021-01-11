@@ -22,7 +22,6 @@ const getPersistableState = () => {
     delete stateToBeSaved.playerSaid;
     delete stateToBeSaved.textScreenMessages;
     delete stateToBeSaved.keysForControllers;
-    delete stateToBeSaved.strings;
     delete stateToBeSaved.priorityBuffer;
     delete stateToBeSaved.visualBuffer;
     delete stateToBeSaved.visualPriorityBuffer;
@@ -80,12 +79,13 @@ export const restoreGame = () => {
                 commands.agi_load_logic(i);
             }
 
+            state.strings = savedState.strings;
+
             for (let i = 0; i < 256; i++) {
                 state.variables[i] = savedState.variables[i];
                 state.flags[i]     = savedState.flags[i];
                 state.items[i]     = savedState.items[i];
             }
-
 
             // todo: this isn't quite working the way I wanted it
             // the ego doesn't return to the original spot and I have to run
