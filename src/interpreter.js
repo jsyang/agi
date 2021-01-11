@@ -569,7 +569,18 @@ const handleSaveRestore = () => {
     isNextCycleRestoreGame = false;
 };
 
+function updateInterpreterClock() {
+    const now = new Date();
+
+    // Probably not right
+    // todo: track time?
+    state.variables[VAR.clock_seconds] = now.getSeconds();
+    state.variables[VAR.clock_minutes] = now.getMinutes();
+    state.variables[VAR.clock_hours]   = now.getHours();
+}
+
 const cycle = () => {
+    updateInterpreterClock();
     handleSaveRestore();
     handleInput();
 

@@ -1,11 +1,16 @@
 # Specific Games
 
+Missing features
+- Add ability to save / load multiple, along with savegame game ID checking
+- Add better UI for said words (swipe and select, hierarchical, synonyms)
+- Add mouse support for movement interaction
+    - Add inventory screen that is clickable
+- Add UI for options (TTS, volume, input style, controls)
+
 ## Space Quest 2
 
 Issues:
 
-- Being eaten by a mushroom in Room 47 does not end the game!
-  
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 

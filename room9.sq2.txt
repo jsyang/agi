@@ -1,0 +1,366 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.view(44);
+  load.view(41);
+  load.view(46);
+  load.sound(9);
+  load.sound(10);
+  load.sound(11);
+  load.pic(v0);
+  draw.pic(v0);
+  animate.obj(o1);
+  set.view(o1,41);
+  set.loop(o1,2);
+  set.cel(o1,2);
+  set.priority(o1,5);
+  position(o1,60,117);
+  draw(o1);
+  stop.update(o1);
+  animate.obj(o11);
+  set.view(o11,46);
+  set.loop(o11,1);
+  set.cel(o11,0);
+  position(o11,72,107);
+  animate.obj(o10);
+  set.view(o10,41);
+  set.loop(o10,3);
+  set.priority(o10,6);
+  position(o10,73,108);
+  animate.obj(o2);
+  set.view(o2,44);
+  set.loop(o2,0);
+  fix.loop(o2);
+  set.cel(o2,2);
+  set.priority(o2,4);
+  step.size(o2,v87);
+  ignore.objs(o2);
+  position(o2,18,142);
+  draw(o2);
+  stop.cycling(o2);
+  move.obj(o2,137,142,0,f30);
+  animate.obj(o3);
+  set.view(o3,44);
+  set.loop(o3,0);
+  fix.loop(o3);
+  set.cel(o3,1);
+  set.priority(o3,4);
+  step.size(o3,v87);
+  ignore.objs(o3);
+  position(o3,81,142);
+  draw(o3);
+  stop.cycling(o3);
+  move.obj(o3,137,142,0,f31);
+  animate.obj(o4);
+  set.view(o4,44);
+  set.loop(o4,0);
+  fix.loop(o4);
+  set.cel(o4,0);
+  set.priority(o4,4);
+  step.size(o4,v87);
+  ignore.objs(o4);
+  position(o4,106,142);
+  draw(o4);
+  stop.cycling(o4);
+  move.obj(o4,137,142,0,f32);
+  animate.obj(o5);
+  set.view(o5,44);
+  set.loop(o5,0);
+  fix.loop(o5);
+  set.cel(o5,0);
+  set.priority(o5,4);
+  step.size(o5,v87);
+  ignore.objs(o5);
+  position(o5,120,142);
+  draw(o5);
+  stop.cycling(o5);
+  move.obj(o5,137,142,0,f33);
+  animate.obj(o6);
+  set.view(o6,44);
+  set.loop(o6,1);
+  fix.loop(o6);
+  set.cel(o6,0);
+  set.priority(o6,5);
+  step.size(o6,v91);
+  ignore.objs(o6);
+  position(o6,0,142);
+  draw(o6);
+  stop.cycling(o6);
+  move.obj(o6,130,142,0,f34);
+  animate.obj(o7);
+  set.view(o7,44);
+  set.loop(o7,1);
+  fix.loop(o7);
+  set.cel(o7,1);
+  set.priority(o7,5);
+  step.size(o7,v91);
+  ignore.objs(o7);
+  position(o7,77,142);
+  draw(o7);
+  stop.cycling(o7);
+  move.obj(o7,130,142,0,f35);
+  animate.obj(o8);
+  set.view(o8,44);
+  set.loop(o8,1);
+  fix.loop(o8);
+  set.cel(o8,1);
+  set.priority(o8,5);
+  step.size(o8,v91);
+  ignore.objs(o8);
+  position(o8,100,142);
+  draw(o8);
+  stop.cycling(o8);
+  move.obj(o8,130,142,0,f36);
+  animate.obj(o9);
+  set.view(o9,44);
+  set.cel(o9,0);
+  set.loop(o9,2);
+  fix.loop(o9);
+  set.priority(o9,7);
+  v53 = 10;
+  step.size(o9,v53);
+  ignore.objs(o9);
+  position(o9,41,142);
+  draw(o9);
+  stop.cycling(o9);
+  move.obj(o9,132,142,0,f37);
+  show.pic();
+  sound(9,f40);
+  v39 = 240;
+}
+if (v69 == 1) {
+  v69 = 0;
+  draw(o11);
+  end.of.loop(o11,f39);
+}
+if (v69 == 2) {
+  v69 = 0;
+  shake.screen(3);
+  new.room(10);
+}
+if (v40 <= 0 &&
+    (isset(f40) ||
+    isset(f65))) {
+  sound(9,f40);
+}
+if (v40 > 0 &&
+    v40 != 4 &&
+    (isset(f41) ||
+    isset(f65))) {
+  sound(10,f41);
+}
+if (isset(f30)) {
+  reset(f30);
+  set.cel(o2,5);
+  random(2,5,v31);
+}
+v31--;
+if (v31 == 1) {
+  reposition.to(o2,0,142);
+  random(0,4,v53);
+  set.cel.v(o2,v53);
+  move.obj(o2,137,142,0,f30);
+}
+if (isset(f31)) {
+  reset(f31);
+  set.cel(o3,5);
+  random(2,5,v32);
+}
+v32--;
+if (v32 == 1) {
+  reposition.to(o3,0,142);
+  random(0,4,v53);
+  set.cel.v(o3,v53);
+  move.obj(o3,137,142,0,f31);
+}
+if (isset(f32)) {
+  reset(f32);
+  set.cel(o4,5);
+  random(2,5,v33);
+}
+v33--;
+if (v33 == 1) {
+  reposition.to(o4,0,142);
+  random(0,4,v53);
+  set.cel.v(o4,v53);
+  move.obj(o4,137,142,0,f32);
+}
+if (isset(f33)) {
+  reset(f33);
+  set.cel(o5,5);
+  random(2,5,v34);
+}
+v34--;
+if (v34 == 1) {
+  reposition.to(o5,0,142);
+  random(0,4,v53);
+  set.cel.v(o5,v53);
+  move.obj(o5,137,142,0,f33);
+}
+if (isset(f34)) {
+  reset(f34);
+  set.cel(o6,4);
+  random(2,5,v35);
+}
+v35--;
+if (v35 == 1) {
+  reposition.to(o6,0,142);
+  random(0,3,v53);
+  set.cel.v(o6,v53);
+  move.obj(o6,130,142,0,f34);
+}
+if (isset(f35)) {
+  reset(f35);
+  set.cel(o7,4);
+  random(2,5,v36);
+}
+v36--;
+if (v36 == 1) {
+  reposition.to(o7,0,142);
+  random(0,3,v53);
+  set.cel.v(o7,v53);
+  move.obj(o7,130,142,0,f35);
+}
+if (isset(f36)) {
+  reset(f36);
+  set.cel(o8,4);
+  random(10,5,v37);
+}
+v37--;
+if (v37 == 1) {
+  reposition.to(o8,0,142);
+  random(0,3,v53);
+  set.cel.v(o8,v53);
+  move.obj(o8,130,142,0,f36);
+}
+if (isset(f37)) {
+  reset(f37);
+  set.cel(o9,1);
+  random(20,70,v38);
+}
+v38--;
+if (v38 == 1) {
+  reposition.to(o9,0,142);
+  set.cel(o9,0);
+  move.obj(o9,130,142,0,f37);
+}
+v39--;
+if (v40 == 4 &&
+    v39 == 2) {
+  print.at("\"Uh Oh.\"",2,15,9);
+  draw(o10);
+}
+if (v39 == 1) {
+  reposition.to(o1,60,119);
+  force.update(o1);
+  if (v40 <= 0) {
+    v30 = 9;
+    v40 = 1;
+    reset(f40);
+    sound(10,f41);
+  }
+  else {
+    if (v40 == 4) {
+      print.at("\"Oh, great. I suppose we're out"
+               "of fuel. Way to go, Gorf breath!\"",2,2,37);
+      print.at("\"Don't blame me. It was your turn"
+               "to fill up. You're always"
+               "forgetting to do it! Wait till the"
+               "Master finds out. You're in big"
+               "trouble.\"",2,2,37);
+      print.at("\"Hey! Don't talk to me that way,"
+               "you slime bucket! I filled it last"
+               "time, dip...\" The argument"
+               "between the two guards is cut"
+               "short as gravity reasserts itself.",2,2,37);
+      start.update(o1);
+      fix.loop(o1);
+      stop.cycling(o1);
+      erase(o10);
+      move.obj(o1,60,167,20,f38);
+      v69 = 1;
+    }
+    if (v40 == 3) {
+      normal.motion(o2);
+      normal.motion(o3);
+      normal.motion(o4);
+      normal.motion(o5);
+      normal.motion(o6);
+      normal.motion(o7);
+      normal.motion(o8);
+      normal.motion(o9);
+      stop.motion(o2);
+      stop.motion(o3);
+      stop.motion(o4);
+      stop.motion(o5);
+      stop.motion(o6);
+      stop.motion(o7);
+      stop.motion(o8);
+      stop.motion(o9);
+      v31 = 0;
+      v32 = 0;
+      v33 = 0;
+      v34 = 0;
+      v35 = 0;
+      v36 = 0;
+      v37 = 0;
+      v38 = 0;
+      stop.sound();
+      reset(f41);
+      v40 = 4;
+      v39 = 18;
+    }
+    if (v40 == 2) {
+      v30 = 2;
+      v40 = 3;
+    }
+    if (v40 == 1) {
+      v30 = 5;
+      v40 = 2;
+      step.size(o2,v86);
+      step.size(o3,v86);
+      step.size(o4,v86);
+      step.size(o5,v86);
+      step.size(o6,v87);
+      step.size(o7,v87);
+      step.size(o8,v87);
+      step.size(o9,v90);
+    }
+  }
+}
+v30--;
+if (v30 == 1) {
+  reposition.to(o1,60,117);
+  force.update(o1);
+  if (v40 == 1) {
+    v39 = 18;
+  }
+  if (v40 == 2) {
+    v39 = 18;
+  }
+  if (v40 == 3) {
+    v39 = 5;
+  }
+}
+if (isset(f39)) {
+  reset(f39);
+  v41 = 18;
+}
+if (isset(f38)) {
+  reset(f38);
+  erase(o1);
+}
+v41--;
+if (v41 == 1) {
+  set.loop(o11,0);
+  reposition.to(o11,61,87);
+  sound(11,f61);
+  v69 = 2;
+}
+return();
+
+// Messages
+#message 1 "\"Oh, great. I suppose we're out of fuel. Way to go, Gorf breath!\""
+#message 2 "\"Don't blame me. It was your turn to fill up. You're always forgetting to do it! Wait till the Master finds out. You're in big trouble.\""
+#message 3 "\"Hey! Don't talk to me that way, you slime bucket! I filled it last time, dip...\" The argument between the two guards is cut short as gravity reasserts itself."
+#message 4 "CRASH ! ! !"
+#message 5 "\"Uh Oh.\""

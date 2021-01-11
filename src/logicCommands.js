@@ -99,7 +99,7 @@ export const commands = {
         commands.agi_reset(state.variables[varNo]);
     },
 
-    agi_togglev: (varNo) => {
+    agi_toggle_v: (varNo) => {
         commands.agi_toggle(state.variables[varNo]);
     },
 
@@ -107,13 +107,12 @@ export const commands = {
         // LLL('agi_call', logicNo);
         state.logicStack.push(state.logicNo);
         state.logicNo = logicNo;
-        if (state.loadedLogics[logicNo] != null) {
-            state.loadedLogics[logicNo].parseLogic();
-        } else {
+
+        if (state.loadedLogics[logicNo] == null) {
             commands.agi_load_logic(logicNo);
-            state.loadedLogics[logicNo].parseLogic();
-            // state.loadedLogics[logicNo] = null;
         }
+
+        state.loadedLogics[logicNo].parseLogic();
         state.logicNo = state.logicStack.pop();
     },
 
