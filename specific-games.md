@@ -13,7 +13,7 @@ Issues:
 - Typing "cheat" at any time leads to game crash (room 95)
   
 - Possible ego edge code error 
-  - Cannot leave the root monster room 21!
+  - Cannot leave the root monster room (room 21)!
   
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet

@@ -30,21 +30,14 @@ const bltDebug = () => {
     document.getElementById('debug').appendChild(imageEl);
 };
 
-const resetActions = () => {
-    while (state.actionContainerElement.children.length > 0) {
-        state.actionContainerElement.removeChild(
-            state.actionContainerElement.children[0]
-        );
-    }
-};
-
-const init = (_canvasContext, _audioContext, _menuContainerElement, _actionContainerElement) => {
+const init = (_canvasContext, _audioContext, _menuContainerElement, _actionContainerElement, _actionSearchElement) => {
     if (canvasContext) return;
 
     canvasContext                = _canvasContext;
     audioContext                 = _audioContext;
     state.menuContainerElement   = _menuContainerElement;
     state.actionContainerElement = _actionContainerElement;
+    state.actionSearchElement    = _actionSearchElement;
 
     state.visualBuffer         = new Bitmap();
     state.visualPriorityBuffer = new Bitmap();
@@ -56,6 +49,14 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
     state.soundEmulator = new SoundEmulatorTiSn76496a(_audioContext);
 
     screen.init(state);
+
+    _actionSearchElement.onkeydown  = e => e.stopPropagation();
+    _actionSearchElement.onkeypress = e => e.stopPropagation();
+    _actionSearchElement.onkeyup    = () => {
+        currentSaidSearch = _actionSearchElement.value.trim().toLowerCase();
+        searchSaidSystem();
+    };
+
 
     window.onkeypress = e => e.which !== 13 ? state.keyboardCharBuffer.push(e.which) : null;
     window.onkeydown  = e => {
@@ -529,23 +530,35 @@ const updateObject = (obj, no) => {
     }
 }
 
+// PLAYER COMMAND SYSTEM
+
+const clearElementChildren = el => {
+    while (el.children.length > 0) el.removeChild(el.children[0]);
+};
+
 const setSaid = e => state.playerSaid = e.target.getAttribute('data-word-groups');
 
 let previousActionCount = 0;
+const actionListByAlpha = [];
 
 const updateSaidSystem = () => {
     const actionNames = Object.keys(state.testSaid);
 
     if (previousActionCount !== actionNames.length) {
-        resetActions();
-        const actionsByAlpha = [];
+        clearElementChildren(state.actionContainerElement);
+
+        for (let listEl of actionListByAlpha) {
+            if (!listEl) continue;
+
+            clearElementChildren(listEl);
+        }
 
         actionNames.forEach(act => {
             act = act.toLowerCase();
 
             const actionsListIndex = act.charCodeAt(0) - 97;
 
-            let list = actionsByAlpha[actionsListIndex];
+            let list = actionListByAlpha[actionsListIndex];
 
             if (!list) {
                 list = document.createElement('div');
@@ -558,18 +571,50 @@ const updateSaidSystem = () => {
             buttonEl.innerHTML = act;
 
             list.appendChild(buttonEl);
-            actionsByAlpha[actionsListIndex] = list;
+            actionListByAlpha[actionsListIndex] = list;
         });
 
-        actionsByAlpha.forEach(listEl => state.actionContainerElement.appendChild(listEl));
+        actionListByAlpha.forEach(listEl => state.actionContainerElement.appendChild(listEl));
 
         previousActionCount = actionNames.length;
+        searchSaidSystem();
     }
 
     state.playerSaid = '';
 };
 
-// User intention to save / restore
+let currentSaidSearch = '';
+
+const searchSaidSystem = () => {
+    if (currentSaidSearch.length === 0) {
+        for (let b of Array.from(state.actionContainerElement.querySelectorAll('button'))) {
+            b.classList.remove('hide');
+        }
+    } else {
+        const searchRE = new RegExp(currentSaidSearch, 'gi');
+
+        Object.keys(state.testSaid)
+            .filter(action => !searchRE.test(action))
+            .forEach(actionToHide => {
+                state.actionContainerElement.querySelector(`button[data-word-groups="${state.testSaid[actionToHide]}"]`)
+                    .classList.add('hide');
+            });
+    }
+
+    // Hide any empty lists so we don't see empty columns
+    for (let listEl of actionListByAlpha) {
+        if (!listEl) continue;
+
+        if (listEl.children.length === listEl.querySelectorAll('.hide').length) {
+            listEl.classList.add('hide');
+        } else {
+            listEl.classList.remove('hide');
+        }
+    }
+};
+
+// PLAYER INTENTION TO SAVE / RESTORE GAME
+
 // Cannot do it within the same cycle because it will always set the controller
 // for save/restore within current state which will cause a call stack overflow
 let isNextCycleSaveGame    = false;

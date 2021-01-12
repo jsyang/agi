@@ -76,6 +76,13 @@
             width: 140px;
             overflow-y: auto;
             max-height: calc(100vh - 400px - 80px);
+            transition: all 0.25s ease;
+        }
+
+        #actions .list.hide {
+            width: 0;
+            overflow: hidden;
+            height: 0;
         }
 
         #actions .list button {
@@ -93,10 +100,19 @@
             margin-bottom: 4px;
             white-space: normal;
             width: 100%;
+            transition: all 0.2s ease;
         }
 
         #actions .list button:hover {
             color: #d31;
+        }
+
+        #actions .list button.hide {
+            width: 0;
+            height: 0;
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
         }
 
         #debug {
@@ -113,6 +129,19 @@
             display: none;
             position: fixed;
             opacity: 0.4;
+        }
+
+        #player-input {
+            display: block;
+            appearance: none;
+            border: 0;
+            font-family: monospace;
+            font-size: 12px;
+            width: 640px;
+            box-sizing: border-box;
+            padding: 4px;
+            margin-top: 6px;
+            margin-bottom: 8px;
         }
 
         @keyframes screenshake {
@@ -141,6 +170,7 @@
 <div id="app">
     <div id="menu"></div>
     <canvas id="canvas" width="320" height="200"></canvas>
+    <input type="text" id="player-input">
     <div id="actions"></div>
     <img id="overlay" src="game/comparison.png" alt="GFX comparison overlay"
          ondragstart="event.preventDefault()"
