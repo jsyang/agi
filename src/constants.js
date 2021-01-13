@@ -320,4 +320,4 @@ export const GAMEOBJECT_PRIORITY = {
 
 export const SCREEN_HEIGHT_PIXELS = 200;
 export const SCREEN_WIDTH_PIXELS  = 320;
-export const SCREEN_WIDTH_UNITS   = SCREEN_WIDTH_PIXELS >> 1;
+export const SCREEN_WIDTH_UNITS   = 160;

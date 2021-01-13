@@ -1,0 +1,197 @@
+if (v96 <= 0) {
+  if (said("check out","snag")) {
+    print("Yes. You see before you a tree.");
+  }
+  if (said("look in","snag")) {
+    print("Too many leaves in the way.");
+  }
+  if (said("check out","brush")) {
+    print("The bushes seem to be composed of"
+          "leaves and small branches. Nothing"
+          "interesting about them.");
+  }
+  if (said("climb","brush")) {
+    print("It's too thick in there.");
+  }
+  if ((said("look in","brush") ||
+      said("explore","brush"))) {
+    print("You peer into the dense thicket, but"
+          "see only denser thicket.");
+  }
+  if ((said("press","snag","down") ||
+      said("knock","snag","down") ||
+      said("press","down","snag"))) {
+    print("Hey, you're no 6 Million Buckazoid man!");
+  }
+  if ((said("check out","deck") ||
+      said("check out","down") ||
+      said("check out","dirt"))) {
+    print("The ground is soiled.");
+  }
+  if ((said("climb","snag") ||
+      said("climb","branch") ||
+      said("climb","above","snag") ||
+      said("climb","above","branch"))) {
+    print("The tree is coated with a thin slimy"
+          "film making it unclimbable.");
+  }
+  if ((said("cut","snag") ||
+      said("cut","down","snag") ||
+      said("cut","branch") ||
+      said("cut","down","branch"))) {
+    print("The tree is very solid. You have no"
+          "implement with which to penetrate it"
+          "and you're no beaver.");
+  }
+  if (said("acquire","snag")) {
+    print("What ever you say, Mr. Atlas.");
+  }
+  if (said("check out","bark")) {
+    print("The juicy bark appears fiberous beneath"
+          "the slick coating.");
+  }
+  if (said("acquire","bark")) {
+    print("You can't remove the bark.");
+  }
+  if ((said("check out","vine") ||
+      said("look up","vine"))) {
+    print("The vines appear to be very thin and"
+          "fragile.");
+  }
+  if ((said("acquire","vine") ||
+      said("cut","vine") ||
+      said("climb","vine"))) {
+    print("You are unable to reach the vines.");
+  }
+  if ((said("check out","sky") ||
+      said("check out","above") ||
+      said("check out","above"))) {
+    print("Sunlight filters through the dense,"
+          "leafy crown of the forest. The sky"
+          "appears to be clear.");
+  }
+  if (said("acquire","branch")) {
+    print("They're all in use right now. Sorry.");
+  }
+  if ((said("dig","entryway") ||
+      said("dig","down") ||
+      said("dig"))) {
+    print("Trying to dig a hole in this solid"
+          "ground is a waste of time.");
+  }
+  if (said("acquire","dirt")) {
+    print("Leave the dirt alone.");
+  }
+  if ((said("listen") ||
+      said("listen","forest"))) {
+    print("You hear the soft music of a million"
+          "leaves in the gentle breeze.");
+  }
+  if (v0 != 45 &&
+      v0 != 8) {
+    if (said("check out","boulder")) {
+      print("The rocks in this region are all gray"
+            "and fairly rounded. There appears to"
+            "be nothing of interest about them.");
+    }
+    if (said("look under","boulder")) {
+      print("You can't move them to look under"
+            "them.");
+    }
+    if ((said("acquire","boulder") ||
+        said("lift","boulder") ||
+        said("move","boulder"))) {
+      print("The rocks here are too large to move.");
+    }
+    if ((said("climb","boulder") ||
+        said("climb","above","boulder") ||
+        said("acquire","top","boulder") ||
+        said("board","boulder"))) {
+      print("That wouldn't be helpful.");
+    }
+  }
+  if ((said("check out","bank") ||
+      said("check out","cliff"))) {
+    if ((v0 == 11 ||
+        v0 == 20)) {
+      print("The bank is an exposed section of"
+            "packed brown dirt.");
+    }
+    else {
+      print("There isn't much to see, as you may"
+            "have noticed.");
+    }
+  }
+  if ((said("climb","cliff") ||
+      said("climb","hill") ||
+      said("climb","wall") ||
+      said("climb","bank"))) {
+    print("The bank is too steep to climb.");
+  }
+  if (said("climb")) {
+    print("Be more specific.");
+  }
+  if (said("climb in","brush")) {
+    print("The foliage is too dense to travel"
+          "through.");
+  }
+  if (said("check out","moss")) {
+    print("The moss on the trees is thick, green,"
+          "and slimey.");
+  }
+  if ((said("acquire","moss") ||
+      said("scrape","moss"))) {
+    print("The moss is too slimey to get.");
+  }
+  if (said("check out","growth")) {
+    print("The roots of the trees are very"
+          "uninteresting.");
+  }
+  if ((said("cut","growth") ||
+      said("dig","growth") ||
+      said("acquire","growth"))) {
+    print("Leave the root alone.");
+  }
+  if (said("check out","forest")) {
+    print("You can't see the forest for the trees.");
+  }
+}
+return();
+
+// Messages
+#message 1 "Yes. You see before you a tree."
+#message 2 "The bushes seem to be composed of leaves and small branches. Nothing interesting about them."
+#message 3 "The ground is soiled."
+#message 4 "The tree is coated with a thin slimy film making it unclimbable."
+#message 5 "The tree is very solid. You have no implement with which to penetrate it and you're no beaver."
+#message 6 "What ever you say, Mr. Atlas."
+#message 7 "Sunlight filters through the dense, leafy crown of the forest. The sky appears to be clear."
+#message 8 "You are not near any gatherable leaves."
+#message 9 "They're all in use right now. Sorry."
+#message 10 "That won't help you right now."
+#message 11 "Leave the dirt alone."
+#message 12 "You hear the soft music of a million leaves in the gentle breeze."
+#message 13 "You already have some leaves."
+#message 14 "The rocks in this region are all gray and fairly rounded. There appears to be nothing of interest about them."
+#message 15 "You peer into the dense thicket, but see only denser thicket."
+#message 16 "The juicy bark appears fiberous beneath the slick coating."
+#message 17 "You can't remove the bark."
+#message 18 "The vines appear to be very thin and fragile."
+#message 19 "You are unable to reach the vines."
+#message 20 "The rocks here are too large to move."
+#message 21 "The bank is an exposed section of packed brown dirt."
+#message 22 "The bank is too steep to climb."
+#message 23 "The foliage is too dense to travel through."
+#message 24 "The moss on the trees is thick, green, and slimey."
+#message 25 "The moss is too slimey to get."
+#message 26 "The roots of the trees are very uninteresting."
+#message 27 "Leave the root alone."
+#message 28 "You can't see the forest for the trees."
+#message 29 "That wouldn't be helpful."
+#message 30 "Hey, you're no 6 Million Buckazoid man!"
+#message 31 "Trying to dig a hole in this solid ground is a waste of time."
+#message 32 "You can't move them to look under them."
+#message 33 "Be more specific."
+#message 34 "Too many leaves in the way."
+#message 35 "There isn't much to see, as you may have noticed."
+#message 36 "It's too thick in there."

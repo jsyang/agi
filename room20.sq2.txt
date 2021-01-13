@@ -1,0 +1,438 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  load.view(58);
+  load.view(16);
+  load.view(113);
+  load.sound(15);
+  load.sound(23);
+  load.sound(16);
+  load.logics(106);
+  load.logics(109);
+  call(109);
+  draw.pic(v0);
+  if (!isset(f85)) {
+    add.to.pic(58,0,0,30,147,4,4);
+  }
+  else {
+    add.to.pic(58,0,1,30,147,4,4);
+  }
+  if (!isset(f86)) {
+    add.to.pic(58,0,0,104,156,4,4);
+  }
+  else {
+    add.to.pic(58,0,1,104,156,4,4);
+  }
+  animate.obj(o10);
+  set.view(o10,16);
+  set.loop(o10,0);
+  set.cel(o10,0);
+  animate.obj(o1);
+  set.view(o1,58);
+  set.loop(o1,1);
+  set.cel(o1,0);
+  ignore.objs(o1);
+  ignore.blocks(o1);
+  cycle.time(o1,v87);
+  animate.obj(o2);
+  set.view(o2,113);
+  ignore.blocks(o2);
+  position(o2,89,45);
+  draw(o2);
+  stop.cycling(o2);
+  if (v1 == 21) {
+    position(o0,15,82);
+  }
+  if (v1 == 11) {
+    get.posn(o0,v70,v71);
+    if (v71 > 50 &&
+        v71 < 82) {
+      v71 = 49;
+      position.v(o0,v70,v71);
+    }
+  }
+  draw(o0);
+  show.pic();
+}
+if (isset(f3) &&
+    !isset(f53)) {
+  set(f53);
+}
+if (posn(o0,26,139,41,148) &&
+    v30 <= 0) {
+  v32 = 1;
+  set(f85);
+}
+if (posn(o0,100,147,114,155) &&
+    v30 <= 0) {
+  v32 = 2;
+  set(f86);
+}
+if (v96 <= 0) {
+  if (v32 > 0) {
+    v96 = 8;
+    if (v32 == 1) {
+      position(o1,32,141);
+      add.to.pic(58,0,1,30,147,4,4);
+    }
+    else {
+      position(o1,106,152);
+      add.to.pic(58,0,1,104,156,4,4);
+    }
+    set.loop(o1,1);
+    set.cel(o1,0);
+    draw(o1);
+    end.of.loop(o1,f30);
+    sound(16,f61);
+    v30 = 1;
+    v32 = 0;
+    set.view(o10,0);
+    set.loop(o10,2);
+    get.posn(o0,v70,v71);
+    position.v(o10,v70,v71);
+    erase(o0);
+    draw(o10);
+    stop.cycling(o10);
+    print("You seem to have kicked one of these"
+          "strange little spores.");
+  }
+}
+if (isset(f87)) {
+  v31--;
+  if (v31 == 1) {
+    set.loop(o10,2);
+    set.cel(o10,0);
+    end.of.loop(o10,f30);
+    v30 = 5;
+  }
+}
+if (isset(f30)) {
+  reset(f30);
+  if (v30 == 5) {
+    get.posn(o10,v51,v52);
+    v52 -= 5;
+    position.v(o0,v51,v52);
+    erase(o10);
+    draw(o0);
+    start.motion(o0);
+    v96 = 0;
+    v30 = 6;
+    print("Fortunately, the paralysis wears off"
+          "and you seem to be back to normal.");
+  }
+  if (v30 == 3) {
+    v31 = 60;
+    print("Your kick caused some spores to open"
+          "and spray a fine powder into the air."
+          "As a result you are paralyzed from head"
+          "to toe, unable to move a single muscle.");
+  }
+  if (v30 == 2) {
+    v51 = 0;
+    v52 = 5;
+    reposition(o10,v51,v52);
+    set.loop(o10,1);
+    set.cel(o10,0);
+    end.of.loop(o10,f30);
+    v30 = 3;
+  }
+  if (v30 == 1) {
+    erase(o1);
+    set.view(o10,16);
+    set.loop(o10,0);
+    set.cel(o10,0);
+    end.of.loop(o10,f30);
+    v30 = 2;
+  }
+}
+if (v30 == 6) {
+  if (!posn(o0,26,139,41,148) &&
+      !posn(o0,100,147,114,155)) {
+    v30 = 0;
+  }
+}
+v33--;
+if (v33 == 1) {
+  stop.sound();
+  reset(f32);
+  stop.update(o2);
+  set.cel(o2,0);
+  force.update(o2);
+  v107 = 2;
+  print.at("The mailbox hums and buzzes for"
+           "awhile. Then, an object of some sort"
+           "drops into the tray at the base of the"
+           "box. The machine goes silent.",2,3,35);
+}
+if (v107 == 1 &&
+    (isset(f32) ||
+    isset(f65))) {
+  sound(15,f32);
+}
+if (v96 != 8) {
+  if ((said("check out") ||
+      said("check out","forest") ||
+      said("check out","area"))) {
+    print("This is another clearing in the"
+          "otherwise heavily wooded area of the"
+          "forest. There is a plateau near the"
+          "back.");
+  }
+  if (said("check out","hill")) {
+    print("It is like the other areas, only raised"
+          "a little. A mail box sits up there.");
+  }
+  if ((said("check out","deck") ||
+      said("look down","deck") ||
+      said("look down"))) {
+    print("The ground looks like everywhere else,"
+          "with the exception of some growths"
+          "which look like spores or pods.");
+  }
+  if (!has("spore")) {
+    if ((said("check out","spore") ||
+        said("check out","down") ||
+        said("check out","deck") ||
+        said("check out","thing") ||
+        said("check out","craft"))) {
+      if (posn(o0,24,135,45,152)) {
+        if (!isset(f85)) {
+          print("The spores are light blue and"
+                "bulb shaped. They seem to be"
+                "loosely attached to the ground.");
+        }
+        else {
+          print("%m4 Some appear to have been"
+                "popped.");
+        }
+      }
+      else {
+        if (posn(o0,95,107,120,161)) {
+          if (!isset(f86)) {
+            print("The spores are light blue and"
+                  "bulb shaped. They seem to be"
+                  "loosely attached to the ground.");
+          }
+          else {
+            print("%m4 Some appear to have been"
+                  "popped.");
+          }
+        }
+        else {
+          print("You need to be closer.");
+        }
+      }
+    }
+  }
+  if ((said("acquire","spore") ||
+      said("acquire","craft"))) {
+    if (!has("spore")) {
+      if (posn(o0,24,135,45,152)) {
+        get("spore");
+        print("You take possession of one of the"
+              "spores being careful not to"
+              "mistakenly break it open.");
+        if (!isset(f202)) {
+          v3 += 4;
+          set(f202);
+        }
+      }
+      else {
+        if (posn(o0,95,107,120,161)) {
+          print("You take possession of one of the"
+                "spores being careful not to"
+                "mistakenly break it open.");
+          get("spore");
+          if (!isset(f202)) {
+            v3 += 4;
+            set(f202);
+          }
+        }
+        else {
+          print("You need to be closer.");
+        }
+      }
+    }
+    else {
+      print("You can't safely carry more than one"
+            "of the fragile spores.");
+    }
+  }
+  if ((said("deposit","coupon") ||
+      said("drop","coupon","mail box") ||
+      said("drop","coupon","cartridge slot") ||
+      said("fill","coupon","cartridge slot"))) {
+    if (posn(o0,80,45,101,52)) {
+      if (has("order form")) {
+        drop("order form");
+        v33 = 27;
+        print("You drop the order form into the"
+              "box.");
+        start.update(o2);
+        start.cycling(o2);
+        sound(15,f32);
+        v107 = 1;
+        v3 += 2;
+      }
+      else {
+        print("You don't have that.");
+      }
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if ((said("check out","mail box") ||
+      said("check out","box") ||
+      said("check out","machine"))) {
+    if (posn(o0,80,45,101,52)) {
+      print("The mailbox looks typical for a"
+            "mailbox. There is a slot, a tray, and"
+            "a sign.");
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if (said("read","sign")) {
+    if (posn(o0,80,45,101,52)) {
+      print("The sign says \"Radical Express -"
+            "When it totally, no doubt for sure"
+            "has to be there awhile previously.\"");
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if ((said("check out","cartridge slot") ||
+      said("check out","mail box","cartridge slot") ||
+      said("look in","mail box","cartridge slot") ||
+      said("look in","cartridge slot","mail box") ||
+      said("check out","cartridge slot","mail box") ||
+      said("look in","cartridge slot"))) {
+    if (posn(o0,80,45,101,52)) {
+      print("The slot looks much like an opening"
+            "in the exterior of the mailbox"
+            "through which a thin piece of mail"
+            "might pass.");
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if ((said("check out","tray") ||
+      said("look in","box") ||
+      said("look in","mail box") ||
+      said("look in","machine") ||
+      said("look in","tray"))) {
+    if (posn(o0,80,45,101,52)) {
+      if (v107 == 2) {
+        print("%m23 bearing what looks to be a"
+              "whistle.");
+      }
+      else {
+        print("%m23 empty.");
+      }
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if ((said("acquire","tray") ||
+      said("acquire","box") ||
+      said("acquire","mail box") ||
+      said("acquire","machine"))) {
+    print("You don't need that.");
+  }
+  if ((said("acquire","object") ||
+      said("reach","tray") ||
+      said("acquire","deposit") ||
+      said("acquire","whistle"))) {
+    if (posn(o0,80,45,101,52)) {
+      if (v107 == 2) {
+        get("whistle");
+        v107 = 3;
+        print("Ok.");
+        v3 += 2;
+      }
+      else {
+        print("There is nothing there.");
+      }
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if (said("reach","cartridge slot")) {
+    if (posn(o0,80,45,101,52)) {
+      print("It's too small for that.");
+    }
+    else {
+      print("You need to be closer.");
+    }
+  }
+  if (said("jump")) {
+    get.posn(o0,v51,v52);
+    if (v52 < 63) {
+      print("Get closer to the edge.");
+    }
+    else {
+      reset(f4);
+    }
+  }
+}
+if ((v2 == 4 ||
+    v2 == 3 ||
+    posn(o0,6,17,9,167))) {
+  if (!isset(f31)) {
+    set(f31);
+    print("The foliage here is much too dense for"
+          "you to pass through.");
+  }
+}
+if (isset(f31) &&
+    v2 != 4 &&
+    v2 != 3 &&
+    !posn(o0,6,17,9,167)) {
+  reset(f31);
+}
+if (posn(o0,0,81,42,81)) {
+  new.room(21);
+}
+if (v2 == 2) {
+  new.room(11);
+}
+call(106);
+if (isset(f53)) {
+  call(109);
+}
+return();
+
+// Messages
+#message 1 "This is another clearing in the otherwise heavily wooded area of the forest. There is a plateau near the back."
+#message 2 "The ground looks like everywhere else, with the exception of some growths which look like spores or pods."
+#message 3 "You need to be closer."
+#message 4 "The spores are light blue and bulb shaped. They seem to be loosely attached to the ground."
+#message 5 "The empty spores would serve no purpose."
+#message 6 "You take possession of one of the spores being careful not to mistakenly break it open."
+#message 7 "%m4 Some appear to have been popped."
+#message 9 "You can't safely carry more than one of the fragile spores."
+#message 10 "You seem to have kicked one of these strange little spores."
+#message 11 "Your kick caused some spores to open and spray a fine powder into the air. As a result you are paralyzed from head to toe, unable to move a single muscle."
+#message 12 "Fortunately, the paralysis wears off and you seem to be back to normal."
+#message 13 "You don't have that."
+#message 14 "You drop the order form into the box."
+#message 15 "The mailbox looks typical for a mailbox. There is a slot, a tray, and a sign."
+#message 16 "The sign says \"Radical Express - When it totally, no doubt for sure has to be there awhile previously.\""
+#message 17 "The slot looks much like an opening in the exterior of the mailbox through which a thin piece of mail might pass."
+#message 18 "There is nothing there."
+#message 19 "Ok."
+#message 20 "The mailbox hums and buzzes for awhile. Then, an object of some sort drops into the tray at the base of the box. The machine goes silent."
+#message 21 "The foliage here is much too dense for you to pass through."
+#message 22 "It is like the other areas, only raised a little. A mail box sits up there."
+#message 23 "The tray is actually a small indentation in the lower part of the machine. It is currently"
+#message 24 "%m23 empty."
+#message 25 "%m23 bearing what looks to be a whistle."
+#message 26 "It's too small for that."
+#message 27 "Get closer to the edge."
+#message 28 "You don't need that."

@@ -11,7 +11,7 @@ import {
     GAMEOBJECT_MOVE_FLAGS, MAX_GAMEOBJECTS, GAMEOBJECT_MAX_Y, SCREEN_WIDTH_UNITS
 } from './constants';
 import {state, restart, getInventoryItems} from './state';
-import {restoreNextCycle, saveNextCycle} from './interpreter';
+import playerSaveSystem from './playerSaveSystem';
 
 const INTERPOLATE_VAR = /%v[0-9]+/g;
 const INTERPOLATE_MSG = /%m[0-9]{1,3}/g;
@@ -221,17 +221,19 @@ export const commands = {
                 ego.y = GAMEOBJECT_MAX_Y;
                 break;
             case 2:
-                ego.x = 1;
+                ego.x = 0;
                 break;
             case 3:
                 // todo: maybe a bug here! not sure this is correct!
-                ego.y = state.horizon;
+                ego.y = 0;
                 break;
             case 4:
                 const celWidth = state.loadedViews[ego.viewNo].loops[ego.loop].cels[ego.cel].width;
                 ego.x          = SCREEN_WIDTH_UNITS - celWidth - 1;
                 break;
         }
+
+        state.variables[VAR.ego_edge_code] = 0;
 
         // Flag 5 (new_room) is set (this is reset after the first cycle in the new room)
         commands.agi_set(FLAG.new_room);
@@ -914,8 +916,8 @@ export const commands = {
         state.loadedSounds[soundNo] = null;
     },
 
-    agi_save_game:    saveNextCycle,
-    agi_restore_game: restoreNextCycle,
+    agi_save_game:    playerSaveSystem.saveNextCycle,
+    agi_restore_game: playerSaveSystem.restoreNextCycle,
     agi_restart_game: restart,
 
     agi_quit: (n1) => {

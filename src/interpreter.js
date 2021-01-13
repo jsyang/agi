@@ -4,7 +4,7 @@ import {
     GAMEOBJECT_MAX_Y,
     GAMEOBJECT_MOVE_FLAGS,
     GAMEOBJECT_PRIORITY,
-    MAX_GAMEOBJECTS,
+    MAX_GAMEOBJECTS, SCREEN_WIDTH_UNITS,
     VAR
 } from './constants';
 import {Bitmap} from './bitmap';
@@ -13,7 +13,8 @@ import {commands} from './logicCommands';
 import SoundEmulatorTiSn76496a from './soundEmulator';
 import {randomBetween} from './helpers';
 import {state, resetControllers, restart, updateSound} from './state';
-import {restoreGame, saveGame} from './persist';
+import playerSaveSystem from './playerSaveSystem';
+import playerCommandSystem from './playerCommandSystem';
 
 let canvasContext;
 let audioContext;
@@ -52,11 +53,7 @@ const init = (_canvasContext, _audioContext, _menuContainerElement, _actionConta
 
     _actionSearchElement.onkeydown  = e => e.stopPropagation();
     _actionSearchElement.onkeypress = e => e.stopPropagation();
-    _actionSearchElement.onkeyup    = () => {
-        currentSaidSearch = _actionSearchElement.value.trim().toLowerCase();
-        searchSaidSystem();
-    };
-
+    _actionSearchElement.onkeyup    = () => playerCommandSystem.searchSaidSystem();
 
     window.onkeypress = e => e.which !== 13 ? state.keyboardCharBuffer.push(e.which) : null;
     window.onkeydown  = e => {
@@ -397,6 +394,13 @@ const updateObject = (obj, no) => {
             obj.x = newX;
             obj.y = newY;
 
+            // Enforce horizon when entering new room
+            if (state.flags[FLAG.new_room]) {
+                if (!obj.ignoreHorizon && obj.y < state.horizon) {
+                    obj.y = state.horizon + 1;
+                }
+            }
+
             if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
                 obj.direction = GAMEOBJECT_DIRECTION.Stopped;
                 commands.agi_set(obj.flagToSetWhenFinished);
@@ -411,7 +415,7 @@ const updateObject = (obj, no) => {
                         state.variables[VAR.object_touching_edge] = no;
                         state.variables[VAR.object_edge_code]     = 4;
                     }
-                } else if (obj.x + cel.width >= 160) {
+                } else if (obj.x + cel.width >= SCREEN_WIDTH_UNITS) {
                     if (no === 0) {
                         state.variables[VAR.ego_edge_code] = 2;
                     } else {
@@ -425,7 +429,7 @@ const updateObject = (obj, no) => {
                         state.variables[VAR.object_touching_edge] = no;
                         state.variables[VAR.object_edge_code]     = 1;
                     }
-                } else if (obj.y >= 168) {
+                } else if (obj.y >= GAMEOBJECT_MAX_Y) {
                     if (no === 0) {
                         state.variables[VAR.ego_edge_code] = 3;
                     } else {
@@ -530,111 +534,6 @@ const updateObject = (obj, no) => {
     }
 }
 
-// PLAYER COMMAND SYSTEM
-
-const clearElementChildren = el => {
-    while (el.children.length > 0) el.removeChild(el.children[0]);
-};
-
-const setSaid = e => state.playerSaid = e.target.getAttribute('data-word-groups');
-
-let previousActionCount = 0;
-const actionListByAlpha = [];
-
-const updateSaidSystem = () => {
-    const actionNames = Object.keys(state.testSaid);
-
-    if (previousActionCount !== actionNames.length) {
-        clearElementChildren(state.actionContainerElement);
-
-        for (let listEl of actionListByAlpha) {
-            if (!listEl) continue;
-
-            clearElementChildren(listEl);
-        }
-
-        actionNames.forEach(act => {
-            act = act.toLowerCase();
-
-            const actionsListIndex = act.charCodeAt(0) - 97;
-
-            let list = actionListByAlpha[actionsListIndex];
-
-            if (!list) {
-                list = document.createElement('div');
-                list.classList.add('list');
-            }
-
-            const buttonEl = document.createElement('button');
-            buttonEl.setAttribute('data-word-groups', state.testSaid[act]);
-            buttonEl.onclick   = setSaid;
-            buttonEl.innerHTML = act;
-
-            list.appendChild(buttonEl);
-            actionListByAlpha[actionsListIndex] = list;
-        });
-
-        actionListByAlpha.forEach(listEl => state.actionContainerElement.appendChild(listEl));
-
-        previousActionCount = actionNames.length;
-        searchSaidSystem();
-    }
-
-    state.playerSaid = '';
-};
-
-let currentSaidSearch = '';
-
-const searchSaidSystem = () => {
-    if (currentSaidSearch.length === 0) {
-        for (let b of Array.from(state.actionContainerElement.querySelectorAll('button'))) {
-            b.classList.remove('hide');
-        }
-    } else {
-        const searchRE = new RegExp(currentSaidSearch, 'gi');
-
-        Object.keys(state.testSaid)
-            .forEach(actionToHide => {
-                const actionEl = state.actionContainerElement.querySelector(`button[data-word-groups="${state.testSaid[actionToHide]}"]`);
-                if (searchRE.test(actionToHide)) {
-                    actionEl.classList.remove('hide');
-                } else {
-                    actionEl.classList.add('hide');
-                }
-            });
-    }
-
-    // Hide any empty lists so we don't see empty columns
-    for (let listEl of actionListByAlpha) {
-        if (!listEl) continue;
-
-        if (listEl.children.length === listEl.querySelectorAll('.hide').length) {
-            listEl.classList.add('hide');
-        } else {
-            listEl.classList.remove('hide');
-        }
-    }
-};
-
-// PLAYER INTENTION TO SAVE / RESTORE GAME
-
-// Cannot do it within the same cycle because it will always set the controller
-// for save/restore within current state which will cause a call stack overflow
-let isNextCycleSaveGame    = false;
-let isNextCycleRestoreGame = false;
-
-const handleSaveRestore = () => {
-    if (isNextCycleSaveGame) {
-        saveGame();
-    } else if (isNextCycleRestoreGame) {
-        restoreGame();
-    }
-
-    // Reset this otherwise it will save/restore for every subsequent cycle once set!
-    isNextCycleSaveGame    = false;
-    isNextCycleRestoreGame = false;
-};
-
 function updateInterpreterClock() {
     const now = new Date();
 
@@ -647,7 +546,7 @@ function updateInterpreterClock() {
 
 const cycle = () => {
     updateInterpreterClock();
-    handleSaveRestore();
+    playerSaveSystem.handleSaveRestore();
     handleInput();
 
     let egoDir = state.variables[VAR.ego_dir];
@@ -663,14 +562,6 @@ const cycle = () => {
 
         if (state.paused) break;
 
-        commands.agi_reset(FLAG.new_room);
-        commands.agi_reset(FLAG.noise_enabled); // Logic 0 executed for the first time
-        commands.agi_reset(FLAG.game_restarted);
-        commands.agi_reset(FLAG.game_restored);
-
-        commands.agi_reset_v(VAR.object_edge_code);
-        commands.agi_reset_v(VAR.object_touching_edge);
-
         for (let j = 0; j < state.gameObjects.length; j++) {
             const obj = state.gameObjects[j];
             if (j === 0) {
@@ -680,22 +571,22 @@ const cycle = () => {
             updateObject(obj, j);
         }
 
+        commands.agi_reset(FLAG.new_room);
+        commands.agi_reset(FLAG.noise_enabled); // Logic 0 executed for the first time
+        commands.agi_reset(FLAG.game_restarted);
+        commands.agi_reset(FLAG.game_restored);
+
+        commands.agi_reset_v(VAR.object_edge_code);
+        commands.agi_reset_v(VAR.object_touching_edge);
+
         break;
     }
 
     bltFrame();
     updateScore();
-    updateSaidSystem();
+    playerCommandSystem.updateSaidSystem();
     updateSound();
     resetControllers();
-}
-
-export function saveNextCycle() {
-    isNextCycleSaveGame = true;
-}
-
-export function restoreNextCycle() {
-    isNextCycleRestoreGame = true;
 }
 
 export default {
