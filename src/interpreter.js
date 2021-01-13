@@ -594,10 +594,13 @@ const searchSaidSystem = () => {
         const searchRE = new RegExp(currentSaidSearch, 'gi');
 
         Object.keys(state.testSaid)
-            .filter(action => !searchRE.test(action))
             .forEach(actionToHide => {
-                state.actionContainerElement.querySelector(`button[data-word-groups="${state.testSaid[actionToHide]}"]`)
-                    .classList.add('hide');
+                const actionEl = state.actionContainerElement.querySelector(`button[data-word-groups="${state.testSaid[actionToHide]}"]`);
+                if (searchRE.test(actionToHide)) {
+                    actionEl.classList.remove('hide');
+                } else {
+                    actionEl.classList.add('hide');
+                }
             });
     }
 
