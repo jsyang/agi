@@ -10,12 +10,20 @@ Missing features
 
 Issues:
 
+- Drawing priority is wrong for flashing boulder in room 27
+
+- Room 14 
+  - Cannot be eaten by monster!
+
+- Use requestAnimationFrame instead of setTimeout
+  - Might be better to reprevent stalling on the call stack when debugger is open 
+
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 
 References:
 
-- https://youtu.be/eVsF_FZ54O0?t=920
+- https://youtu.be/eVsF_FZ54O0?t=1282
 - http://sarien.net/spacequest2#outsidexos4
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 

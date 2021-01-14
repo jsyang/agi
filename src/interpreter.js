@@ -294,6 +294,8 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 }
 
 const updateObject = (obj, no) => {
+    let hasChangedDirection = false;
+
     if (obj.draw) {
 
         if (obj.update) {
@@ -483,13 +485,22 @@ const updateObject = (obj, no) => {
                     }
                 } else if (view.loops.length >= 4) {
                     if (obj.direction === 1) {
-                        obj.loop = 3;
+                        obj.loop            = 3;
+                        hasChangedDirection = obj.loop !== obj.oldLoop;
                     } else if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4) {
-                        obj.loop = 0;
+                        obj.loop            = 0;
+                        hasChangedDirection = obj.loop !== obj.oldLoop;
                     } else if (obj.direction === 5) {
-                        obj.loop = 2;
+                        obj.loop            = 2;
+                        hasChangedDirection = obj.loop !== obj.oldLoop;
                     } else if (obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
-                        obj.loop = 1;
+                        obj.loop            = 1;
+                        hasChangedDirection = obj.loop !== obj.oldLoop;
+                    }
+
+                    // Ensure we force the correct cel for the new loop if it's changed direction
+                    if (hasChangedDirection) {
+                        obj.nextCycle = 1;
                     }
                 }
             }
