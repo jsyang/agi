@@ -241,8 +241,11 @@ export const commands = {
         // Execution jumps to the start of logic 0
         state.loadedLogics[0].data.position = state.loadedLogics[0].scanStart;
 
-        // Empty out the said options
-        state.testSaid = {};
+        // Empty out the said options and what the player has said
+        // otherwise we might get stuck in an endless loop.
+        // e.g. using "cheat" any time in SQ2
+        state.testSaid   = {};
+        state.playerSaid = '';
     },
 
     agi_new_room_v: (varNo) => {
