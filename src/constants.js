@@ -1,22 +1,22 @@
 export const DECRYPTION_KEY = "Avis Durgan";
 
 export const palette = [
-    0x000000,   // BLACK
-    0x0000AA,   // DARK BLUE
-    0x00AA00,   // DARK GREEN
-    0x00AAAA,   // DARK CYAN
-    0xAA0000,   // DARK RED
-    0xAA00AA,   // DARK MAGENTA
-    0xAA5500,   // DARK BROWN
-    0xAAAAAA,   // GRAY
-    0x555555,   // DARK GRAY
-    0x5555FF,   // BLUE
-    0x55FF55,   // GREEN
-    0x55FFFF,   // CYAN
-    0xFF5555,   // RED
-    0xFF55FF,   // MAGENTA
-    0xFFFF55,   // YELLOW
-    0xFFFFFF    // WHITE
+    0x000000,   // 0    BLACK
+    0x0000AA,   // 1    DARK BLUE
+    0x00AA00,   // 2    DARK GREEN
+    0x00AAAA,   // 3    DARK CYAN
+    0xAA0000,   // 4    DARK RED
+    0xAA00AA,   // 5    DARK MAGENTA
+    0xAA5500,   // 6    DARK BROWN
+    0xAAAAAA,   // 7    GRAY
+    0x555555,   // 8    DARK GRAY
+    0x5555FF,   // 9    BLUE
+    0x55FF55,   // 10   GREEN
+    0x55FFFF,   // 11   CYAN
+    0xFF5555,   // 12   RED
+    0xFF55FF,   // 13   MAGENTA
+    0xFFFF55,   // 14   YELLOW
+    0xFFFFFF    // 15   WHITE
 ];
 
 export const FLAG = {

@@ -396,65 +396,99 @@ export class Pic {
             let x;
             let y;
 
-            queuePic.enqueue(startX);
-            queuePic.enqueue(startY);
+            // Ensure this meets the spec exactly: http://agi.sierrahelp.com/Documentation/Specifications/5-1-PICTURE.html
+            /*
+            0xF8 : FILL
+            Function: Flood fill from the locations given. Arguments are given in groups of two bytes which
+            give the coordinates of the location to start the fill at. If picture drawing is enabled then it
+            flood fills from that location on the picture screen to all pixels locations that it can reach
+            which are white in colour. The boundary is given by any pixels which are not white.
 
-            i = startY * BITMAP_WIDTH + startX;
+            If priority drawing is enabled, and picture drawing is not enabled, then it flood fills from that
+            location on the priority screen to all pixels that it can reach which are red in colour. The boundary
+            in this case is given by any pixels which are not red.
 
-            this.visited.fill(0);
+            If both picture drawing and priority drawing are enabled, then a flood fill naturally enough takes
+            place on both screens. In this case there is a difference in the way the fill takes place in the
+            priority screen. The difference is that it not only looks for its own boundary, but also stops if
+            it reaches a boundary that exists in the picture screen but does not necessarily exist in the priority
+            screen.
+             */
+            if (this.picEnabled && !this.priEnabled) {
+                queuePic.enqueue(startX);
+                queuePic.enqueue(startY);
 
-            while (!queuePic.isEmpty()) {
-                x = queuePic.dequeue();
-                y = queuePic.dequeue();
-                i = y * BITMAP_WIDTH + x;
+                i = startY * BITMAP_WIDTH + startX;
 
-                this.visited[i] = 1;
+                this.visited.fill(0);
 
-                if (this.visible.data[i] === 0x0F) {
-                    this.setPixel(x, y, true, false);
-                    addAdjCoordsToQueue(this.visited, queuePic, x, y);
+                while (!queuePic.isEmpty()) {
+                    x = queuePic.dequeue();
+                    y = queuePic.dequeue();
+                    i = y * BITMAP_WIDTH + x;
+
+                    this.visited[i] = 1;
+
+                    if (this.visible.data[i] === 0x0F) {
+                        this.setPixel(x, y, true, false);
+                        addAdjCoordsToQueue(this.visited, queuePic, x, y);
+                    }
+                }
+            } else if (!this.picEnabled && this.priEnabled) {
+                queuePri.enqueue(startX);
+                queuePri.enqueue(startY);
+
+                i = startY * BITMAP_WIDTH + startX;
+
+                const startingPriorityVis = this.visiblePriority.data[i];
+                const startingPriority    = this.priority.data[i];
+                const startingColor       = this.visible.data[i];
+
+                this.visited.fill(0);
+
+                while (!queuePri.isEmpty()) {
+                    let shouldDraw = false;
+                    x              = queuePri.dequeue();
+                    y              = queuePri.dequeue();
+                    i              = y * BITMAP_WIDTH + x;
+
+                    this.visited[i] = 1;
+
+                    if (
+                        (this.visiblePriority.data[i] === startingPriorityVis && this.priority.data[i] === startingPriority)
+                    ) {
+                        shouldDraw = true;
+                    }
+
+                    // Enqueue if all ok
+                    if (shouldDraw) {
+                        this.setPixel(x, y, false, true);
+                        addAdjCoordsToQueue(this.visited, queuePri, x, y);
+                    }
+                }
+            } else if (this.picEnabled && this.priEnabled) {
+                queuePic.enqueue(startX);
+                queuePic.enqueue(startY);
+
+                i = startY * BITMAP_WIDTH + startX;
+
+                this.visited.fill(0);
+
+                while (!queuePic.isEmpty()) {
+                    x = queuePic.dequeue();
+                    y = queuePic.dequeue();
+                    i = y * BITMAP_WIDTH + x;
+
+                    this.visited[i] = 1;
+
+                    if (this.visible.data[i] === 0x0F &&
+                        this.visiblePriority.data[i] === 0x04 && this.priority.data[i] === 0x04
+                    ) {
+                        this.setPixel(x, y, true, true);
+                        addAdjCoordsToQueue(this.visited, queuePic, x, y);
+                    }
                 }
             }
-
-            queuePri.enqueue(startX);
-            queuePri.enqueue(startY);
-
-            i = startY * BITMAP_WIDTH + startX;
-
-            const startingPriorityVis = this.visiblePriority.data[i];
-            const startingPriority    = this.priority.data[i];
-            const startingColor       = this.visible.data[i];
-
-            this.visited.fill(0);
-
-            while (!queuePri.isEmpty()) {
-                let shouldDraw = false;
-                x              = queuePri.dequeue();
-                y              = queuePri.dequeue();
-                i              = y * BITMAP_WIDTH + x;
-
-                this.visited[i] = 1;
-
-                if (
-                    (this.visiblePriority.data[i] === startingPriorityVis && this.priority.data[i] === startingPriority)
-                    // (this.visiblePriority.data[i] === 0x04 && this.priority.data[i] === 0x04)
-                ) {
-                    shouldDraw = true;
-                    // if (this.picEnabled) {
-                    //     if (this.visible.data[i] === startingColor || this.visible.data[i] === 0x0F ) {
-                    //         shouldDraw = true;
-                    //     }
-                    // } else {
-                    // }
-                }
-
-                // Enqueue if all ok
-                if (shouldDraw) {
-                    this.setPixel(x, y, false, true);
-                    addAdjCoordsToQueue(this.visited, queuePri, x, y);
-                }
-            }
-
         }
         this.stream.position--;
     }

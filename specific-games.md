@@ -10,11 +10,6 @@ Missing features
 
 Issues:
 
-- Wrong priority in room 20!
-![](images/Screen%20Shot%202021-01-13%20at%201.42.41%20AM.png)
-
-- Typing "cheat" at any time leads to game crash (room 95)
-   
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 
