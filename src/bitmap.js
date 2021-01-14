@@ -472,6 +472,10 @@ export class Pic {
 
                 i = startY * BITMAP_WIDTH + startX;
 
+                const startingPriorityVis = this.visiblePriority.data[i];
+                const startingPriority    = this.priority.data[i];
+                const startingColor       = this.visible.data[i];
+
                 this.visited.fill(0);
 
                 while (!queuePic.isEmpty()) {
@@ -482,7 +486,8 @@ export class Pic {
                     this.visited[i] = 1;
 
                     if (this.visible.data[i] === 0x0F &&
-                        this.visiblePriority.data[i] === 0x04 && this.priority.data[i] === 0x04
+                        this.visiblePriority.data[i] === startingPriorityVis &&
+                        this.priority.data[i] === startingPriority
                     ) {
                         this.setPixel(x, y, true, true);
                         addAdjCoordsToQueue(this.visited, queuePic, x, y);
