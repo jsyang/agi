@@ -10,8 +10,6 @@ Missing features
 
 Issues:
 
-- Drawing priority is wrong for flashing boulder in room 27
-
 - Room 14 
   - Cannot be eaten by monster!
 

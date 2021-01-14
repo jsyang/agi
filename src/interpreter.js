@@ -573,7 +573,8 @@ const cycle = () => {
 
         if (state.paused) break;
 
-        for (let j = 0; j < state.gameObjects.length; j++) {
+        // Reverse the rendering of objects so that ego might always be drawn on top of anything!
+        for (let j = state.gameObjects.length - 1; j >= 0; j--) {
             const obj = state.gameObjects[j];
             if (j === 0) {
                 obj.direction = egoDir;

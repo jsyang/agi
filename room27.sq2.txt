@@ -1,0 +1,262 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  load.view(74);
+  load.view(81);
+  load.view(76);
+  load.view(103);
+  load.logics(110);
+  call(110);
+  draw.pic(v0);
+  if (!isset(f92)) {
+    add.to.pic(76,0,0,18,100,15,4);
+    add.to.pic(76,0,0,37,100,15,4);
+    add.to.pic(76,0,0,56,100,15,4);
+    add.to.pic(76,0,0,75,100,15,4);
+    add.to.pic(76,0,0,94,100,15,4);
+    add.to.pic(76,0,0,113,100,15,4);
+  }
+  if (!has("glowing gem")) {
+    animate.obj(o1);
+    set.view(o1,103);
+    set.priority(o1,8);
+    ignore.blocks(o1);
+    ignore.objs(o1);
+    position(o1,108,84);
+    draw(o1);
+  }
+  position(o0,148,155);
+  set(f59);
+  draw(o0);
+  show.pic();
+  v30 = 0;
+}
+if (posn(o0,45,129,80,129)) {
+  if (!isset(f92)) {
+    draw.pic(v0);
+    show.pic();
+    set(f92);
+    v3 += 2;
+  }
+  v97 = 0;
+  v98 = 0;
+  set.view(o0,81);
+  draw(o0);
+  reposition.to(o0,58,92);
+  start.motion(o0);
+  v30 = 1;
+}
+if (v30 == 1) {
+  if (!posn(o0,49,89,80,101) &&
+      !posn(o0,0,102,159,167)) {
+    get.posn(o0,v51,v52);
+    if (v51 > 51 &&
+        v51 < 78) {
+      v52 -= 3;
+    }
+    else {
+      if (v51 < 52) {
+        v51 -= 9;
+      }
+      else {
+        v51 += 9;
+      }
+    }
+    set.view(o0,0);
+    reposition.to.v(o0,v51,v52);
+    reset(f59);
+    v30 = 2;
+  }
+}
+if (v30 == 2) {
+  if (posn(o0,45,86,85,101)) {
+    get.posn(o0,v51,v52);
+    v52 = 91;
+    if (v51 < 52) {
+      v51 = 52;
+    }
+    if (v51 > 77) {
+      v51 = 77;
+    }
+    reposition.to.v(o0,v51,v52);
+    set.view(o0,81);
+    set(f59);
+    v30 = 1;
+  }
+}
+if (isset(f30)) {
+  reset(f30);
+  reposition.to(o0,59,139);
+  set.view(o0,74);
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","area") ||
+      said("check out","area"))) {
+    if (v30 == 0) {
+      print("You have paddled into another portion"
+            "of the underwater cavern. Your lungs"
+            "tell you that you'll be in need of"
+            "air darn soon.");
+    }
+    else {
+      print("You are in a small grotto below the"
+            "swamp.");
+      if (!has("glowing gem")) {
+        print("A strange light dances off the"
+              "walls of this cave. Its origin -- a"
+              "glowing gem situated on top of a"
+              "boulder.");
+      }
+    }
+  }
+  if ((said("check out","boulder") ||
+      said("check out","boulder") ||
+      said("check out","top","boulder"))) {
+    if (has("glowing gem")) {
+      print("The boulder just sits there staunchly.");
+    }
+    else {
+      print("A glowing gem gently spreads light"
+            "througout the cave.");
+    }
+  }
+  if (said("swim")) {
+    if (v30 != 2) {
+      print("C'mon!");
+    }
+    else {
+      print("Get closer.");
+    }
+  }
+  if ((said("dive") ||
+      said("climb in","under water") ||
+      said("duck","under water") ||
+      said("dive","under water") ||
+      said("swim","under water"))) {
+    if (v30 == 1) {
+      set(f30);
+      v97 = 91;
+      v98 = 2;
+      v30 = 0;
+    }
+    else {
+      if (v30 == 1) {
+        print("Where are you now?");
+      }
+      else {
+        print("Get in first.");
+      }
+    }
+  }
+  if ((said("grip","breath") ||
+      said("grip","own","breath") ||
+      said("grip","breath","dive") ||
+      said("grip","breath","dive","under water") ||
+      said("grip","breath","dive","glowing water") ||
+      said("acquire","breath") ||
+      said("acquire","breath","dive") ||
+      said("acquire","breath","dive","under water") ||
+      said("acquire","breath","dive","glowing water"))) {
+    if (v30 == 1) {
+      print("Once again, you wisely take in a load"
+            "of air and head below.");
+      set(f30);
+      v97 = 91;
+      v98 = 5;
+      v30 = 0;
+      if (!isset(f205)) {
+        set(f205);
+        v3 += 2;
+      }
+    }
+    else {
+      if (v30 == 0) {
+        print("C'mon!");
+      }
+      else {
+        print("Get in first.");
+      }
+    }
+  }
+  if ((v30 == 1 ||
+      v30 == 0)) {
+    if (said("climb out","glowing water")) {
+      print("Just swim on out.");
+    }
+  }
+  if ((said("check out","area","wall") ||
+      said("check out","wall"))) {
+    print("The walls of the room radiate a gentle"
+          "light.");
+  }
+  if (v30 == 2) {
+    if (said("acquire","gem")) {
+      if (posn(o0,99,80,124,91)) {
+        if (!has("glowing gem")) {
+          get("glowing gem");
+          erase(o1);
+          print("You take the glowing gem.");
+          v3 += 3;
+        }
+        else {
+          print("You already have one.");
+        }
+      }
+      else {
+        print("Get closer.");
+      }
+    }
+  }
+  if ((said("move","boulder") ||
+      said("press","boulder") ||
+      said("board","boulder") ||
+      said("move","boulder") ||
+      said("press","boulder") ||
+      said("board","boulder"))) {
+    print("That wouldn't be the correct action now.");
+  }
+  if (said("check out","under water")) {
+    if (v30 == 2) {
+      print("Dive down there and give it a look.");
+    }
+    else {
+      print("It looks wet down there.");
+    }
+  }
+  if ((said("check out","glow") ||
+      said("check out","glow","source"))) {
+    if (!has("glowing gem")) {
+      print("It seems to be coming from that gem.");
+    }
+    else {
+      print("The walls of the room radiate a"
+            "gentle light.");
+    }
+  }
+}
+if (v2 == 2) {
+  new.room(26);
+}
+call(110);
+return();
+
+// Messages
+#message 1 "Once again, you wisely take in a load of air and head below."
+#message 2 "You take the glowing gem."
+#message 3 "You already have one."
+#message 4 "Get closer."
+#message 5 "You have paddled into another portion of the underwater cavern. Your lungs tell you that you'll be in need of air darn soon."
+#message 6 "A strange light dances off the walls of this cave. Its origin -- a glowing gem situated on top of a boulder."
+#message 7 "You are in a small grotto below the swamp."
+#message 8 "Get in first."
+#message 9 "Dive down there and give it a look."
+#message 10 "It seems to be coming from that gem."
+#message 11 "The walls of the room radiate a gentle light."
+#message 12 "Just swim on out."
+#message 13 "That wouldn't be the correct action now."
+#message 14 "C'mon!"
+#message 15 "The boulder just sits there staunchly."
+#message 16 "A glowing gem gently spreads light througout the cave."
+#message 17 "Where are you now?"
+#message 18 "It looks wet down there."

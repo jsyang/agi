@@ -5,7 +5,8 @@ import TTS from './tts';
 import {state} from './state';
 import {commands} from './logicCommands';
 
-let renderTimeout;
+let renderRAF;
+let renderPrevTime = 0;
 
 window.AGI = {
     hasStarted: false,
@@ -18,47 +19,51 @@ window.AGI = {
     start: async () => {
         if (AGI.state) return;
 
-            await load(
-                location.hash ? location.hash.slice(1) : undefined
-            );
+        await load(
+            location.hash ? location.hash.slice(1) : undefined
+        );
 
-            AGI.hasStarted = true;
-            AGI.canvasEl   = document.getElementById('canvas');
+        AGI.hasStarted = true;
+        AGI.canvasEl   = document.getElementById('canvas');
 
-            TTS.init();
+        TTS.init();
 
-            interpreter.init(
-                AGI.canvasEl.getContext("2d"),
-                new AudioContext(),
-                document.getElementById('menu'),
-                document.getElementById('actions'),
-                document.getElementById('player-input'),
-            );
+        interpreter.init(
+            AGI.canvasEl.getContext("2d"),
+            new AudioContext(),
+            document.getElementById('menu'),
+            document.getElementById('actions'),
+            document.getElementById('player-input'),
+        );
 
-            AGI.state    = state;
-            AGI.commands = commands;
-            AGI.cycle    = interpreter.cycle;
-            AGI.bltDebug = interpreter.bltDebug;
-            AGI.TTS      = TTS;
+        AGI.state    = state;
+        AGI.commands = commands;
+        AGI.cycle    = interpreter.cycle;
+        AGI.bltDebug = interpreter.bltDebug;
+        AGI.TTS      = TTS;
     },
-
-    getNextCycleTimeMS: () => 1000 / AGI.FPS * Math.max(AGI.state.variables[VAR.cycle_delay], 1),
 
     render: () => {
         if (!AGI.state) return;
         if (AGI.state.hasQuit) return;
 
-        interpreter.cycle();
-        renderTimeout = setTimeout(AGI.render, AGI.getNextCycleTimeMS());
+        const now = Date.now();
+
+        if (now - renderPrevTime > 1000 / AGI.FPS * Math.max(state.variables[VAR.cycle_delay], 1)) {
+            interpreter.cycle();
+            renderPrevTime = now;
+        }
+
+        renderRAF = requestAnimationFrame(AGI.render);
     },
 
     togglePause: () => {
         if (!AGI.state) return;
 
-        if (renderTimeout) {
+        if (renderRAF) {
             AGI.canvasEl.style.opacity = 0.4;
-            clearTimeout(renderTimeout);
-            renderTimeout = null;
+            cancelAnimationFrame(renderRAF);
+            renderRAF = null;
             AGI.state.soundEmulator.deactivate();
         } else {
             AGI.canvasEl.style.opacity = 1;
