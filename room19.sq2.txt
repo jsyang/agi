@@ -1,0 +1,990 @@
+if (isset(f5)) {
+  set.horizon(78);
+  load.pic(v0);
+  if (v99 <= 0) {
+    load.view(49);
+    load.view(67);
+    load.view(68);
+  }
+  load.view(69);
+  load.view(65);
+  load.view(66);
+  load.view(104);
+  load.sound(16);
+  load.logics(106);
+  if (v1 != 18) {
+    set(f30);
+    v33 = 1;
+  }
+  draw.pic(v0);
+  add.to.pic(65,0,0,42,138,12,4);
+  if (isset(f93)) {
+    add.to.pic(69,0,7,89,132,12,4);
+  }
+  if (v99 < 3) {
+    animate.obj(o1);
+    set.view(o1,65);
+    set.loop(o1,1);
+    position(o1,44,132);
+    draw(o1);
+    set(f39);
+  }
+  if (v99 <= 0) {
+    animate.obj(o6);
+    set.view(o6,104);
+    set.loop(o6,0);
+    set.cel(o6,1);
+    set.priority(o6,15);
+    position(o6,104,124);
+    animate.obj(o10);
+    set.view(o10,49);
+    set.loop(o10,2);
+    set.cel(o10,0);
+  }
+  if (!has("rope") &&
+      !isset(f88) &&
+      !isset(f89)) {
+    animate.obj(o5);
+    set.view(o5,104);
+    set.cel(o5,0);
+    ignore.objs(o5);
+    position(o5,86,103);
+    set.priority(o5,10);
+    draw(o5);
+    stop.update(o5);
+  }
+  if (v1 != 18) {
+    animate.obj(o2);
+    set.view(o2,67);
+    set.loop(o2,0);
+    set.cel(o2,0);
+    ignore.blocks(o2);
+    position(o2,68,132);
+    draw(o2);
+  }
+  animate.obj(o3);
+  set.view(o3,66);
+  if (isset(f30)) {
+    set.cel(o3,0);
+    set.priority(o3,11);
+  }
+  else {
+    set.cel(o3,2);
+    set.priority(o3,4);
+    v31 = 3;
+  }
+  ignore.objs(o3);
+  position(o3,106,126);
+  draw(o3);
+  stop.update(o3);
+  if (has("spore") &&
+      !isset(f93)) {
+    animate.obj(o4);
+    set.view(o4,69);
+    set.cel(o4,0);
+    set.priority(o4,15);
+    v53 = 5;
+    step.size(o4,v53);
+    cycle.time(o4,v87);
+    ignore.objs(o4);
+    ignore.blocks(o4);
+  }
+  if (v1 == 18) {
+    get.posn(o0,v51,v52);
+    if (v51 > 89) {
+      v51 = 85;
+      position.v(o0,v51,v52);
+    }
+    v31 = 3;
+  }
+  else {
+    position(o0,109,121);
+    set.priority(o0,4);
+    set.loop(o0,1);
+    start.motion(o0);
+  }
+  draw(o0);
+  show.pic();
+  status.line.on();
+  accept.input();
+  if (v1 != 18) {
+    print.at("Your head begins to clear and you"
+             "realize that you have been"
+             "imprisoned. Your captor appears to"
+             "be that large oaf sitting near the"
+             "fire.",2,3,35);
+  }
+}
+if (v69 > 0) {
+  if (v69 == 1) {
+    print.at("You have caused the guard to be"
+             "paralyzed. I don't think he's too"
+             "pleased with you.",2,3,35);
+    cycle.time(o2,v86);
+    v33 = 6;
+    v34 = 4;
+  }
+  v69 = 0;
+}
+if (isset(f3) &&
+    !isset(f32)) {
+  if (isset(f30)) {
+    if (v31 == 3 &&
+        !isset(f32)) {
+      set(f32);
+    }
+    else {
+      get.posn(o0,v70,v71);
+      if (v6 == 5) {
+        v71 -= 1;
+      }
+      else {
+        v70 += 1;
+      }
+      reposition.to.v(o0,v70,v71);
+      start.motion(o0);
+    }
+  }
+  else {
+    set(f32);
+  }
+}
+if (v96 <= 0 &&
+    isset(f30) &&
+    !posn(o0,95,117,137,131)) {
+  reset(f30);
+  release.priority(o0);
+}
+if (isset(f32)) {
+  get.posn(o0,v54,v55);
+  if (!isset(f3)) {
+    reset(f32);
+    if (v54 < 109) {
+      reset(f30);
+      release.priority(o0);
+    }
+    else {
+      set(f30);
+    }
+  }
+  else {
+    if (v54 < 109) {
+      release.priority(o0);
+    }
+    else {
+      set.priority(o0,4);
+    }
+  }
+}
+if (!isset(f30)) {
+  if (posn(o0,128,128,144,133)) {
+    set.priority(o0,12);
+  }
+  else {
+    release.priority(o0);
+  }
+}
+if (isset(f33)) {
+  reset(f33);
+  if (v32 == 2) {
+    if (v33 == 1) {
+      reposition.to(o2,70,134);
+    }
+    normal.motion(o2);
+    stop.motion(o2);
+    set.view(o2,68);
+    set.loop(o2,0);
+    set.cel(o2,0);
+    end.of.loop(o2,f34);
+    cycle.time(o2,v87);
+    v33 = 2;
+    add.to.pic(69,0,7,89,135,12,4);
+    erase(o4);
+  }
+  if (v32 == 1) {
+    reposition.to(o4,89,135);
+    end.of.loop(o4,f33);
+    sound(16,f61);
+    v32 = 2;
+  }
+}
+if (isset(f34)) {
+  reset(f34);
+  if (v33 == 11) {
+    set.view(o10,67);
+    set.loop(o10,1);
+    reposition.to(o10,46,118);
+    normal.motion(o10);
+    stop.motion(o10);
+    start.cycling(o10);
+    set.view(o2,67);
+    set.loop(o2,0);
+    reposition.to(o2,68,132);
+    v33 = 12;
+    v34 = 27;
+  }
+  if (v33 == 8) {
+    stop.cycling(o2);
+    v33 = 9;
+    v34 = 9;
+  }
+  if (v33 == 10) {
+    stop.cycling(o2);
+    v34 = 3;
+    v33 = 9;
+  }
+  if (v33 == 7) {
+    if (has("spore")) {
+      stop.cycling(o2);
+      set(f41);
+      v33 = 10;
+      v34 = 150;
+    }
+    else {
+      move.obj(o2,102,128,0,f34);
+      v96 = 50;
+      v33 = 8;
+    }
+  }
+  if (v33 == 5) {
+    set.view(o2,49);
+    set.loop(o2,0);
+    v69 = 1;
+  }
+  if (v33 == 3) {
+    v34 = 250;
+    print("Upon impact with the ground, the spore"
+          "opens and spews its dust into the air."
+          "The hunter falls to the ground"
+          "paralyzed.");
+    v33 = 4;
+  }
+  if (v33 == 2) {
+    set.loop(o2,2);
+    set.cel(o2,0);
+    end.of.loop(o2,f34);
+    v33 = 3;
+  }
+}
+v34--;
+if (v34 == 1) {
+  if (v33 == 12) {
+    print.at("The hunter has decided that it's a"
+             "perfect day for a barbecue. As he"
+             "slowly turns you over the fire, you"
+             "begin to turn a beautiful golden"
+             "brown. Death follows at an"
+             "agonizingly long distance.",2,3,35);
+    v67 = 1;
+  }
+  if (v33 == 9) {
+    program.control();
+    start.update(o3);
+    set.priority(o3,4);
+    end.of.loop(o3,f31);
+    v31 = 2;
+  }
+  if (v33 == 10) {
+    v96 = 50;
+    set(f42);
+    start.update(o2);
+    move.obj(o2,102,128,0,f34);
+    start.cycling(o2);
+  }
+  if (v33 == 6) {
+    if (has("spore")) {
+      print.at("The hunter stands and takes a long"
+               "look in your direction. His face,"
+               "though strange in its own right,"
+               "bears an expression one might see"
+               "on a freak show patron. He moves"
+               "closer.",2,3,35);
+    }
+    move.obj(o2,95,135,0,f34);
+    start.cycling(o2);
+    v33 = 7;
+  }
+  if (v33 == 4) {
+    reverse.loop(o2,f34);
+    v33 = 5;
+    set(f38);
+  }
+}
+v35--;
+if (v35 == 7) {
+  erase(o0);
+  set.view(o10,49);
+  set.loop(o10,2);
+  fix.loop(o10);
+  set.cel(o10,0);
+  position(o10,102,125);
+  cycle.time(o10,v88);
+  draw(o10);
+  stop.cycling(o10);
+  reposition.to(o2,92,131);
+  move.obj(o2,62,131,0,f34);
+  move.obj(o10,71,125,0,f36);
+  start.cycling(o2);
+  v33 = 11;
+  v96 = 50;
+}
+if (v35 == 1) {
+  erase(o6);
+}
+if (isset(f31)) {
+  reset(f31);
+  stop.update(o3);
+  if (v31 == 2) {
+    draw(o6);
+    stop.cycling(o6);
+    v35 = 10;
+    shake.screen(1);
+  }
+  if (v31 == 1) {
+    v31 = 3;
+    set.priority(o3,4);
+    stop.update(o3);
+    force.update(o3);
+  }
+  if (v31 == 4) {
+    v31 = 0;
+    set.priority(o3,11);
+    stop.update(o3);
+    force.update(o3);
+  }
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","area"))) {
+    if (isset(f30)) {
+      print.at("%m26 %m29",2,3,35);
+    }
+    else {
+      print.at("You are in a well hidden clearing."
+               "It is surrounded on three sides by"
+               "large, smooth rock formations with"
+               "brush to the north. A cage is"
+               "below one of the formations.",2,3,35);
+    }
+    if (isset(f39)) {
+      if (!has("rope") &&
+          !isset(f88) &&
+          !isset(f89)) {
+        if (v33 == 4) {
+          print.at("%m27 %m30 %m35",2,3,35);
+        }
+        else {
+          if (v99 > 0) {
+            print.at("%m27 %m30",2,3,35);
+          }
+          else {
+            print.at("%m27 %m30 %m34",2,3,35);
+          }
+        }
+      }
+      else {
+        if (v33 == 4) {
+          print.at("%m27 %m35",2,3,35);
+        }
+        else {
+          if (v99 > 0) {
+            print.at("In the center a campfire"
+                     "burns. One has to wonder"
+                     "about the purpose of a fire"
+                     "during a warm day such as"
+                     "this.",2,3,35);
+          }
+          else {
+            print.at("%m27 %m34",2,3,35);
+          }
+        }
+      }
+    }
+    else {
+      if (!has("rope") &&
+          (!isset(f88) ||
+          isset(f89))) {
+        print.at("%m28 %m30",2,3,35);
+      }
+      else {
+        print.at("A campfire ring, fire"
+                 "extinguished, is located in the"
+                 "center.",2,3,35);
+      }
+    }
+  }
+  if ((said("check out","cage") ||
+      said("check out","bar"))) {
+    print("The cage is made of some very hard"
+          "branches. They might as well be welded"
+          "steel bars.");
+  }
+  if ((said("check out","lock") ||
+      said("check out","cage","lock"))) {
+    print("It's crude looking but effective. The"
+          "rust would prevent anything but the"
+          "correct key from turning it.");
+  }
+  if (v33 > 0) {
+    if ((said("check out","ape") ||
+        said("check out","bodies") ||
+        said("check out","animal") ||
+        said("check out","alien"))) {
+      if (v33 == 1) {
+        print("The hunter looks hungry.");
+      }
+      else {
+        if (v33 > 4 &&
+            v33 < 11) {
+          print("The hunter is looking right at"
+                "you, and he's salivating just a"
+                "tad.");
+        }
+        else {
+          if (v33 == 4) {
+            if (isset(f41)) {
+              print("%m60 It looks as though the"
+                    "spore proved quite effective"
+                    "in this instance.");
+            }
+            else {
+              if ((isset(f85) ||
+                  isset(f86))) {
+                print("%m60 A feeling you can"
+                      "relate to.");
+              }
+              else {
+                print("The hunter is lying on the"
+                      "ground unable to move.");
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (v33 == 4 &&
+      has("rope")) {
+    if ((said("afix","ape","rope") ||
+        said("afix","animal","rope") ||
+        said("afix","alien","rope") ||
+        said("afix","above","ape","rope") ||
+        said("afix","above","animal","rope") ||
+        said("afix","above","alien","rope") ||
+        said("afix","above","ape") ||
+        said("afix","above","animal") ||
+        said("afix","rope","ape") ||
+        said("afix","above","alien"))) {
+      print("What a waste of a perfectly good"
+            "rope. In his state, he will not prove"
+            "an impedence.");
+    }
+    if ((said("hit","ape") ||
+        said("hit","bodies") ||
+        said("hit","animal") ||
+        said("hit","alien"))) {
+      print("Nice guy you are!");
+    }
+    if ((said("asshole","ape") ||
+        said("asshole","bodies") ||
+        said("asshole","animal") ||
+        said("asshole","alien"))) {
+      print("Nice guy you are!");
+    }
+  }
+  if (isset(f30) &&
+      v31 != 3) {
+    if (v1 != 18) {
+      if ((said("cast","spore") ||
+          said("cast","spore","ape") ||
+          said("cast","spore","animal") ||
+          said("cast","spore","alien"))) {
+        if (has("spore")) {
+          if (posn(o0,103,117,121,129)) {
+            if (!isset(f42)) {
+              drop("spore");
+              get.posn(o0,v51,v52);
+              v51 -= 4;
+              v52 -= 12;
+              position.v(o4,v51,v52);
+              draw(o4);
+              stop.cycling(o4);
+              move.obj(o4,89,135,0,f33);
+              normal.motion(o2);
+              stop.motion(o2);
+              stop.cycling(o2);
+              v32 = 1;
+              set(f93);
+              v3 += 5;
+              v34 = 0;
+            }
+            else {
+              print("Too late.");
+            }
+          }
+          else {
+            print("You should be closer to the"
+                  "door.");
+          }
+        }
+        else {
+          print("Don't you wish you had one to"
+                "throw?");
+        }
+      }
+    }
+    if ((said("call","ape") ||
+        said("call") ||
+        said("call","animal") ||
+        said("call","alien") ||
+        said("ask","animal") ||
+        said("ask","ape") ||
+        said("ask","alien"))) {
+      if (v33 == 1) {
+        if (isset(f35)) {
+          set.view(o2,49);
+          set.loop(o2,0);
+          reposition.to(o2,70,134);
+          cycle.time(o2,v86);
+          stop.cycling(o2);
+          v34 = 27;
+          v33 = 6;
+        }
+        else {
+          print.at("The hunter seems to ignore you.",2,3,35);
+          set(f35);
+        }
+      }
+      else {
+        print("That's not helpful now.");
+      }
+    }
+    if ((said("acquire","cage key") ||
+        said("acquire","cage key","ape") ||
+        said("acquire","cage key","alien") ||
+        said("acquire","cage key","animal"))) {
+      if (v33 == 4) {
+        get.posn(o2,v54,v55);
+        if (v54 > 87 &&
+            posn(o0,103,117,121,129)) {
+          if (!has("cage key")) {
+            get("cage key");
+            print.at("You reach through the bars"
+                     "and take possession of the"
+                     "key.",2,3,35);
+            v34 = 255;
+            v3 += 2;
+          }
+          else {
+            print("You already have it.");
+          }
+        }
+        else {
+          print("You can't reach it. The hunter is"
+                "too far away.");
+        }
+      }
+      else {
+        print("How are you going to manage that?");
+      }
+    }
+  }
+  if ((said("open","cage") ||
+      said("open","bar") ||
+      said("open","cage","door") ||
+      said("open","door"))) {
+    if (v31 <= 0) {
+      if (isset(f37)) {
+        if (isset(f30) &&
+            !posn(o0,103,117,115,120)) {
+          if (v33 == 4) {
+            print("You open the cage door.");
+            start.update(o3);
+            end.of.loop(o3,f31);
+            v31 = 1;
+            v34 = 0;
+          }
+          else {
+            print("Too late.");
+          }
+        }
+        else {
+          print("You need to be closer.");
+        }
+      }
+      else {
+        print("The door is locked.");
+      }
+    }
+    else {
+      print("That's been done already.");
+    }
+  }
+  if ((said("close","cage") ||
+      said("close","bar") ||
+      said("close","cage","door") ||
+      said("close","door"))) {
+    if (v31 == 3) {
+      if (isset(f30) &&
+          !posn(o0,103,117,115,121)) {
+        print("You close the cage door.");
+        start.update(o3);
+        reverse.loop(o3,f31);
+        v31 = 4;
+      }
+      else {
+        print("You need to be closer.");
+      }
+    }
+    else {
+      print("That's been done already.");
+    }
+  }
+  if ((said("unlock","cage") ||
+      said("use","cage key","unlock","cage") ||
+      said("use","cage key","unlock","door") ||
+      said("use","cage key","unlock","cage","door") ||
+      said("use","cage key","unlock","lock") ||
+      said("use","cage key","unlock","cage","lock") ||
+      said("use","cage key","unlock","cage","door") ||
+      said("use","cage key","unlock","cage") ||
+      said("use","cage key","unlock","cage","lock") ||
+      said("open","lock") ||
+      said("unlock","cage","cage key") ||
+      said("unlock","door","cage key") ||
+      said("unlock","lock","cage key") ||
+      said("unlock","cage","door") ||
+      said("unlock","lock") ||
+      said("unlock","bar") ||
+      said("unlock","door"))) {
+    if (v31 <= 0) {
+      if (!isset(f37)) {
+        if (has("cage key")) {
+          if (isset(f30) &&
+              posn(o0,103,117,121,129)) {
+            print("You slip the key into the lock"
+                  "and give it a turn. The lock"
+                  "snaps open.");
+            set(f37);
+          }
+          else {
+            print("You need to be closer.");
+          }
+        }
+        else {
+          print("You don't have anything to do"
+                "that with.");
+        }
+      }
+      else {
+        print("That's been done already.");
+      }
+    }
+    else {
+      print("That wouldn't be helpful now.");
+    }
+  }
+  if ((said("lock","cage") ||
+      said("lock","cage","door") ||
+      said("lock","lock") ||
+      said("lock","bar") ||
+      said("lock","door"))) {
+    if (v31 <= 0) {
+      if (isset(f37)) {
+        if (has("cage key")) {
+          if (isset(f30) &&
+              posn(o0,103,117,121,129)) {
+            print("You snap the lock closed.");
+            reset(f37);
+          }
+          else {
+            print("You need to be closer.");
+          }
+        }
+        else {
+          print("You don't have anything to do"
+                "that with.");
+        }
+      }
+      else {
+        print("That's been done already.");
+      }
+    }
+    else {
+      print("That wouldn't be helpful now.");
+    }
+  }
+  if (!has("rope") &&
+      !isset(f88) &&
+      !isset(f89)) {
+    if ((said("acquire","rope") ||
+        said("reach","rope") ||
+        said("acquire","rope","gem"))) {
+      if (posn(o0,73,100,89,114)) {
+        print("You grab the rope.");
+        get("rope");
+        erase(o5);
+        force.update(o5);
+        v3 += 2;
+      }
+      else {
+        print("It's not available to you from here.");
+      }
+    }
+  }
+  if (v1 != 18 &&
+      isset(f30)) {
+    if ((said("cast","gem") ||
+        said("cast","gem","ape") ||
+        said("cast","gem","animal") ||
+        said("cast","gem","alien") ||
+        said("cast","gem","ape") ||
+        said("cast","gem","animal") ||
+        said("cast","gem","alien"))) {
+      print("It's too heavy for you to get any"
+            "power behind.");
+    }
+    if ((said("sling","gem") ||
+        said("use","athletic supporter") ||
+        said("sling","gem","ape") ||
+        said("sling","gem","animal") ||
+        said("sling","gem","alien") ||
+        said("sling","gem","ape") ||
+        said("sling","gem","animal") ||
+        said("sling","gem","alien"))) {
+      print("It's too cramped in here.");
+    }
+    if ((said("break","cage") ||
+        said("break","door") ||
+        said("break","bar") ||
+        said("break","cage","open") ||
+        said("break","door","open") ||
+        said("break","bar","open"))) {
+      print("The cage is made of some very hard"
+            "branches. They might as well be"
+            "welded steel bars.");
+    }
+    if (has("rope")) {
+      if (said("cast","rope")) {
+        print("Who do you think you are, Roy"
+              "Rogers?");
+      }
+    }
+    if (has("keycard")) {
+      if (said("fill","card","lock")) {
+        print("An interesting idea, but no good"
+              "here.");
+      }
+    }
+    if (has("puzzle")) {
+      if ((said("give","cube") ||
+          said("cast","cube") ||
+          said("give","animal","cube") ||
+          said("give","cube","animal") ||
+          said("cast","cube","animal") ||
+          said("give","ape","cube") ||
+          said("give","cube","ape") ||
+          said("cast","athletic supporter","alien") ||
+          said("cast","cube","ape"))) {
+        print("He'd soon figure out that it wasn't"
+              "food, and you'd be in trouble.");
+      }
+    }
+  }
+  if (v1 != 18) {
+    if ((said("explore","bodies") ||
+        said("explore","ape") ||
+        said("explore","animal") ||
+        said("explore","alien"))) {
+      if (v33 == 4) {
+        if (posn(o0,91,123,127,137)) {
+          if (!has("cage key")) {
+            print("%m42 You find a key which might"
+                  "unlock the cage. Other than"
+                  "that, you find only a few"
+                  "assorted parasites clinging to"
+                  "him.");
+          }
+          else {
+            print("%m42 There is nothing of"
+                  "interest unless tiny parasites"
+                  "do something for you.");
+          }
+        }
+        else {
+          print("That's not to be accomplished"
+                "from here.");
+        }
+      }
+      else {
+        print("You'll have to get his permission"
+              "first.");
+      }
+    }
+  }
+  if (isset(f93)) {
+    if ((said("acquire","spore") ||
+        said("acquire","spore","deck"))) {
+      if (!isset(f30)) {
+        print("The spent spore would be of no use"
+              "to you now.");
+      }
+      else {
+        print("It's not available to you from here.");
+      }
+    }
+  }
+  if ((said("check out","camp fire") ||
+      said("look in","camp fire") ||
+      said("look in","ash") ||
+      said("check out","ash"))) {
+    if (v99 < 3) {
+      print("There are flames dancing above the"
+            "embers of the fire.");
+    }
+    else {
+      print("You see just an empty fire ring.");
+    }
+  }
+  if ((said("use","gem") ||
+      said("use","gem","break","lock") ||
+      said("break","lock","gem"))) {
+    print("Interesting, but wrong.");
+  }
+  if (said("rattle","cage")) {
+    if (isset(f30)) {
+      print("Pretty darn solid construction, eh?");
+    }
+    else {
+      print("Don't bother now.");
+    }
+  }
+  if (said("extinguish","camp fire")) {
+    print("Who are you, Smokey the Bear? Leave it"
+          "alone. It won't help.");
+  }
+  if (said("acquire","camp fire")) {
+    print("Don't bother now.");
+  }
+  if (said("drop","ape","cage")) {
+    print("Leave the hunter alone and get on with"
+          "the adventure.");
+  }
+  if ((said("climb","cage") ||
+      said("climb","bar") ||
+      said("cast","anyword","camp fire") ||
+      said("afix","rope","cage") ||
+      said("afix","rope","bar"))) {
+    print("That would accomplish nothing.");
+  }
+  if (v33 == 4) {
+    if ((said("strip","ape") ||
+        said("strip","animal") ||
+        said("strip","alien"))) {
+      print("I think I speak for everyone when I"
+            "say that's a bad idea.");
+    }
+  }
+}
+if ((posn(o0,6,145,6,167) ||
+    posn(o0,1,120,1,131) ||
+    posn(o0,3,114,3,118) ||
+    posn(o0,15,98,16,106) ||
+    posn(o0,23,87,23,95) ||
+    posn(o0,89,68,89,95))) {
+  if (!isset(f40)) {
+    set(f40);
+    print("The foliage here is much too dense for"
+          "you to pass through.");
+  }
+}
+if (isset(f40) &&
+    !posn(o0,6,145,6,167) &&
+    !posn(o0,1,120,1,131) &&
+    !posn(o0,3,114,3,118) &&
+    !posn(o0,15,98,16,106) &&
+    !posn(o0,23,87,23,95) &&
+    !posn(o0,89,68,89,95)) {
+  reset(f40);
+}
+if (v2 == 1) {
+  if (v99 <= 0) {
+    v99 = 1;
+  }
+  new.room(18);
+}
+call(106);
+return();
+
+// Messages
+#message 1 "Don't you wish you had one to throw?"
+#message 2 "You have caused the guard to be paralyzed. I don't think he's too pleased with you."
+#message 3 "The hunter seems to ignore you."
+#message 4 "The hunter stands and takes a long look in your direction. His face, though strange in its own right, bears an expression one might see on a freak show patron. He moves closer."
+#message 5 "You reach through the bars and take possession of the key."
+#message 6 "You already have it."
+#message 7 "You can't reach it. The hunter is too far away."
+#message 8 "How are you going to manage that?"
+#message 9 "It's not available to you from here."
+#message 10 "You grab the rope."
+#message 11 "You slip the key into the lock and give it a turn. The lock snaps open."
+#message 12 "You open the cage door."
+#message 13 "You close the cage door."
+#message 14 "You snap the lock closed."
+#message 15 "You need to be closer."
+#message 16 "You don't have a key."
+#message 17 "The door is locked."
+#message 18 "That's been done already."
+#message 19 "That wouldn't be helpful now."
+#message 20 "You don't have anything to do that with."
+#message 21 "You should be closer to the door."
+#message 22 "Too late."
+#message 23 "Your head begins to clear and you realize that you have been imprisoned. Your captor appears to be that large oaf sitting near the fire."
+#message 24 "The hunter has decided that it's a perfect day for a barbecue. As he slowly turns you over the fire, you begin to turn a beautiful golden brown. Death follows at an agonizingly long distance."
+#message 25 "That's not helpful now."
+#message 26 "You are in a well hidden clearing. It is surrounded on three sides by large, smooth rock formations with brush to the north. A cage is below one of the formations."
+#message 27 "In the center a campfire burns. One has to wonder about the purpose of a fire during a warm day such as this."
+#message 28 "A campfire ring, fire extinguished, is located in the center."
+#message 29 "(You are currently in it.)"
+#message 30 "A rope sits on one of the boulders."
+#message 31 "%m26 %m29"
+#message 32 "%m27 %m30 %m34"
+#message 33 "%m28 %m30"
+#message 34 "A large beast is nearby."
+#message 35 "A large beast is lying on the ground."
+#message 36 "%m27 %m30 %m35"
+#message 37 "%m27 %m34"
+#message 38 "%m27 %m35"
+#message 39 "%m27 %m30"
+#message 40 "You'll have to get his permission first."
+#message 41 "That's not to be accomplished from here."
+#message 42 "You search the large, not to mention uncleansed, body of the hunter."
+#message 43 "%m42 You find a key which might unlock the cage. Other than that, you find only a few assorted parasites clinging to him."
+#message 44 "%m42 There is nothing of interest unless tiny parasites do something for you."
+#message 45 "The foliage here is much too dense for you to pass through."
+#message 46 "Upon impact with the ground, the spore opens and spews its dust into the air. The hunter falls to the ground paralyzed."
+#message 47 "What a waste of a perfectly good rope. In his state, he will not prove an impedence."
+#message 48 "The spent spore would be of no use to you now."
+#message 49 "The hunter looks hungry."
+#message 50 "The hunter is looking right at you, and he's salivating just a tad."
+#message 60 "The hunter is lying on the ground unable to move."
+#message 61 "%m60 A feeling you can relate to."
+#message 62 "%m60 It looks as though the spore proved quite effective in this instance."
+#message 63 "You see just an empty fire ring."
+#message 64 "There are flames dancing above the embers of the fire."
+#message 65 "The cage is made of some very hard branches. They might as well be welded steel bars."
+#message 66 "Interesting, but wrong."
+#message 67 "You'd only hurt yourself throwing it halfway there."
+#message 68 "Pretty darn solid construction, eh?"
+#message 69 "Don't bother now."
+#message 70 "It's too heavy for you to get any power behind."
+#message 71 "It's too cramped in here."
+#message 72 "Who are you, Smokey the Bear? Leave it alone. It won't help."
+#message 73 "Nice guy you are!"
+#message 74 "An interesting idea, but no good here."
+#message 75 "He'd soon figure out that it wasn't food, and you'd be in trouble."
+#message 76 "It's crude looking but effective. The rust would prevent anything but the correct key from turning it."
+#message 77 "Leave the hunter alone and get on with the adventure."
+#message 78 "That would accomplish nothing."
+#message 79 "Who do you think you are, Roy Rogers?"
+#message 80 "I think I speak for everyone when I say that's a bad idea."

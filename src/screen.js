@@ -123,11 +123,13 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
     if (!cel) return;
     cel = cel.cels[celNo];
 
-
-    const mirror = cel.mirrored;
+    // If the view has more loops then we have to ignore the original mirror option and use
+    // basic mirroring.
+    let shouldMirror = false;
 
     if (cel.mirrored) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
+        shouldMirror = view.loops.length >= 4;
     }
 
     const {data} = state.frameData;
@@ -148,7 +150,7 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
             }
 
             let ccx = cx;
-            if (mirror) {
+            if (shouldMirror) {
                 ccx = cel.width - cx - 1;
             }
 
@@ -176,11 +178,16 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
 }
 
 export function bltView(viewNo, loopNo, celNo, x, y, priority) {
-    const view   = state.loadedViews[viewNo];
-    let cel      = view.loops[loopNo].cels[celNo];
-    const mirror = cel.mirrored;
+    const view = state.loadedViews[viewNo];
+    let cel    = view.loops[loopNo].cels[celNo];
+
+    // If the view has more loops then we have to ignore the original mirror option and use
+    // basic mirroring.
+    let shouldMirror = false;
+
     if (cel.mirrored) {
         cel = view.loops[cel.mirroredLoop].cels[celNo];
+        shouldMirror = view.loops.length >= 4;
     }
 
     const {data} = state.frameData;
@@ -201,7 +208,7 @@ export function bltView(viewNo, loopNo, celNo, x, y, priority) {
             }
 
             let ccx = cx;
-            if (mirror) {
+            if (shouldMirror) {
                 ccx = cel.width - cx - 1;
             }
 

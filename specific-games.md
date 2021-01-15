@@ -10,7 +10,10 @@ Missing features
 
 Issues:
 
-- Room 14 
+- Some visual weirdness in room 19
+  - When rope is taken it does not disappear from the rock
+
+- Room 14 (initial swimming screen)
   - Cannot be eaten by monster!
 
 - Use requestAnimationFrame instead of setTimeout

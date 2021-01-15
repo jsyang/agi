@@ -1105,7 +1105,14 @@ export const commands = {
         const indicesString = testWordGroups.join(',');
 
         if (state.playerSaid.length > 0) {
-            return indicesString === state.playerSaid;
+            const returnValue = indicesString === state.playerSaid;
+
+            if(returnValue) {
+                // Reset so it doesn't trigger additional test commands beyond current logic
+                state.playerSaid = '';
+
+                return true;
+            }
         }
 
         // Make sure we can see what the options are

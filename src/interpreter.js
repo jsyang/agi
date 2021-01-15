@@ -479,8 +479,14 @@ const updateObject = (obj, no) => {
 
             if (!obj.fixedLoop) {
                 if (view.loops.length > 1 && view.loops.length < 4) {
-                    if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4 ||
-                        obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
+                    if (
+                        obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
+                        obj.direction === GAMEOBJECT_DIRECTION.Right ||
+                        obj.direction === GAMEOBJECT_DIRECTION.DownRight ||
+                        obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||
+                        obj.direction === GAMEOBJECT_DIRECTION.Left ||
+                        obj.direction === GAMEOBJECT_DIRECTION.UpLeft
+                    ) {
                         obj.loop = 1;
                     }
                 } else if (view.loops.length >= 4) {
