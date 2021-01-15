@@ -757,6 +757,9 @@ export const commands = {
                 const sNum = parseFloat(match.replace('%s', ''));
                 return state.strings[sNum];
             });
+
+            // Ensure backslash is removed
+            interpolated = interpolated.replace(/\\/g, '');
         }
 
         return interpolated;

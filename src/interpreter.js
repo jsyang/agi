@@ -396,11 +396,9 @@ const updateObject = (obj, no) => {
             obj.x = newX;
             obj.y = newY;
 
-            // Enforce horizon when entering new room
-            if (state.flags[FLAG.new_room]) {
-                if (!obj.ignoreHorizon && obj.y < state.horizon) {
-                    obj.y = state.horizon + 1;
-                }
+            // Enforce horizon
+            if (!obj.ignoreHorizon && obj.y < state.horizon) {
+                obj.y = state.horizon + 1;
             }
 
             if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {

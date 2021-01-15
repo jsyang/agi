@@ -58,7 +58,7 @@ const updateSaidSystem = () => {
 let currentSaidSearch = '';
 
 const searchSaidSystem = () => {
-    currentSaidSearch = state.actionSearchElement.value.trim().toLowerCase();
+    currentSaidSearch = state.actionSearchElement.value.trim().toLowerCase().replace(/\\/g, '');
 
     if (currentSaidSearch.length === 0) {
         for (let b of Array.from(state.actionContainerElement.querySelectorAll('button'))) {
