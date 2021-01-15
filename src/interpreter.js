@@ -579,6 +579,14 @@ const cycle = () => {
 
         if (state.paused) break;
 
+        commands.agi_reset(FLAG.new_room);
+        commands.agi_reset(FLAG.noise_enabled); // Logic 0 executed for the first time
+        commands.agi_reset(FLAG.game_restarted);
+        commands.agi_reset(FLAG.game_restored);
+
+        commands.agi_reset_v(VAR.object_edge_code);
+        commands.agi_reset_v(VAR.object_touching_edge);
+
         // Reverse the rendering of objects so that ego might always be drawn on top of anything!
         for (let j = state.gameObjects.length - 1; j >= 0; j--) {
             const obj = state.gameObjects[j];
@@ -589,13 +597,6 @@ const cycle = () => {
             updateObject(obj, j);
         }
 
-        commands.agi_reset(FLAG.new_room);
-        commands.agi_reset(FLAG.noise_enabled); // Logic 0 executed for the first time
-        commands.agi_reset(FLAG.game_restarted);
-        commands.agi_reset(FLAG.game_restored);
-
-        commands.agi_reset_v(VAR.object_edge_code);
-        commands.agi_reset_v(VAR.object_touching_edge);
 
         break;
     }

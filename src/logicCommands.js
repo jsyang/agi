@@ -564,8 +564,10 @@ export const commands = {
     },
 
     agi_force_update: (objNo) => {
-        state.gameObjects[objNo].draw = true;
-        commands.agi_draw(objNo);
+        const obj = state.gameObjects[objNo];
+        if (obj.draw) {
+            screen.drawObject(obj);
+        }
     },
 
     agi_ignore_horizon: (objNo) => {
@@ -669,7 +671,7 @@ export const commands = {
 
     agi_erase: (objNo) => {
         const obj = state.gameObjects[objNo];
-        screen.clearOldObjectView(obj);
+        screen.clearView(obj.viewNo, obj.loop, obj.cel, obj.x, obj.y, obj.priority);
         obj.draw = false;
     },
 
@@ -1107,7 +1109,7 @@ export const commands = {
         if (state.playerSaid.length > 0) {
             const returnValue = indicesString === state.playerSaid;
 
-            if(returnValue) {
+            if (returnValue) {
                 // Reset so it doesn't trigger additional test commands beyond current logic
                 state.playerSaid = '';
 

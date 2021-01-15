@@ -1,4 +1,4 @@
-import {load} from './resources';
+import {load, inventoryObjects} from './resources';
 import interpreter from './interpreter';
 import {VAR} from './constants'
 import TTS from './tts';
@@ -15,6 +15,7 @@ window.AGI = {
     commands:   null,
     canvasEl:   null,
     TTS:        null,
+    inv:        null,
 
     start: async () => {
         if (AGI.state) return;
@@ -41,6 +42,7 @@ window.AGI = {
         AGI.cycle    = interpreter.cycle;
         AGI.bltDebug = interpreter.bltDebug;
         AGI.TTS      = TTS;
+        AGI.inv      = inventoryObjects;
     },
 
     render: () => {
