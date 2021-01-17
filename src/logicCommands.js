@@ -348,6 +348,8 @@ export const commands = {
     },
 
     agi_player_control: () => {
+        if (!state.programControl) return;
+
         state.programControl = false;
 
         state.variables[VAR.ego_dir] = state.gameObjects[0].direction = GAMEOBJECT_DIRECTION.Stopped;

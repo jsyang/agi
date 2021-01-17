@@ -1,0 +1,385 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  draw.pic(v0);
+  discard.pic(v0);
+  random(1,100,v64);
+  get.posn(o0,v135,v136);
+  if (isset(f86)) {
+    if (v64 > 50 &&
+        v1 != 1 &&
+        v136 > 80) {
+      load.logics(103);
+      call(103);
+      v67 = 1;
+    }
+    else {
+      if (v1 != 3 &&
+          v1 != 11 &&
+          v64 > 29 &&
+          v64 < 51) {
+        if (v136 < 80) {
+          load.logics(108);
+          call(108);
+          v67 = 2;
+        }
+      }
+    }
+  }
+  load.view(32);
+  load.view(42);
+  load.view(12);
+  load.sound(1);
+  load.sound(2);
+  load.sound(6);
+  set(f34);
+  load.view(28);
+  add.to.pic(28,0,0,76,147,13,0);
+  add.to.pic(28,0,1,114,159,14,0);
+  animate.obj(o4);
+  set.view(o4,32);
+  v55 = 0;
+  step.size(o4,v55);
+  ignore.objs(o4);
+  ignore.blocks(o4);
+  set.cel(o4,0);
+  position(o4,29,61);
+  animate.obj(o5);
+  set.view(o5,32);
+  v55 = 0;
+  step.size(o5,v55);
+  ignore.blocks(o5);
+  ignore.objs(o5);
+  set.cel(o5,0);
+  position(o5,29,142);
+  animate.obj(o3);
+  set.view(o3,42);
+  ignore.objs(o3);
+  ignore.blocks(o3);
+  position(o3,152,62);
+  animate.obj(o1);
+  ignore.horizon(o1);
+  set.view(o1,12);
+  set.cel(o1,0);
+  position(o1,67,8);
+  animate.obj(o2);
+  ignore.horizon(o2);
+  set.view(o2,12);
+  set.cel(o2,2);
+  position(o2,64,90);
+  draw(o1);
+  draw(o2);
+  load.view(171);
+  add.to.pic(171,0,0,113,134,12,4);
+  if (v1 == 11) {
+    position(o0,114,137);
+  }
+  draw(o4);
+  draw(o5);
+  stop.update(o4);
+  stop.update(o5);
+  v30 = 2;
+  v31 = 2;
+  if (v1 == 1) {
+    position(o0,152,63);
+    last.cel(o3,v64);
+    set.cel.v(o3,v64);
+    set(f32);
+  }
+  draw(o3);
+  stop.update(o3);
+  animate.obj(o0);
+  draw(o0);
+  show.pic();
+  if (v26 == 2 &&
+      v20 == 0) {
+    goto(Label1);
+  }
+  clear.lines(23,24,0);
+}
+Label1:
+if (isset(f64)) {
+  reset(f64);
+  print("Sorry, due to your low security clearance"
+        "you are not allowed access to this area.");
+}
+if (isset(f162)) {
+  reset(f162);
+}
+if ((obj.in.box(o0,20,67,55,67) ||
+    obj.in.box(o0,20,151,55,151))) {
+  normal.motion(o0);
+  player.control();
+}
+if ((posn(o0,111,119,120,135) ||
+    posn(o0,28,132,44,142) ||
+    posn(o0,28,51,43,60))) {
+  set.priority(o0,5);
+}
+else {
+  release.priority(o0);
+}
+if ((obj.in.box(o0,6,136,26,144) ||
+    obj.in.box(o0,28,50,44,146) ||
+    posn(o0,112,118,120,136) ||
+    posn(o0,0,136,13,141))) {
+  set(f1);
+}
+else {
+  reset(f1);
+}
+if (posn(o0,112,135,124,137) &&
+    (isset(f34) ||
+    v1 == 11)) {
+  ignore.blocks(o0);
+  ignore.objs(o0);
+}
+else {
+  observe.blocks(o0);
+}
+if (isset(f30)) {
+  stop.update(o4);
+  stop.update(o5);
+}
+if (!isset(f199)) {
+  if (isset(f30) &&
+      v30 == 2 &&
+      v31 == 2) {
+    reset(f30);
+    if ((obj.in.box(o0,29,52,43,56) ||
+        obj.in.box(o0,29,133,43,137))) {
+      program.control();
+      stop.motion(o0);
+      normal.motion(o0);
+      start.motion(o0);
+      get.posn(o0,v135,v136);
+      if (v136 < 85) {
+        set.priority(o0,5);
+        v135 = 0;
+        v136 = 81;
+        reposition(o0,v135,v136);
+      }
+      if (v136 > 84) {
+        set.priority(o0,5);
+        v135 = 0;
+        v136 = 175;
+        reposition(o0,v135,v136);
+      }
+      v32 = 14;
+    }
+  }
+  v32--;
+  if (v32 == 1) {
+    get.posn(o0,v135,v136);
+    v136 += 16;
+    v55 = 0;
+    move.obj.v(o0,v135,v136,55,f31);
+  }
+  if (isset(f31)) {
+    reset(f31);
+    player.control();
+    start.motion(o0);
+  }
+  if (v30 != 1 &&
+      posn(o0,29,57,39,65)) {
+    start.update(o4);
+    end.of.loop(o4,f30);
+    sound(1,f162);
+    v30 = 1;
+  }
+  if (v30 == 1 &&
+      !posn(o0,29,57,39,65)) {
+    start.update(o4);
+    reverse.loop(o4,f30);
+    sound(2,f162);
+    v30 = 2;
+  }
+  if (v31 != 1 &&
+      posn(o0,29,138,39,146)) {
+    start.update(o5);
+    end.of.loop(o5,f30);
+    sound(1,f162);
+    v31 = 1;
+  }
+  if (v31 == 1 &&
+      !posn(o0,29,138,39,146)) {
+    start.update(o5);
+    reverse.loop(o5,f30);
+    sound(2,f162);
+    v31 = 2;
+  }
+}
+if ((!isset(f2) ||
+    isset(f4))) {
+  goto(Label2);
+}
+if (said("check out","area")) {
+  print("This another hallway aboard the Arcada."
+        "There is an elevator door nearby.");
+}
+if (said("check out","wall")) {
+  print("You see nothing that catches your eye.");
+}
+if (obj.in.box(o0,90,118,143,154)) {
+  if ((said("open","door") ||
+      said("unlock","door"))) {
+    if (!isset(f34)) {
+      print("The door is quite heavy and"
+            "impossible for you to open. Your"
+            "classification does not permit it.");
+    }
+    else {
+      print("Are you serious?");
+    }
+  }
+  if (said("check out","door")) {
+    if (!isset(f34)) {
+      print("The door is quite heavy and"
+            "impossible for you to open. Your"
+            "classification does not permit it.");
+    }
+    else {
+      print("There is not much left of the door."
+            "Someone has blown it away.");
+    }
+  }
+}
+else {
+  if (obj.in.box(o0,12,55,68,157)) {
+    if (said("check out","elevator")) {
+      print("This is an elevator to one of the"
+            "other levels of the Arcada.");
+    }
+    if (said("check out","door")) {
+      print("You see another boring door.");
+    }
+  }
+  else {
+    if (obj.in.box(o0,12,55,68,157)) {
+      if (said("check out","door")) {
+        print("You see another boring door.");
+      }
+    }
+    else {
+      if ((said("check out","door") ||
+          said("check out","elevator"))) {
+        print("You are too far away to get a good"
+              "look.");
+      }
+    }
+  }
+}
+if ((said("check out","bodies") ||
+    said("check out","being"))) {
+  if (posn(o0,67,140,100,151)) {
+    print("A cursory glance indicates that this is"
+          "a dead lab technician.");
+  }
+  else {
+    if (posn(o0,104,152,141,160)) {
+      print("This appears to be a non-breathing"
+            "research scientist.");
+    }
+    else {
+      print("You are too far away to get a good"
+            "look.");
+    }
+  }
+}
+if ((said("explore","bodies") ||
+    said("explore","being") ||
+    said("explore","pocket") ||
+    said("check out","pocket"))) {
+  if (posn(o0,67,140,100,151)) {
+    print("Your search of the body reveals nothing.");
+  }
+  else {
+    if (posn(o0,104,152,141,160)) {
+      print("Your search of the body reveals"
+            "nothing.");
+    }
+    else {
+      print("That cannot be done from here.");
+    }
+  }
+}
+if ((said("strip","bodies") ||
+    said("strip","being") ||
+    said("acquire","clothes","bodies"))) {
+  print("One can only wonder what your purpose for"
+        "this action is. You can't undress the"
+        "body. Allow him one last bit of dignity.");
+}
+if (said("kick","bodies")) {
+  if ((posn(o0,67,140,100,151) ||
+      posn(o0,104,152,141,160))) {
+    print("Good grief, man! You are a bit twisted,"
+          "I must say.?");
+    v3--;
+  }
+}
+Label2:
+if (isset(f33) &&
+    !isset(f32)) {
+  reset(f33);
+  stop.update(o3);
+}
+if (!isset(f32) &&
+    posn(o0,140,60,159,63)) {
+  set(f32);
+  start.update(o3);
+  end.of.loop(o3,f33);
+  sound(1,f162);
+}
+if (isset(f32) &&
+    !posn(o0,140,60,159,63)) {
+  reset(f32);
+  start.update(o3);
+  reverse.loop(o3,f33);
+  sound(2,f162);
+}
+get.posn(o0,v135,v136);
+if (v2 == 2) {
+  if (v136 > 135) {
+    v67 = 0;
+    new.room(2);
+  }
+  if (v136 > 59 &&
+      v136 < 64) {
+    v67 = 0;
+    new.room(1);
+  }
+}
+if (v2 == 4) {
+  v67 = 0;
+  new.room(3);
+}
+if (obj.in.box(o0,113,131,123,133)) {
+  v67 = 0;
+  new.room(11);
+}
+if (v67 == 1) {
+  call(103);
+}
+if (v67 == 2) {
+  call(108);
+}
+return();
+
+// Messages
+#message 1 "This another hallway aboard the Arcada. There is an elevator door nearby."
+#message 2 "Sorry, due to your low security clearance you are not allowed access to this area."
+#message 3 "This is an elevator to one of the other levels of the Arcada."
+#message 4 "That cannot be done from here."
+#message 5 "There is no situation which calls for that action now."
+#message 6 "You see nothing that catches your eye."
+#message 7 "The door is quite heavy and impossible for you to open. Your classification does not permit it."
+#message 8 "A cursory glance indicates that this is a dead lab technician."
+#message 9 "Your search of the body reveals nothing."
+#message 10 "This appears to be a non-breathing research scientist."
+#message 11 "Good grief, man! You are a bit twisted, I must say.?"
+#message 13 "There is not much left of the door. Someone has blown it away."
+#message 14 "You see another boring door."
+#message 15 "One can only wonder what your purpose for this action is. You can't undress the body. Allow him one last bit of dignity."
+#message 16 "Are you serious?"
+#message 17 "You are too far away to get a good look."

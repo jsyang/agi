@@ -297,249 +297,249 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 const updateObject = (obj, no) => {
     let hasChangedDirection = false;
 
-    if (obj.draw) {
+    const view = state.loadedViews[obj.viewNo];
+    const cel  = view.loops[obj.loop].cels[obj.cel];
 
-        if (obj.update) {
-            obj.oldX = obj.x;
-            obj.oldY = obj.y;
+    if (obj.update) {
+        obj.oldX = obj.x;
+        obj.oldY = obj.y;
 
-            const view = state.loadedViews[obj.viewNo];
-            const cel  = view.loops[obj.loop].cels[obj.cel];
 
-            let xStep = obj.stepSize;
-            let yStep = obj.stepSize;
-            switch (obj.movementFlag) {
-                case GAMEOBJECT_MOVE_FLAGS.Normal:
-                    break;
-                case GAMEOBJECT_MOVE_FLAGS.MoveTo:
-                    if (obj.moveToStep !== 0) {
-                        xStep = yStep = obj.moveToStep;
-                    }
+        let xStep = obj.stepSize;
+        let yStep = obj.stepSize;
+        switch (obj.movementFlag) {
+            case GAMEOBJECT_MOVE_FLAGS.Normal:
+                break;
+            case GAMEOBJECT_MOVE_FLAGS.MoveTo:
+                if (obj.moveToStep !== 0) {
+                    xStep = yStep = obj.moveToStep;
+                }
 
-                    yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
-                    xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
+                yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
+                xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
 
-                    if (view.loops.length < 5) {
-                        setObjDirectionViaMoveTo(obj);
-                    }
+                if (view.loops.length < 5) {
+                    setObjDirectionViaMoveTo(obj);
+                }
 
-                    break;
-                case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
-                    const egoX = state.gameObjects[0].x;
-                    const egoY = state.gameObjects[0].y;
-                    if (egoX > obj.x) {
-                        if (egoY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.DownRight;
-                        } else if (egoY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.UpRight;
-                        } else {
-                            obj.direction = GAMEOBJECT_DIRECTION.Right;
-                        }
-                    } else if (egoX < obj.x) {
-                        if (egoY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
-                        } else if (egoY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
-                        } else {
-                            obj.direction = GAMEOBJECT_DIRECTION.Left;
-                        }
+                break;
+            case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
+                const egoX = state.gameObjects[0].x;
+                const egoY = state.gameObjects[0].y;
+                if (egoX > obj.x) {
+                    if (egoY > obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.DownRight;
+                    } else if (egoY < obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.UpRight;
                     } else {
-                        if (egoY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.Down;
-                        } else if (egoY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.Up;
-                        }
+                        obj.direction = GAMEOBJECT_DIRECTION.Right;
                     }
-
-                    yStep = Math.min(yStep, Math.abs(obj.y - egoY));
-                    xStep = Math.min(xStep, Math.abs(obj.x - egoX));
-                    break;
-
-                case GAMEOBJECT_MOVE_FLAGS.Wander:
-                    break;
-                default:
-            }
-            let newX = obj.x;
-            let newY = obj.y;
-            if (obj.direction === 1 || obj.direction === 2 || obj.direction === 8) {
-                newY = obj.y - yStep;
-            } else if (obj.direction === 5 || obj.direction === 4 || obj.direction === 6) {
-                newY = obj.y + yStep;
-            }
-
-            if (obj.direction === 7 || obj.direction === 8 || obj.direction === 6) {
-                newX = obj.x - xStep;
-            } else if (obj.direction === 3 || obj.direction === 2 || obj.direction === 4) {
-                newX = obj.x + xStep;
-            }
-
-            // Set newX, newY based on blocks, but only if it's not a MoveTo
-            if(obj.movementFlag !== GAMEOBJECT_MOVE_FLAGS.MoveTo) {
-                [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
-            }
-
-            obj.x = newX;
-            obj.y = newY;
-
-            // Enforce horizon
-            if (!obj.ignoreHorizon && obj.y < state.horizon) {
-                obj.y = state.horizon + 1;
-            }
-
-            if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
-                obj.direction = GAMEOBJECT_DIRECTION.Stopped;
-                commands.agi_set(obj.flagToSetWhenFinished);
-                obj.movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
-            }
-
-            if (obj.x !== obj.oldX || obj.y !== obj.oldY) {
-                if (obj.x <= 0) {
-                    if (no === 0) {
-                        state.variables[VAR.ego_edge_code] = 4;
+                } else if (egoX < obj.x) {
+                    if (egoY > obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
+                    } else if (egoY < obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
                     } else {
-                        state.variables[VAR.object_touching_edge] = no;
-                        state.variables[VAR.object_edge_code]     = 4;
-                    }
-                } else if (cel && (obj.x + cel.width >= SCREEN_WIDTH_UNITS)) {
-                    if (no === 0) {
-                        state.variables[VAR.ego_edge_code] = 2;
-                    } else {
-                        state.variables[VAR.object_touching_edge] = no;
-                        state.variables[VAR.object_edge_code]     = 2;
-                    }
-                } else if (!obj.ignoreHorizon && obj.y <= state.horizon) {
-                    if (no === 0) {
-                        state.variables[VAR.ego_edge_code] = 1;
-                    } else {
-                        state.variables[VAR.object_touching_edge] = no;
-                        state.variables[VAR.object_edge_code]     = 1;
-                    }
-                } else if (obj.y >= GAMEOBJECT_MAX_Y) {
-                    if (no === 0) {
-                        state.variables[VAR.ego_edge_code] = 3;
-                    } else {
-                        state.variables[VAR.object_touching_edge] = no;
-                        state.variables[VAR.object_edge_code]     = 3;
+                        obj.direction = GAMEOBJECT_DIRECTION.Left;
                     }
                 } else {
-                    // Not touching any edges
-                    if (no === 0) {
-                        state.variables[VAR.ego_edge_code] = 0;
-                    } else {
-                        state.variables[VAR.object_edge_code] = 0;
+                    if (egoY > obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.Down;
+                    } else if (egoY < obj.y) {
+                        obj.direction = GAMEOBJECT_DIRECTION.Up;
                     }
                 }
-            }
 
-            if (!obj.fixedPriority) {
-                // http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
-                if (obj.y < 48) {
-                    obj.priority = 4;
-                } else if (obj.y < 60) {
-                    obj.priority = 5;
-                } else if (obj.y < 72) {
-                    obj.priority = 6;
-                } else if (obj.y < 84) {
-                    obj.priority = 7;
-                } else if (obj.y < 96) {
-                    obj.priority = 8;
-                } else if (obj.y < 108) {
-                    obj.priority = 9;
-                } else if (obj.y < 120) {
-                    obj.priority = 10;
-                } else if (obj.y < 132) {
-                    obj.priority = 11;
-                } else if (obj.y < 144) {
-                    obj.priority = 12;
-                } else if (obj.y < 156) {
-                    obj.priority = 13;
-                } else if (obj.y <= GAMEOBJECT_MAX_Y) {
-                    obj.priority = 14;
+                yStep = Math.min(yStep, Math.abs(obj.y - egoY));
+                xStep = Math.min(xStep, Math.abs(obj.x - egoX));
+                break;
+
+            case GAMEOBJECT_MOVE_FLAGS.Wander:
+                break;
+            default:
+        }
+        let newX = obj.x;
+        let newY = obj.y;
+        if (obj.direction === 1 || obj.direction === 2 || obj.direction === 8) {
+            newY = obj.y - yStep;
+        } else if (obj.direction === 5 || obj.direction === 4 || obj.direction === 6) {
+            newY = obj.y + yStep;
+        }
+
+        if (obj.direction === 7 || obj.direction === 8 || obj.direction === 6) {
+            newX = obj.x - xStep;
+        } else if (obj.direction === 3 || obj.direction === 2 || obj.direction === 4) {
+            newX = obj.x + xStep;
+        }
+
+        // Set newX, newY based on blocks, but only if it's not a MoveTo
+        if (obj.movementFlag !== GAMEOBJECT_MOVE_FLAGS.MoveTo) {
+            [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
+        }
+
+        obj.x = newX;
+        obj.y = newY;
+
+        // Enforce horizon
+        if (!obj.ignoreHorizon && obj.y < state.horizon) {
+            obj.y = state.horizon + 1;
+        }
+
+        if (obj.movementFlag === GAMEOBJECT_MOVE_FLAGS.MoveTo && obj.x === obj.moveToX && obj.y === obj.moveToY) {
+            obj.direction = GAMEOBJECT_DIRECTION.Stopped;
+            commands.agi_set(obj.flagToSetWhenFinished);
+            obj.movementFlag = GAMEOBJECT_MOVE_FLAGS.Normal;
+        }
+
+        if (obj.x !== obj.oldX || obj.y !== obj.oldY) {
+            if (obj.x <= 0) {
+                if (no === 0) {
+                    state.variables[VAR.ego_edge_code] = 4;
                 } else {
-                    obj.priority = 15;
+                    state.variables[VAR.object_touching_edge] = no;
+                    state.variables[VAR.object_edge_code]     = 4;
+                }
+            } else if (cel && (obj.x + cel.width >= SCREEN_WIDTH_UNITS)) {
+                if (no === 0) {
+                    state.variables[VAR.ego_edge_code] = 2;
+                } else {
+                    state.variables[VAR.object_touching_edge] = no;
+                    state.variables[VAR.object_edge_code]     = 2;
+                }
+            } else if (!obj.ignoreHorizon && obj.y <= state.horizon) {
+                if (no === 0) {
+                    state.variables[VAR.ego_edge_code] = 1;
+                } else {
+                    state.variables[VAR.object_touching_edge] = no;
+                    state.variables[VAR.object_edge_code]     = 1;
+                }
+            } else if (obj.y >= GAMEOBJECT_MAX_Y) {
+                if (no === 0) {
+                    state.variables[VAR.ego_edge_code] = 3;
+                } else {
+                    state.variables[VAR.object_touching_edge] = no;
+                    state.variables[VAR.object_edge_code]     = 3;
+                }
+            } else {
+                // Not touching any edges
+                if (no === 0) {
+                    state.variables[VAR.ego_edge_code] = 0;
+                } else {
+                    state.variables[VAR.object_edge_code] = 0;
                 }
             }
+        }
 
-            if (!obj.fixedLoop) {
-                if (view.loops.length > 1 && view.loops.length < 4) {
-                    // http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/CyclingObjects.html
+        if (!obj.fixedLoop) {
+            if (view.loops.length > 1 && view.loops.length < 4) {
+                // http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/CyclingObjects.html
 
-                    if (obj.direction === GAMEOBJECT_DIRECTION.Up && view.loops[2] && view.loops[3]) {
-                        obj.loop = 3;
-                    } else if (
-                        obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
-                        obj.direction === GAMEOBJECT_DIRECTION.Right ||
-                        obj.direction === GAMEOBJECT_DIRECTION.DownRight
-                    ) {
+                if (obj.direction === GAMEOBJECT_DIRECTION.Up && view.loops[2] && view.loops[3]) {
+                    obj.loop = 3;
+                } else if (
+                    obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
+                    obj.direction === GAMEOBJECT_DIRECTION.Right ||
+                    obj.direction === GAMEOBJECT_DIRECTION.DownRight
+                ) {
+                    obj.loop = 0;
+                } else if (obj.direction === GAMEOBJECT_DIRECTION.Down && view.loops[2] && view.loops[3]) {
+                    obj.loop = 2;
+                } else if (
+                    obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||
+                    obj.direction === GAMEOBJECT_DIRECTION.Left ||
+                    obj.direction === GAMEOBJECT_DIRECTION.UpLeft
+                ) {
+                    if (view.loops[1]) {
+                        obj.loop = 1;
+                    } else {
                         obj.loop = 0;
-                    } else if (obj.direction === GAMEOBJECT_DIRECTION.Down && view.loops[2] && view.loops[3]) {
-                        obj.loop = 2;
-                    } else if (
-                        obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||
-                        obj.direction === GAMEOBJECT_DIRECTION.Left ||
-                        obj.direction === GAMEOBJECT_DIRECTION.UpLeft
-                    ) {
-                        if (view.loops[1]) {
-                            obj.loop = 1;
-                        } else {
-                            obj.loop = 0;
-                        }
                     }
-                } else if (view.loops.length >= 4) {
-                    if (obj.direction === 1) {
-                        obj.loop            = 3;
-                        hasChangedDirection = obj.loop !== obj.oldLoop;
-                    } else if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4) {
-                        obj.loop            = 0;
-                        hasChangedDirection = obj.loop !== obj.oldLoop;
-                    } else if (obj.direction === 5) {
-                        obj.loop            = 2;
-                        hasChangedDirection = obj.loop !== obj.oldLoop;
-                    } else if (obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
-                        obj.loop            = 1;
-                        hasChangedDirection = obj.loop !== obj.oldLoop;
-                    }
+                }
+            } else if (view.loops.length >= 4) {
+                if (obj.direction === 1) {
+                    obj.loop            = 3;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
+                } else if (obj.direction === 2 || obj.direction === 3 || obj.direction === 4) {
+                    obj.loop            = 0;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
+                } else if (obj.direction === 5) {
+                    obj.loop            = 2;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
+                } else if (obj.direction === 6 || obj.direction === 7 || obj.direction === 8) {
+                    obj.loop            = 1;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
+                }
 
-                    // Ensure we force the correct cel for the new loop if it's changed direction
-                    if (hasChangedDirection) {
-                        obj.nextCycle = 1;
-                    }
+                // Ensure we force the correct cel for the new loop if it's changed direction
+                if (hasChangedDirection) {
+                    obj.nextCycle = 1;
                 }
             }
+        }
 
-            if (obj.celCycling) {
-                if (obj.nextCycle === 1) {
-                    if (obj.reverseCycle) {
-                        obj.cel--;
-                    } else {
-                        obj.cel++;
-                    }
-
-                    let endOfLoop = false;
-                    if (obj.cel < 0) {
-                        if (obj.callAtEndOfLoop) {
-                            obj.cel = 0;
-                        } else {
-                            obj.cel = view.loops[obj.loop].cels.length - 1;
-                        }
-                        endOfLoop = true;
-                    } else if (obj.cel > view.loops[obj.loop].cels.length - 1) {
-                        if (obj.callAtEndOfLoop) {
-                            obj.cel = view.loops[obj.loop].cels.length - 1;
-                        } else {
-                            obj.cel = 0;
-                        }
-                        endOfLoop = true;
-                    }
-
-                    if (endOfLoop && obj.callAtEndOfLoop) {
-                        obj.celCycling = false;
-                        commands.agi_set(obj.flagToSetWhenFinished);
-                    }
-                    obj.nextCycle = obj.cycleTime;
+        if (obj.celCycling) {
+            if (obj.nextCycle === 1) {
+                if (obj.reverseCycle) {
+                    obj.cel--;
                 } else {
-                    obj.nextCycle--;
+                    obj.cel++;
                 }
+
+                let endOfLoop = false;
+                if (obj.cel < 0) {
+                    if (obj.callAtEndOfLoop) {
+                        obj.cel = 0;
+                    } else {
+                        obj.cel = view.loops[obj.loop].cels.length - 1;
+                    }
+                    endOfLoop = true;
+                } else if (obj.cel > view.loops[obj.loop].cels.length - 1) {
+                    if (obj.callAtEndOfLoop) {
+                        obj.cel = view.loops[obj.loop].cels.length - 1;
+                    } else {
+                        obj.cel = 0;
+                    }
+                    endOfLoop = true;
+                }
+
+                if (endOfLoop && obj.callAtEndOfLoop) {
+                    obj.celCycling = false;
+                    commands.agi_set(obj.flagToSetWhenFinished);
+                }
+                obj.nextCycle = obj.cycleTime;
+            } else {
+                obj.nextCycle--;
+            }
+        }
+    }
+
+    if (obj.draw) {
+        if (!obj.fixedPriority) {
+            // http://agi.sierrahelp.com/AGIStudioHelp/Picture/Priorities.html
+            if (obj.y < 48) {
+                obj.priority = 4;
+            } else if (obj.y < 60) {
+                obj.priority = 5;
+            } else if (obj.y < 72) {
+                obj.priority = 6;
+            } else if (obj.y < 84) {
+                obj.priority = 7;
+            } else if (obj.y < 96) {
+                obj.priority = 8;
+            } else if (obj.y < 108) {
+                obj.priority = 9;
+            } else if (obj.y < 120) {
+                obj.priority = 10;
+            } else if (obj.y < 132) {
+                obj.priority = 11;
+            } else if (obj.y < 144) {
+                obj.priority = 12;
+            } else if (obj.y < 156) {
+                obj.priority = 13;
+            } else if (obj.y <= GAMEOBJECT_MAX_Y) {
+                obj.priority = 14;
+            } else {
+                obj.priority = 15;
             }
         }
 
