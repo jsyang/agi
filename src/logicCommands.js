@@ -1146,11 +1146,14 @@ export const commands = {
     },
 
     agi_test_obj_in_box: (oA, X1, Y1, X2, Y2) => {
+        const obj      = state.gameObjects[oA];
+        const celWidth = state.loadedViews[obj.viewNo].loops[obj.loop].cels[obj.cel].width - 1;
+
         return (
-            state.gameObjects[oA].x <= X2 &&
-            state.gameObjects[oA].x >= X1 &&
-            state.gameObjects[oA].y <= Y2 &&
-            state.gameObjects[oA].y <= Y1
+            obj.x + celWidth <= X2 &&
+            obj.x >= X1 &&
+            obj.y <= Y2 &&
+            obj.y >= Y1
         );
     },
 

@@ -1,0 +1,1523 @@
+if (v17 > 0) {
+  call(98);
+}
+if (v0 == 0) {
+  v10 = 2;
+  call(104);
+  if (isset(f6)) {
+    v77 = 2;
+    set(f14);
+    disable.item(c20);
+    new.room(2);
+  }
+  else {
+    set.menu("Sierra");
+    set.menu.item("About SQ",c21);
+    set.menu.item("Help    ",c2);
+    set.menu("File");
+    set.menu.item("Save     <F5>",c3);
+    set.menu.item("Restore  <F7>",c5);
+    set.menu.item("-------------",c20);
+    set.menu.item("Restart  <F9>",c7);
+    set.menu.item("Quit  <Alt-Z>",c1);
+    set.menu("Action");
+    set.menu.item("See Object  <F4>",c22);
+    set.menu.item("Inventory  <Tab>",c10);
+    set.menu("Special");
+    set.menu.item("Sound On/Off      <F2>",c16);
+    if (v20 == 0 &&
+        v26 != 3 &&
+        v26 != 2) {
+      set.menu.item("Graphics Mode <Ctrl R>",c12);
+    }
+    if (v20 == 4) {
+      set.menu.item("Controller     <Ctrl J>",c15);
+    }
+    else {
+      set.menu.item("Joystick      <Ctrl J>",c15);
+    }
+    set.menu.item("Pause            <Esc>",c18);
+    if (v20 != 5) {
+      set.menu("Speed");
+      set.menu.item("Normal ",c24);
+      set.menu.item("Slow   ",c25);
+      set.menu.item("Fast   ",c23);
+      set.menu.item("Fastest",c28);
+    }
+    submit.menu();
+    disable.item(c20);
+    new.room(67);
+  }
+}
+if (isset(f5)) {
+  reset(f190);
+  animate.obj(o0);
+  if ((v81 > 0 ||
+      v0 > 7)) {
+    if (v0 != 10 &&
+        v0 != 12 &&
+        v0 != 13 &&
+        v0 != 14 &&
+        v0 != 75) {
+      load.view(0);
+    }
+  }
+  load.view.v(v16);
+  if (v0 > 39 &&
+      has("jetpack")) {
+    load.view(132);
+  }
+  if (!isset(f92)) {
+    if (v0 > 14 &&
+        v0 < 24) {
+      load.view(163);
+    }
+    if ((v0 == 30 ||
+        v0 == 81 ||
+        v0 == 82 ||
+        v0 == 83)) {
+      load.view(163);
+    }
+  }
+  set.view.v(o0,v16);
+  observe.objs(o0);
+  v138 = 0;
+  v64 = 0;
+  v126 = 0;
+  v87 = 0;
+  v55 = 0;
+  reset(f64);
+  reset(f162);
+  v133 = 30;
+Label1:
+  *v133 = 0;
+  reset.v(v133);
+  if (v133 < 49) {
+    v133++;
+    goto(Label1);
+  }
+  else {
+    v133 = 230;
+Label2:
+    *v133 = 0;
+    reset.v(v133);
+    if (v133 < 249) {
+      v133++;
+      goto(Label2);
+    }
+  }
+}
+if (v130 > 0) {
+  if (v130 != 8) {
+    disable.item(c3);
+    disable.item(c18);
+    disable.item(c16);
+    disable.item(c22);
+    disable.item(c15);
+    disable.item(c12);
+    disable.item(c24);
+    disable.item(c28);
+    disable.item(c23);
+    disable.item(c25);
+    load.logics(100);
+  }
+  call(100);
+  return();
+}
+if (isset(f198)) {
+  reset(f198);
+}
+if (isset(f116)) {
+  reset(f116);
+  set(f198);
+  if (v26 == 2) {
+    if (v0 == 75) {
+      set(f193);
+      set(f198);
+    }
+  }
+}
+if (!isset(f95) &&
+    !isset(f189) &&
+    !isset(f50)) {
+  if (controller(c19)) {
+    set(f116);
+    menu.input();
+  }
+}
+if (controller(c21)) {
+  print("Space Quest was designed and created by"
+        "Mark Crowe and Scott Murphy.");
+}
+if ((said("fastest") ||
+    controller(c28))) {
+  v10 = 0;
+}
+if ((said("fast") ||
+    controller(c23))) {
+  v10 = 1;
+}
+if ((said("normal") ||
+    controller(c24))) {
+  v10 = 2;
+}
+if ((said("slow") ||
+    controller(c25))) {
+  v10 = 4;
+}
+if (!isset(f190)) {
+  if (controller(c13)) {
+    show.mem();
+  }
+}
+if (controller(c26)) {
+  v23--;
+}
+if (controller(c27)) {
+  if (v23 < 15) {
+    v23++;
+  }
+}
+if (v0 != 75 &&
+    !isset(f189) &&
+    !isset(f50)) {
+  if ((controller(c22) ||
+      controller(c4))) {
+    if (v0 == 37 &&
+        isset(f60) &&
+        isset(f65) &&
+        isset(f97)) {
+      print("Sorry. Can't see an object right now."
+            "Try later.");
+    }
+    else {
+      set(f13);
+      status();
+      if (v25 > 0 &&
+          v25 != 255) {
+        v64 = v25;
+        v64 += 214;
+        set(f198);
+        if (v64 == 225) {
+          show.obj(225);
+          get("xenon army knife");
+          get("dehydrated water");
+          drop("survival kit");
+          get("survival kit");
+        }
+        else {
+          if (v64 == 236) {
+            show.obj(186);
+          }
+          else {
+            if (v64 == 217) {
+              if (isset(f154)) {
+                show.obj(199);
+              }
+              else {
+                show.obj(217);
+              }
+            }
+            else {
+              show.obj.v(v64);
+            }
+          }
+        }
+      }
+      reset(f13);
+    }
+  }
+  else {
+    if (controller(c4)) {
+      set(f129);
+    }
+  }
+}
+else {
+  if (controller(c4)) {
+    set(f129);
+  }
+}
+if (controller(c16)) {
+  toggle(f9);
+}
+if (controller(c12)) {
+  toggle.monitor();
+}
+if (v0 != 67 &&
+    !isset(f187)) {
+  if (!isset(f190)) {
+    if (controller(c14)) {
+      set(f190);
+      print("%s4");
+      version();
+      load.logics(99);
+    }
+  }
+  if (controller(c6)) {
+    set(f128);
+  }
+  if (controller(c8)) {
+    set(f130);
+  }
+  if ((controller(c3) ||
+      said("rescue","game"))) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      stop.sound();
+      save.game();
+      set(f198);
+      if (v0 == 75) {
+        set(f193);
+      }
+    }
+  }
+  if ((controller(c5) ||
+      said("restore","game"))) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      set(f198);
+      if (v0 == 75) {
+        set(f193);
+      }
+      stop.sound();
+      restore.game();
+      set(f198);
+    }
+  }
+  if ((controller(c7) ||
+      said("restart","game"))) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      set(f198);
+      restart.game();
+      set(f198);
+      if (v0 == 75) {
+        set(f193);
+      }
+    }
+  }
+  if ((controller(c2) ||
+      said("aid") ||
+      said("aid","a"))) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      call(92);
+      set(f198);
+      if (v0 == 75) {
+        set(f193);
+      }
+    }
+  }
+  if (controller(c9)) {
+    echo.line();
+  }
+  if (controller(c17)) {
+    cancel.line();
+  }
+  if (controller(c15)) {
+    init.joy();
+  }
+  if ((controller(c18) ||
+      said("pause","game"))) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      pause();
+      if (v0 == 75) {
+        set(f193);
+      }
+    }
+  }
+  if (controller(c10)) {
+    if (!isset(f189) &&
+        !isset(f50)) {
+      status();
+      set(f198);
+      if (v0 == 75) {
+        set(f193);
+      }
+      else {
+        if (v0 == 65) {
+          set(f115);
+        }
+        else {
+          if (has("pulseray") &&
+              v0 != 65 &&
+              v0 != 64) {
+            if (v26 == 2 &&
+                v20 == 0) {
+              goto(Label3);
+            }
+            display(24,10,"F6 to fire Pulseray");
+          }
+        }
+      }
+    }
+  }
+Label3:
+  if ((controller(c1) ||
+      said("quit"))) {
+    stop.sound();
+    if ((isset(f190) ||
+        isset(f189) ||
+        isset(f50))) {
+      quit(1);
+    }
+    else {
+      quit(0);
+      if (v0 == 75) {
+        set(f193);
+      }
+    }
+  }
+}
+if (v0 > 33) {
+  if ((said("check out","pocket") ||
+      said("look in","clothes") ||
+      said("look in","pocket") ||
+      said("check out","clothes"))) {
+    if (v81 == 3) {
+      if (!has("sarien id card")) {
+        get("sarien id card");
+        print("In the pocket of this%m2 is an"
+              "alien %m5card. The name on the card"
+              "is Butston Freem. You wonder if"
+              "this is a common%m3 name.");
+      }
+      else {
+        print("There is an alien %m5card there.");
+      }
+    }
+    else {
+      print("Searching your pocket you find $%v124.");
+    }
+  }
+}
+get.posn(o0,v153,v154);
+if (v6 == v150 &&
+    v153 == v151 &&
+    v154 == v152) {
+  stop.cycling(o0);
+}
+else {
+  if (!isset(f56)) {
+    start.cycling(o0);
+  }
+}
+v151 = v153;
+v152 = v154;
+v150 = v6;
+if (isset(f133)) {
+  start.cycling(o0);
+}
+else {
+  if ((v6 <= 0 ||
+      isset(f56))) {
+    stop.cycling(o0);
+  }
+}
+v145--;
+if (v145 == 1) {
+  v145 = 255;
+  v144--;
+  if (v144 == 0) {
+    shake.screen(2);
+    set(f186);
+    shake.screen(1);
+    new.room(77);
+  }
+}
+if ((isset(f86) ||
+    isset(f89))) {
+  if ((v0 > 11 ||
+      isset(f79))) {
+    reset(f86);
+  }
+  else {
+    if (!isset(f72)) {
+      if (v76 <= 0) {
+        v76 = 9;
+        if (v75 > 0) {
+          v75--;
+        }
+        else {
+          if (v74 > 0) {
+            v74--;
+            v75 = 9;
+          }
+          else {
+            if (v73 > 0) {
+              v73--;
+              v74 = 5;
+              v75 = 9;
+            }
+            else {
+              if (v77 > 0) {
+                v77--;
+                v73 = 9;
+                v74 = 5;
+                v75 = 9;
+              }
+              else {
+                if ((isset(f50) ||
+                    isset(f189))) {
+                  graphics();
+                }
+                shake.screen(2);
+                new.room(77);
+              }
+            }
+          }
+        }
+      }
+    }
+    v76--;
+  }
+}
+if (v0 != 24) {
+  if (isset(f96) &&
+      !isset(f156) &&
+      !isset(f157)) {
+    v94--;
+    if (v94 == 1) {
+      v95--;
+      if (v95 == 1) {
+        reset(f96);
+        set(f101);
+      }
+      else {
+        v94 = 252;
+      }
+    }
+  }
+}
+if (isset(f182)) {
+  v147--;
+  if (v147 == 1) {
+    v147 = 181;
+    v148--;
+    if (v148 == 41) {
+      print("The heat is causing you to develop"
+            "quite a thirst. A drink of water"
+            "would certainly be most pleasant.");
+    }
+    else {
+      if (v148 == 16) {
+        print("%m4very much in need of water now."
+              "Your future will be a thing of the"
+              "past without it.");
+      }
+      else {
+        if (v148 == 1) {
+          normal.motion(o0);
+          stop.motion(o0);
+          set.view(o0,163);
+          print("You're dead, %s1. You have died"
+                "of dehydration. Within a few"
+                "hours, your gaunt corpse will"
+                "have dried to a crisp, your"
+                "powdered remains evenly"
+                "distributed across the parched"
+                "terrain by a searing gust.");
+          v130 = 33;
+        }
+      }
+    }
+  }
+}
+if (said("clock")) {
+  toggle(f184);
+}
+if (isset(f184)) {
+  if (v11 != v149) {
+    v149 = v11;
+    if (v0 > 0 &&
+        v0 < 84 &&
+        v0 != 67 &&
+        v0 != 69) {
+      display(1,28," %v13:%v12|2:%v11|2  ");
+    }
+  }
+}
+if (said("fast")) {
+  v121 = 0;
+  v10 = v121;
+}
+if (said("normal")) {
+  v121 = 2;
+  v10 = v121;
+}
+if (said("slow")) {
+  v121 = 4;
+  v10 = v121;
+}
+if (isset(f12)) {
+  if (v26 == 2 &&
+      v20 == 0) {
+    if (v0 == 33) {
+      clear.lines(0,0,0);
+    }
+  }
+  else {
+    clear.lines(23,24,0);
+  }
+  set(f193);
+  set(f198);
+  reset(f190);
+  disable.item(c20);
+  if (v0 == 75) {
+    disable.item(c22);
+  }
+}
+call.v(v0);
+if (isset(f190)) {
+  call(99);
+}
+if (v124 <= 0 &&
+    has("buckazoid(s)")) {
+  drop("buckazoid(s)");
+}
+if (v124 > 0 &&
+    !has("buckazoid(s)") &&
+    !isset(f94)) {
+  set(f94);
+  print("Just lost your buckazoid object.");
+}
+if (isset(f94) &&
+    has("buckazoid(s)")) {
+  reset(f94);
+}
+if ((!isset(f2) ||
+    v9 > 0 ||
+    isset(f4))) {
+  goto(Label4);
+}
+if (isset(f125)) {
+  goto(Label5);
+}
+if (v0 == 33) {
+  print("No time to talk!");
+  set(f4);
+  reset(f2);
+}
+if (isset(f86)) {
+  if (v0 > 0 &&
+      v0 < 10 &&
+      v0 != 8) {
+    if ((said("check out","light") ||
+        said("check out","alarm","light"))) {
+      print("There is a red flashing alarm light"
+            "here which seems to be indicating"
+            "that you had better get moving.");
+    }
+    if (v138 <= 0 &&
+        said("listen","sound")) {
+      print("You can't hear anything of note.");
+    }
+    if (said("acquire","bodies")) {
+      print("I hope you know how strange that"
+            "sounds.");
+    }
+    if ((said("check out","alien") ||
+        said("check out","being") ||
+        said("check out","being"))) {
+      if (isset(f195)) {
+        print("You see a%m3 clad in red battle"
+              "gear. You'd better hope it doesn't"
+              "see you.");
+      }
+      else {
+        print("There is no one else here.");
+      }
+    }
+  }
+}
+if (v0 > 0 &&
+    v0 < 8) {
+  if ((said("attack","bodies") ||
+      said("attack","being"))) {
+    print("Don't be ridiculous!");
+  }
+  if ((said("speak","being") ||
+      said("speak","bodies"))) {
+    print("You talk to the sprawled corpse."
+          "Strangely, you get no response.");
+  }
+  if ((said("kick","bodies") ||
+      said("kick","being"))) {
+    print("Good grief, %s1! %m4a bit twisted, I"
+          "must say.");
+    if (!isset(f119) &&
+        v3 > 0) {
+      set(f119);
+      v3--;
+    }
+  }
+}
+if (said("listen","foot step")) {
+  if (v138 > 0) {
+    print("Yes, it's true. You definitely hear"
+          "footsteps. You'd better make yourself"
+          "scarce!");
+  }
+  else {
+    print("There are no footsteps to hear now.");
+  }
+}
+if (has("keycard") &&
+    has("sarien id card")) {
+  if (said("check out","card")) {
+    print("The Keycard or the I.D. card?");
+  }
+}
+if (said("check out","cart")) {
+  if (has("cartridge")) {
+    v89 = 215;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","boulder")) {
+  if (has("rock")) {
+    v89 = 216;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","dialect translator")) {
+  if (has("gadget")) {
+    if (isset(f154)) {
+      v89 = 199;
+    }
+    else {
+      v89 = 217;
+    }
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("check out","orat","chunk") ||
+    said("check out","chunk"))) {
+  if (has("orat part")) {
+    v89 = 218;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","credit card")) {
+  if (has("keycard")) {
+    v89 = 219;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","glass")) {
+  if (has("glass")) {
+    v89 = 220;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("check out","key") ||
+    said("check out","bike","key"))) {
+  if (has("skimmer key")) {
+    v89 = 221;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","ale")) {
+  if (has("beer")) {
+    v89 = 222;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","jet pack")) {
+  if (has("jetpack")) {
+    v89 = 223;
+    if (v81 == 2) {
+      print("%m4currently wearing it.");
+    }
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("check out","buck") ||
+    said("check out","cash"))) {
+  if (has("buckazoid(s)")) {
+    v89 = 224;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("check out","kit") ||
+    said("look in","kit") ||
+    said("open","kit"))) {
+  if ((has("survival kit") ||
+      has("survival kit"))) {
+    if (!has("xenon army knife")) {
+      v89 = 225;
+      get("xenon army knife");
+      get("dehydrated water");
+      drop("survival kit");
+      get("survival kit");
+    }
+    else {
+      v89 = 186;
+    }
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (has("dehydrated water")) {
+  if ((said("check out","dehydrated water") ||
+      said("check out","can","dehydrated water") ||
+      said("check out","dehydrated water","can") ||
+      said("check out","can"))) {
+    v89 = 226;
+  }
+}
+if (said("check out","i.d.")) {
+  if (has("sarien id card")) {
+    v89 = 227;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","gun")) {
+  if (has("pulseray")) {
+    v89 = 228;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","bomb")) {
+  if (has("gas grenade")) {
+    v89 = 229;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","control")) {
+  if (has("remote control")) {
+    v89 = 230;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","bush")) {
+  if (has("plant")) {
+    v89 = 232;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("check out","army knife")) {
+  if (has("xenon army knife")) {
+    v89 = 233;
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (v89 > 0) {
+  if (v0 == 37 &&
+      isset(f60) &&
+      isset(f65) &&
+      isset(f97)) {
+    if (v89 == 224) {
+      print("You possess %v124 buckazoid(s).");
+    }
+    else {
+      print("Sorry. Can't see an object right now."
+            "Try later.");
+    }
+  }
+  else {
+    show.obj.v(v89);
+    set(f198);
+  }
+  v89 = 0;
+}
+if ((said("consume","chunk") ||
+    said("consume","orat","chunk"))) {
+  if (has("orat part")) {
+    print("You raise the Orat part to your mouth"
+          "and attempt to feast on it."
+          "Unfortunately for you it is composed"
+          "mainly of bone. The small amount of"
+          "flesh still clinging to the bone is"
+          "incredibly rancid in flavor. You wisely"
+          "give up on this idea.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (v0 != 29) {
+  if ((said("drop","orat","chunk") ||
+      said("drop","chunk"))) {
+    if (has("orat part")) {
+      print("Silly human! That would not be"
+            "helpful.");
+    }
+    else {
+      print("You do not possess the designated"
+            "item.");
+    }
+  }
+}
+if (said("use","army knife")) {
+  if (has("xenon army knife")) {
+    print("This knife wouldn't cut hot margarine.");
+  }
+}
+if (said("drop","army knife")) {
+  if (has("xenon army knife")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","cart")) {
+  if (has("cartridge")) {
+    print("Silly human! That would not be helpful.");
+  }
+}
+if ((said("drop","boulder") ||
+    said("cast","boulder"))) {
+  if (has("rock")) {
+    print("Silly human! That would not be helpful.");
+  }
+}
+if ((said("turn","dial") ||
+    said("turn","dialect translator") ||
+    said("turn","dialect translator","dial") ||
+    said("turn","dial","dialect translator"))) {
+  if (has("gadget")) {
+    if (isset(f154)) {
+      print("There is no need for you to turn the"
+            "gadget off.");
+    }
+    else {
+      print("You turn the dial to the right. The"
+            "light begins to glow.");
+      set(f154);
+    }
+  }
+}
+if (said("drop","dialect translator")) {
+  if (has("gadget")) {
+    print("Silly human! That would not be helpful.");
+  }
+}
+if (said("drop","credit card")) {
+  if (has("keycard")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("look in","glass")) {
+  if (has("glass")) {
+    print("Due to its highly reflective coating"
+          "you cannot see through the glass very"
+          "easily, however, you do see a rather"
+          "striking figure peering back at you.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","glass")) {
+  if (has("glass")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("drop","bike","key") ||
+    said("drop","key"))) {
+  if (has("skimmer key")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("look in","ale")) {
+  if (has("beer")) {
+    print("You stare into the semi-clear liquid"
+          "and notice how it gives everything seen"
+          "through it a lovely yellow tint.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","ale")) {
+  if (has("beer")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drink","ale")) {
+  if (has("beer")) {
+    drop("beer");
+    print("Yum! What a taste treat.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","jet pack")) {
+  if (has("jetpack")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("put on","jet pack") ||
+    said("drop","jet pack"))) {
+  if (!isset(f175)) {
+    if (v0 == 43) {
+      if (has("jetpack")) {
+        set.view(o0,132);
+        v81 = 2;
+        set(f175);
+        print("%m4now wearing the jetpack. A small"
+              "control linkage snaps onto the back"
+              "of your helmet allowing you to"
+              "control it merely by focusing on"
+              "where you want to go.");
+      }
+      else {
+        print("You do not possess the designated"
+              "item.");
+      }
+    }
+    else {
+      print("It wouldn't help to wear it since"
+            "there is gravity here.");
+    }
+  }
+  else {
+    print("%m4already wearing it.");
+  }
+}
+if (v0 != 53 &&
+    v0 != 57) {
+  if (said("get down","jet pack")) {
+    if (isset(f175)) {
+      print("There is no need to do that now.");
+    }
+    else {
+      print("You do not possess the designated"
+            "item.");
+    }
+  }
+}
+if ((said("drop","buck") ||
+    said("drop","cash"))) {
+  if (has("buckazoid(s)")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","kit")) {
+  if ((has("survival kit") ||
+      has("survival kit"))) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (has("dehydrated water")) {
+  if (said("open","regulator")) {
+    print("There is no need to do that. Just drink"
+          "from the nozzle.");
+  }
+  if (said("open","nozzle")) {
+    print("There is no need to do that. Just drink"
+          "from the nozzle.");
+  }
+  if (said("check out","regulator")) {
+    print("The regulator is just a curved, metal"
+          "tube which mixes air with the can's"
+          "contents and directs it to the nozzle.");
+  }
+  if (said("check out","nozzle")) {
+    print("The nozzle is a flexible tube which"
+          "senses suction and releases the water.");
+  }
+  if (said("check out","instructions")) {
+    print("There is printing on it.");
+  }
+  if ((said("read","instructions") ||
+      said("read","letters") ||
+      said("check out","letters") ||
+      said("check out","letters") ||
+      said("read","letters"))) {
+    print("The can label says \"Pelvitron's"
+          "Dehydrated Water  (H2) - All you add is"
+          "air!  Makes 10 gallons!\"");
+    print("\"Directions - To use, simply drink"
+          "from nozzle. Metered amounts will be"
+          "dispensed.     Caution - Do not attempt"
+          "to open or rupture! Misuse could result"
+          "in personal injury and/or flash"
+          "flooding.\"");
+  }
+  if ((said("open","dehydrated water") ||
+      said("open","dehydrated water","can") ||
+      said("open","can","dehydrated water") ||
+      said("open","can") ||
+      said("open","can","boulder") ||
+      said("open","can","army knife"))) {
+    print("You can't do that. Read the label, %s!");
+  }
+  if ((said("cast","can") ||
+      said("cast","dehydrated water") ||
+      said("cast","can","dehydrated water") ||
+      said("cast","dehydrated water","area") ||
+      said("cast","dehydrated water","can"))) {
+    print("Come to your senses, %s1. That couldn't"
+          "help you at this time.");
+  }
+  if ((said("drop","dehydrated water") ||
+      said("drop","dehydrated water","can") ||
+      said("drop","can","dehydrated water"))) {
+    print("Silly human! That would not be helpful.");
+  }
+}
+if ((has("dehydrated water") ||
+    has("survival kit"))) {
+  if ((said("drink","dehydrated water") ||
+      said("drink","nozzle") ||
+      said("drink") ||
+      said("drink","can") ||
+      said("draw","nozzle") ||
+      said("suck","can") ||
+      said("suck","nozzle"))) {
+    if (!has("dehydrated water")) {
+      if (has("xenon army knife")) {
+        print("I'll bet you wish you still had"
+              "that dehydrated water.");
+      }
+      else {
+        print("You don't seem to have that.");
+      }
+    }
+    else {
+      v147 = 181;
+      v148 = 61;
+      print("You place your lips to the nozzle and"
+            "draw.  A fluid, not a very reasonable"
+            "facsimile of water, is released"
+            "slowly. While tasting slightly"
+            "terrible, it quenches your thirst, at"
+            "least for the time being.");
+    }
+  }
+}
+if (said("drop","i.d.")) {
+  if (has("sarien id card")) {
+    print("Silly human! That would not be helpful.");
+  }
+}
+if (v81 == 3) {
+  if (said("acquire","i.d.")) {
+    if (has("sarien id card")) {
+      print("%m4already in possession of the card.");
+    }
+    else {
+      get("sarien id card");
+      print("Reaching into the pocket of the%m3%m2"
+            "you find a%m3 ID card.");
+    }
+  }
+}
+if (said("drop","gun")) {
+  if (has("pulseray")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (said("drop","control")) {
+  if (has("control")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if (has("control") &&
+    v0 != 50) {
+  if ((said("press","button") ||
+      said("press","control","button"))) {
+    print("You press the button on the remote"
+          "control but notice nothing different.");
+  }
+}
+if (said("consume","bush")) {
+  if (has("plant")) {
+    print("You plant your teeth into the strange"
+          "plant and take a large bite, only to"
+          "find it tastes exquisitely bad. If you"
+          "had your choice you would choose any"
+          "form of death over a meal of this.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("drop","bush") ||
+    said("cast","bush"))) {
+  if (has("plant")) {
+    print("Silly human! That would not be helpful.");
+  }
+  else {
+    print("You do not possess the designated item.");
+  }
+}
+if ((said("asshole") ||
+    said("asshole","anyword") ||
+    said("anyword","asshole") ||
+    said("asshole","anyword","anyword") ||
+    said("anyword","asshole","anyword") ||
+    said("anyword","anyword","asshole"))) {
+  print("A mind is a terrible thing to waste.");
+  reset(f2);
+}
+if (said("get down","clothes")) {
+  print("I'll get naked if you get naked. You go"
+        "first.");
+}
+if ((said("get down","helmet") ||
+    said("open","helmet"))) {
+  if ((v81 == 1 ||
+      v81 == 3)) {
+    print("You just can't do that. Really. It's"
+          "not a good idea. Besides, your dental"
+          "hygiene hasn't been what it should. Do"
+          "the universe a favor.");
+  }
+}
+if (said("who")) {
+  print("%m4%s1. Don't you remember?");
+}
+if (v0 != 11) {
+  if (said("check out","ceiling")) {
+    print("Nothing up there is going to help you.");
+  }
+}
+if (said("check out","floor")) {
+  if (v0 != 6 &&
+      v0 != 14) {
+    print("There is nothing there that you can't"
+          "already see.");
+  }
+}
+if (said("check out","clothes")) {
+  if (v81 == 1) {
+    print("%m4dressed in the standard issue"
+          "excursion garment.");
+  }
+  else {
+    if (v81 == 3) {
+      print("%m4attired in the spiffy%m2 of a%m3"
+            "marauder. There is a pocket.");
+    }
+    else {
+      if (v81 == 2) {
+        print("%m4dressed in the standard issue"
+              "excursion garment.");
+        print("On your back is a jetpack.");
+      }
+      else {
+        if (v81 == 4) {
+          print("%m4attired in the spiffy%m2 of"
+                "a%m3 marauder. There is a pocket.");
+          print("You have no helmet and are easily"
+                "distinguished as an intruder by"
+                "your non-green head.");
+        }
+        else {
+          print("%m4wearing a lovely one-piece"
+                "casual space travel outfit.");
+        }
+      }
+    }
+  }
+}
+if (said("check out","coupon")) {
+  if (isset(f174) &&
+      isset(f176)) {
+    print("You do not possess the designated item.");
+  }
+  else {
+    print("For more information refer to coupons"
+          "enclosed in package.");
+  }
+}
+if (said("scott")) {
+  print("Hello, %s1. I've been expecting you."
+        "You're obviously a person of dubious"
+        "taste. Drop me a line at Sierra and let"
+        "me know if you've enjoyed playing.");
+}
+if (said("run")) {
+  print("You can't run.");
+}
+if ((said("jump") ||
+    said("jump","anyword") ||
+    said("jump","anyword","anyword"))) {
+  print("Sorry. This game is in a NO JUMPING zone.");
+}
+if ((said("nap") ||
+    said("climb in","nap"))) {
+  print("You've already had your nap!");
+}
+if ((said("open","anyword") ||
+    said("close","anyword"))) {
+  print("That doesn't seem to be the correct"
+        "action in this case.");
+}
+if (said("check out")) {
+  print("You'll have to be more specific.");
+}
+if ((said("check out","alien") ||
+    said("check out","being"))) {
+  print("You see no one of interest.");
+}
+if ((said("check out","next","area") ||
+    said("check out","down","area"))) {
+  print("You'll have to go there to do that.");
+}
+if ((said("check out","anyword") ||
+    said("check out","anyword","anyword"))) {
+  random(70,72,v64);
+  print.v(v64);
+}
+if ((said("look in","anyword") ||
+    said("look in","anyword","anyword"))) {
+  print("You learn nothing new through this act.");
+}
+if ((said("acquire","anyword") ||
+    said("acquire","anyword","anyword"))) {
+  random(73,75,v64);
+  print.v(v64);
+}
+if (said("climb in","anyword")) {
+  random(76,77,v64);
+  print.v(v64);
+}
+if (said("use","anyword")) {
+  random(79,80,v64);
+  print.v(v64);
+}
+if (said("consume","anyword")) {
+  print("That act would lack any serious"
+        "gratification.");
+}
+if (said("cut","anyword")) {
+  if (has("xenon army knife")) {
+    print("This knife wouldn't cut hot margarine.");
+  }
+  else {
+    print("You possess nothing that would help you"
+          "accomplish this.");
+  }
+}
+if ((said("find","anyword") ||
+    said("find","anyword","anyword"))) {
+  print("You can't find something you didn't lose.");
+}
+Label4:
+if (isset(f2) &&
+    v9 > 0) {
+  reset(f2);
+  if (v9 == 1) {
+    print("%m8\"%w1\"");
+  }
+  if (v9 == 2) {
+    print("%m8\"%w2\"");
+  }
+  if (v9 == 3) {
+    print("%m8\"%w3\"");
+  }
+}
+if (isset(f2) &&
+    !isset(f4)) {
+  random(89,91,v64);
+  print.v(v64);
+  reset(f2);
+}
+Label5:
+reset(f4);
+reset(f129);
+reset(f128);
+reset(f130);
+return();
+
+// Messages
+#message 1 ""
+#message 2 " uniform"
+#message 3 " Sarien"
+#message 4 "You are "
+#message 5 "identification "
+#message 6 "There is nothing there that you can't already see."
+#message 7 "That does not "
+#message 8 "I don't understand "
+#message 9 "The can gives only one size of serving, 10 gallons. I don't think you're that thirsty."
+#message 10 "%m8\"%w1\""
+#message 11 "%m8\"%w2\""
+#message 12 "%m8\"%w3\""
+#message 13 "A mind is a terrible thing to waste."
+#message 14 "I'll get naked if you get naked. You go first."
+#message 15 "%m4%s1. Don't you remember?"
+#message 16 "Silly human! That would not be helpful."
+#message 17 "Yum! What a taste treat."
+#message 18 "There is a red flashing alarm light here which seems to be indicating that you had better get moving."
+#message 19 "You can't hear anything of note."
+#message 20 "Yes, it's true. You definitely hear footsteps. You'd better make yourself scarce!"
+#message 21 "Word not known: "
+#message 22 "%m21%w1"
+#message 23 "%m21%w2"
+#message 24 "%m21%w3"
+#message 25 "%m8you."
+#message 26 "There are no footsteps to hear now."
+#message 27 "I hope you know how strange that sounds."
+#message 28 "Nothing up there is going to help you."
+#message 29 "You can't do that. Read the label, %s!"
+#message 30 "You do not possess the designated item."
+#message 31 "You'll have to be more specific."
+#message 32 "This knife wouldn't cut hot margarine."
+#message 33 "You turn the dial to the right. The light begins to glow."
+#message 34 "There is no need for you to turn the gadget off."
+#message 35 "You just can't do that. Really. It's not a good idea. Besides, your dental hygiene hasn't been what it should. Do the universe a favor."
+#message 36 "%m4dressed in the standard issue excursion garment."
+#message 37 "On your back is a jetpack."
+#message 38 "%m4attired in the spiffy%m2 of a%m3 marauder. There is a pocket."
+#message 39 "You have no helmet and are easily distinguished as an intruder by your non-green head."
+#message 40 "%m4wearing a lovely one-piece casual space travel outfit."
+#message 41 "There is printing on it."
+#message 42 "You plant your teeth into the strange plant and take a large bite, only to find it tastes exquisitely bad. If you had your choice you would choose any form of death over a meal of this."
+#message 43 "No time to talk!"
+#message 44 "%m4now wearing the jetpack. A small control linkage snaps onto the back of your helmet allowing you to control it merely by focusing on where you want to go."
+#message 45 "%m4already wearing it."
+#message 46 "Due to its highly reflective coating you cannot see through the glass very easily, however, you do see a rather striking figure peering back at you."
+#message 47 "You place your lips to the nozzle and draw.  A fluid, not a very reasonable facsimile of water, is released slowly. While tasting slightly terrible, it quenches your thirst, at least for the time being."
+#message 48 "The can label says \"Pelvitron's Dehydrated Water  (H2) - All you add is air!  Makes 10 gallons!\""
+#message 49 "\"Directions - To use, simply drink from nozzle. Metered amounts will be dispensed.     Caution - Do not attempt to open or rupture! Misuse could result in personal injury and/or flash flooding.\""
+#message 50 "Come to your senses, %s1. That couldn't help you at this time."
+#message 51 "The regulator is just a curved, metal tube which mixes air with the can's contents and directs it to the nozzle."
+#message 52 "The nozzle is a flexible tube which senses suction and releases the water."
+#message 53 "You just had a drink. You'd better ration your supply. This place is hot!"
+#message 54 "Sorry. Can't see an object right now. Try later."
+#message 55 "There is no need to do that now."
+#message 56 "It wouldn't help to wear it since there is gravity here."
+#message 57 "For more information refer to coupons enclosed in package."
+#message 58 "Hello, %s1. I've been expecting you. You're obviously a person of dubious taste. Drop me a line at Sierra and let me know if you've enjoyed playing."
+#message 59 "Sorry. This game is in a NO JUMPING zone."
+#message 60 "You can't run."
+#message 61 "Don't be ridiculous!"
+#message 62 "You raise the Orat part to your mouth and attempt to feast on it. Unfortunately for you it is composed mainly of bone. The small amount of flesh still clinging to the bone is incredibly rancid in flavor. You wisely give up on this idea."
+#message 63 "You've already had your nap!"
+#message 64 "You talk to the sprawled corpse. Strangely, you get no response."
+#message 65 "Good grief, %s1! %m4a bit twisted, I must say."
+#message 66 "There is no need to do that. Just drink from the nozzle."
+#message 67 "That doesn't seem to be the correct action in this case."
+#message 68 "You stare into the semi-clear liquid and notice how it gives everything seen through it a lovely yellow tint."
+#message 69 "You possess %v124 buckazoid(s)."
+#message 70 "%m7seem to be in your sight now."
+#message 71 "%m7appear to be here to view."
+#message 72 "Are you sure you want to look at that?"
+#message 73 "%m7seem to be available at this time."
+#message 74 "There is nothing here by that name which can be acquired."
+#message 75 "You can't obtain that here."
+#message 76 "Your legs will take you where you want to go (in most cases, anyway)."
+#message 77 "That's not the way to get there."
+#message 79 "That is not currently one of your options."
+#message 80 "How would you like to do that?"
+#message 82 "That act would lack any serious gratification."
+#message 83 "You possess nothing that would help you accomplish this."
+#message 84 "You can't find something you didn't lose."
+#message 87 "You press the button on the remote control but notice nothing different."
+#message 88 "You learn nothing new through this act."
+#message 89 "%m8your request."
+#message 90 "%m7compute."
+#message 91 "Say What?"
+#message 95 "%m4currently wearing it."
+#message 96 "You'll have to go there to do that."
+#message 98 "You see a%m3 clad in red battle gear. You'd better hope it doesn't see you."
+#message 99 "There is no one else here."
+#message 100 "%m4already in possession of the card."
+#message 101 "Reaching into the pocket of the%m3%m2 you find a%m3 ID card."
+#message 102 "You see no one of interest."
+#message 103 "The Keycard or the I.D. card?"
+#message 104 "You don't seem to have that."
+#message 105 "I'll bet you wish you still had that dehydrated water."
+#message 106 "%m4very much in need of water now. Your future will be a thing of the past without it."
+#message 107 "You're dead, %s1. You have died of dehydration. Within a few hours, your gaunt corpse will have dried to a crisp, your powdered remains evenly distributed across the parched terrain by a searing gust."
+#message 108 "F6 to fire Pulseray"
+#message 109 " %v13:%v12|2:%v11|2  "
+#message 110 "Searching your pocket you find $%v124."
+#message 111 "In the pocket of this%m2 is an alien %m5card. The name on the card is Butston Freem. You wonder if this is a common%m3 name."
+#message 112 "There is an alien %m5card there."
+#message 113 "The heat is causing you to develop quite a thirst. A drink of water would certainly be most pleasant."
+#message 114 "Sorry, you'll have to go back into the bar to do that."
+#message 115 "%s4"
+#message 118 "Just lost your buckazoid object."
+#message 149 "Controller     <Ctrl J>"
+#message 150 "Sierra"
+#message 151 "About SQ"
+#message 152 "Help    "
+#message 153 "File"
+#message 154 "Save     <F5>"
+#message 155 "Restore  <F7>"
+#message 156 "-------------"
+#message 157 "Restart  <F9>"
+#message 158 "Quit  <Alt-Z>"
+#message 159 "Action"
+#message 161 "See Object  <F4>"
+#message 162 "Inventory  <Tab>"
+#message 163 "Special"
+#message 164 "Sound On/Off      <F2>"
+#message 165 "Graphics Mode <Ctrl R>"
+#message 166 "Joystick      <Ctrl J>"
+#message 167 "Pause            <Esc>"
+#message 168 "Speed"
+#message 169 "Normal "
+#message 170 "Slow   "
+#message 171 "Fast   "
+#message 172 "Fastest"
+#message 175 "Space Quest was designed and created by Mark Crowe and Scott Murphy."

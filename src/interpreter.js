@@ -436,14 +436,17 @@ const updateObject = (obj, no) => {
 
                 if (obj.direction === GAMEOBJECT_DIRECTION.Up && view.loops[2] && view.loops[3]) {
                     obj.loop = 3;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (
                     obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
                     obj.direction === GAMEOBJECT_DIRECTION.Right ||
                     obj.direction === GAMEOBJECT_DIRECTION.DownRight
                 ) {
                     obj.loop = 0;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (obj.direction === GAMEOBJECT_DIRECTION.Down && view.loops[2] && view.loops[3]) {
                     obj.loop = 2;
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (
                     obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||
                     obj.direction === GAMEOBJECT_DIRECTION.Left ||
@@ -454,6 +457,12 @@ const updateObject = (obj, no) => {
                     } else {
                         obj.loop = 0;
                     }
+                    hasChangedDirection = obj.loop !== obj.oldLoop;
+                }
+
+                // Ensure we force the correct cel for the new loop if it's changed direction
+                if (hasChangedDirection) {
+                    obj.nextCycle = 1;
                 }
             } else if (view.loops.length >= 4) {
                 if (obj.direction === 1) {

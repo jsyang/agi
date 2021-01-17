@@ -1,0 +1,241 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  draw.pic(v0);
+  load.view(32);
+  load.view(12);
+  load.sound(1);
+  load.sound(2);
+  load.view(28);
+  add.to.pic(28,0,1,126,71,6,0);
+  animate.obj(o3);
+  set.view(o3,32);
+  v55 = 0;
+  step.size(o3,v55);
+  ignore.blocks(o3);
+  set.cel(o3,0);
+  position(o3,70,62);
+  animate.obj(o4);
+  set.view(o4,32);
+  v55 = 0;
+  step.size(o4,v55);
+  ignore.blocks(o4);
+  set.cel(o4,0);
+  position(o4,70,145);
+  animate.obj(o1);
+  ignore.horizon(o1);
+  set.view(o1,12);
+  set.cel(o1,0);
+  position(o1,34,8);
+  animate.obj(o2);
+  ignore.horizon(o2);
+  set.view(o2,12);
+  set.cel(o2,2);
+  position(o2,103,90);
+  draw(o1);
+  draw(o2);
+  draw(o3);
+  draw(o4);
+  stop.update(o3);
+  stop.update(o4);
+  v30 = 2;
+  v31 = 2;
+  ignore.objs(o0);
+  animate.obj(o0);
+  draw(o0);
+  show.pic();
+  if (v26 == 2 &&
+      v20 == 0) {
+    goto(Label1);
+  }
+  clear.lines(23,24,0);
+}
+Label1:
+if (isset(f162)) {
+  reset(f162);
+}
+if ((obj.in.box(o0,63,67,92,67) ||
+    obj.in.box(o0,63,151,92,151))) {
+  normal.motion(o0);
+  player.control();
+}
+if (isset(f30)) {
+  stop.update(o3);
+  stop.update(o4);
+}
+if (isset(f30) &&
+    v30 == 2 &&
+    v31 == 2) {
+  reset(f30);
+  if ((obj.in.box(o0,70,52,84,56) ||
+      obj.in.box(o0,70,134,84,138))) {
+    program.control();
+    stop.motion(o0);
+    normal.motion(o0);
+    start.motion(o0);
+    get.posn(o0,v135,v136);
+    if (v136 < 85) {
+      v136 = 83;
+      v135 = 0;
+      reposition(o0,v135,v136);
+    }
+    if (v136 > 84) {
+      v136 = 174;
+      v135 = 0;
+      reposition(o0,v135,v136);
+    }
+    v32 = 14;
+  }
+}
+v32--;
+if (v32 == 1) {
+  get.posn(o0,v135,v136);
+  v136 += 16;
+  v55 = 0;
+  move.obj.v(o0,v135,v136,55,f31);
+}
+if (isset(f31)) {
+  reset(f31);
+  player.control();
+  start.motion(o0);
+}
+if (v30 != 1 &&
+    posn(o0,70,57,79,66)) {
+  start.update(o3);
+  end.of.loop(o3,f30);
+  sound(1,f162);
+  v30 = 1;
+}
+if (v30 == 1 &&
+    !posn(o0,70,57,79,66)) {
+  start.update(o3);
+  reverse.loop(o3,f30);
+  sound(2,f162);
+  v30 = 2;
+}
+if (v31 != 1 &&
+    posn(o0,70,140,79,149)) {
+  start.update(o4);
+  end.of.loop(o4,f30);
+  sound(1,f162);
+  v31 = 1;
+}
+if (v31 == 1 &&
+    !posn(o0,70,140,79,149)) {
+  start.update(o4);
+  reverse.loop(o4,f30);
+  sound(2,f162);
+  v31 = 2;
+}
+if ((!isset(f2) ||
+    isset(f4))) {
+  goto(Label2);
+}
+if (said("check out","wall")) {
+  print("Unable to be tricked, you cleverly deduce"
+        "that there are, indeed, walls in here."
+        "They are just your run-of-the-mill"
+        "spacecraft interior walls.");
+}
+if (said("check out","area")) {
+  print("You are in one of the Arcada's hallways"
+        "near an elevator.");
+}
+if (said("check out","elevator")) {
+  if ((posn(o0,0,137,39,160) ||
+      posn(o0,113,57,159,79))) {
+    print("You can see no elevator where you are.");
+  }
+  else {
+    print("This is an elevator to another level of"
+          "the ship.");
+  }
+}
+if ((said("check out","bodies") ||
+    said("check out","being"))) {
+  if (posn(o0,117,57,159,79)) {
+    print("It appears to be one of your crewmates."
+          " He is nonfunctional.");
+  }
+  else {
+    print("That can't be done from where you are"
+          "standing.");
+  }
+}
+if ((said("explore","bodies") ||
+    said("check out","pocket") ||
+    said("explore","being") ||
+    said("explore","pocket"))) {
+  if (posn(o0,117,57,159,79)) {
+    print("You search the body of your crewmate"
+          "and find. . .");
+    if (!has("keycard")) {
+      print("a keycard.");
+    }
+    else {
+      print("Nothing.");
+    }
+  }
+  else {
+    print("That can't be done from where you are"
+          "standing.");
+  }
+}
+if ((said("strip","bodies") ||
+    said("strip","being") ||
+    said("acquire","clothes","bodies"))) {
+  print("One can only wonder what your purpose for"
+        "this action is. You can't undress the"
+        "body. Allow him one last bit of dignity.");
+}
+if ((said("acquire","card") ||
+    said("acquire","credit card"))) {
+  if (posn(o0,117,57,159,79)) {
+    if (!has("keycard")) {
+      print("You take the keycard.");
+      get("keycard");
+      v3 += 1;
+    }
+    else {
+      print("You already have it.");
+    }
+  }
+  else {
+    print("That can't be done from where you are"
+          "standing.");
+  }
+}
+if (said("acquire","lint")) {
+  if (posn(o0,117,57,159,79)) {
+    print("You have added to your pocket lint"
+          "collection. How proud you must be.");
+  }
+  else {
+    print("That can't be done from where you are"
+          "standing.");
+  }
+}
+Label2:
+if (v2 == 2) {
+  new.room(4);
+}
+if (v2 == 4) {
+  new.room(2);
+}
+return();
+
+// Messages
+#message 1 "You are in one of the Arcada's hallways near an elevator."
+#message 2 "This is an elevator to another level of the ship."
+#message 3 "You search the body of your crewmate and find. . ."
+#message 4 "You take the keycard."
+#message 5 "You already have it."
+#message 6 "It appears to be one of your crewmates.  He is nonfunctional."
+#message 7 "You have added to your pocket lint collection. How proud you must be."
+#message 8 "That can't be done from where you are standing."
+#message 9 "Unable to be tricked, you cleverly deduce that there are, indeed, walls in here. They are just your run-of-the-mill spacecraft interior walls."
+#message 10 "Don't bother. Nothing of interest there."
+#message 11 "You can see no elevator where you are."
+#message 12 "a keycard."
+#message 13 "Nothing."
+#message 14 "One can only wonder what your purpose for this action is. You can't undress the body. Allow him one last bit of dignity."
