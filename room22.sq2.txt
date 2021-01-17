@@ -1,0 +1,656 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  load.view(70);
+  load.view(71);
+  load.view(62);
+  load.view(25);
+  load.view(0);
+  load.sound(44);
+  load.sound(20);
+  draw.pic(v0);
+  add.to.pic(62,0,0,113,112,9,4);
+  if (v1 == 25) {
+    add.to.pic(71,0,0,78,66,4,4);
+  }
+  load.logics(106);
+  animate.obj(o4);
+  animate.obj(o2);
+  set.view(o2,62);
+  set.loop(o2,1);
+  set.cel(o2,0);
+  set.priority(o2,10);
+  ignore.objs(o2);
+  position(o2,104,68);
+  cycle.time(o2,v87);
+  draw(o2);
+  end.of.loop(o2,f32);
+  sound(20,f61);
+  animate.obj(o1);
+  set.view(o1,62);
+  set.loop(o1,2);
+  set.cel(o1,0);
+  set.priority(o1,8);
+  ignore.objs(o1);
+  position(o1,102,97);
+  draw(o1);
+  stop.cycling(o1);
+  v30 = 1;
+  animate.obj(o3);
+  set.view(o3,71);
+  set.loop(o3,0);
+  set.cel(o3,0);
+  ignore.objs(o3);
+  position(o3,69,66);
+  stop.cycling(o3);
+  animate.obj(o10);
+  if (v1 < 22) {
+    set.view(o10,71);
+    set.loop(o10,0);
+    set.cel(o10,0);
+    set.priority(o10,10);
+    ignore.objs(o10);
+    position(o10,78,66);
+    draw(o10);
+    stop.cycling(o10);
+    set(f34);
+    start.motion(o0);
+    set.view(o0,70);
+    set.loop(o0,0);
+    fix.loop(o0);
+    set.priority(o0,11);
+    position(o0,78,33);
+  }
+  else {
+    set(f37);
+    position(o0,7,93);
+  }
+  draw(o0);
+  show.pic();
+}
+if (isset(f67)) {
+  reset(f67);
+  program.control();
+  set.view(o0,25);
+  set.loop(o0,1);
+  set.cel(o0,0);
+  stop.cycling(o0);
+  set(f50);
+  position(o0,76,79);
+  draw(o0);
+  v53 = 10;
+  step.size(o0,v53);
+  move.obj(o0,76,158,0,f40);
+}
+if (isset(f41)) {
+  reset(f41);
+  if (v20 == 4) {
+    display(24,5,"F6 to release grip on rope");
+  }
+  else {
+    display(21,5,"F6 to release grip on rope");
+  }
+}
+if (v69 == 1) {
+  v69 = 0;
+  v67 = 1;
+}
+if (isset(f2)) {
+  set(f65);
+}
+if (isset(f32)) {
+  reset(f32);
+  stop.update(o2);
+  set.cel(o2,0);
+  force.update(o2);
+  random(50,150,v41);
+}
+v41--;
+if (v41 == 1) {
+  start.update(o2);
+  end.of.loop(o2,f32);
+  sound(20,f61);
+}
+if (isset(f40)) {
+  reset(f40);
+  erase(o0);
+}
+if (isset(f88) &&
+    v38 <= 0) {
+  if (posn(o0,78,60,78,63)) {
+    v38 = 1;
+    reset(f34);
+    erase(o0);
+    set(f67);
+    set.loop(o10,1);
+    set.cel(o10,0);
+    end.of.loop(o10,f39);
+    v96 = 9;
+  }
+}
+if (isset(f39)) {
+  reset(f39);
+  if (v38 == 1) {
+    set.view(o4,71);
+    set.loop(o4,2);
+    position(o4,75,25);
+    v53 = 10;
+    step.size(o4,v53);
+    step.size(o10,v53);
+    draw(o4);
+    move.obj(o10,78,158,0,f39);
+    move.obj(o4,75,158,0,f38);
+    v38 = 3;
+  }
+  else {
+    erase(o10);
+  }
+}
+if (isset(f38)) {
+  reset(f38);
+  erase(o4);
+  v36 = 18;
+}
+if (isset(f37) &&
+    isset(f3) &&
+    !isset(f53)) {
+  set(f53);
+  v31 = 6;
+  set.view(o0,25);
+  set.loop(o0,0);
+  set.cel(o0,0);
+  stop.cycling(o0);
+  set(f50);
+  fix.loop(o0);
+  get.posn(o0,v70,v71);
+  if (v71 < 117) {
+    v70 += 7;
+    reposition.to.v(o0,v70,v71);
+    if (v71 < 95) {
+      set.priority(o0,4);
+    }
+  }
+  v53 = 10;
+  step.size(o0,v53);
+  v71 = 158;
+  move.obj.v(o0,v70,v71,89,f31);
+  sound(44,f61);
+}
+if (isset(f34) &&
+    v31 <= 0) {
+  get.posn(o0,v70,v71);
+  if (v38 <= 0 &&
+      (v70 != 78 ||
+      v71 > 70)) {
+    v96 = 9;
+    reset(f34);
+    set.view(o0,25);
+    set.loop(o0,1);
+    set.cel(o0,0);
+    stop.cycling(o0);
+    set(f50);
+    v71 = 158;
+    step.time(o0,v86);
+    v53 = 10;
+    step.size(o0,v53);
+    move.obj.v(o0,v70,v71,89,f31);
+    sound(44,f61);
+    if (v70 != 78) {
+      v31 = 7;
+    }
+    else {
+      v31 = 4;
+    }
+  }
+  else {
+    current.loop(o0,v53);
+    if (v6 == 1 &&
+        v53 != 1) {
+      set.loop(o0,1);
+      fix.loop(o0);
+    }
+    else {
+      if (v6 == 5 &&
+          v53 != 0) {
+        set.loop(o0,0);
+        fix.loop(o0);
+      }
+    }
+  }
+}
+if (isset(f34)) {
+  if ((said("swing","rope") ||
+      said("swing","ledge") ||
+      said("move","rope") ||
+      said("swing"))) {
+    if (v31 <= 0) {
+      if (posn(o0,78,64,78,70)) {
+        if (v20 == 4) {
+          display(24,5,"F6 to release grip on rope");
+        }
+        else {
+          display(21,5,"F6 to release grip on rope");
+        }
+        set.view(o10,71);
+        set.loop(o10,0);
+        fix.loop(o10);
+        set.cel(o10,1);
+        stop.cycling(o10);
+        set.priority(o10,10);
+        position(o10,78,66);
+        v34 = 77;
+        v35 = 78;
+        v52 = 66;
+        v89 = 0;
+        draw(o10);
+        erase(o0);
+        step.time(o10,v88);
+        cycle.time(o10,v88);
+        move.obj.v(o10,v34,v52,89,f35);
+        set(f33);
+        v31 = 1;
+        v3 += 2;
+      }
+      else {
+        print("You need to be further down the"
+              "rope to cause a good swing.");
+      }
+    }
+    else {
+      print("You've done that.");
+    }
+  }
+}
+if (isset(f35)) {
+  reset(f35);
+  if (!isset(f36) &&
+      posn(o10,65,66,65,66)) {
+    set(f36);
+    set(f35);
+  }
+  else {
+    toggle(f33);
+    if (isset(f33)) {
+      if (!isset(f36)) {
+        v34 -= 1;
+      }
+      v51 = v34;
+    }
+    else {
+      if (!isset(f36)) {
+        v35 += 1;
+      }
+      v51 = v35;
+    }
+    if (v34 == 73) {
+      step.time(o10,v87);
+      cycle.time(o10,v87);
+    }
+    if (v34 == 71) {
+      step.time(o10,v86);
+      cycle.time(o10,v86);
+    }
+    if (v34 < 72) {
+      v37 = 4;
+      get.posn(o10,v54,v55);
+      if (v54 > 89) {
+        v39++;
+      }
+    }
+    else {
+      if (v34 < 74) {
+        v37 = 3;
+      }
+      else {
+        v37 = 2;
+      }
+    }
+  }
+}
+v37--;
+if (!isset(f42) &&
+    v37 == 1) {
+  move.obj.v(o10,v51,v52,89,f35);
+}
+if (v96 <= 0 &&
+    isset(f34)) {
+  if (v31 > 0 &&
+      v35 == 90) {
+    get.posn(o10,v54,v55);
+    current.loop(o10,v53);
+    current.cel(o10,v66);
+    if (v54 == 87 &&
+        v53 != 2 &&
+        v66 > 0) {
+      set.loop(o1,2);
+      set.cel(o1,0);
+      reposition.to(o1,102,97);
+      stop.cycling(o1);
+    }
+    if (v54 == 88 &&
+        v53 != 2 &&
+        v66 != 1) {
+      set.loop(o1,2);
+      set.cel(o1,1);
+      reposition.to(o1,102,97);
+      stop.cycling(o1);
+    }
+    if (v54 == 89 &&
+        v53 != 2 &&
+        v66 != 2) {
+      set.loop(o1,2);
+      set.cel(o1,2);
+      reposition.to(o1,94,74);
+      stop.cycling(o1);
+    }
+    if (v54 == 90) {
+      if (v39 < 4) {
+        if (v53 != 3 &&
+            v66 > 0) {
+          set.loop(o1,3);
+          set.cel(o1,0);
+          reposition.to(o1,94,70);
+          stop.cycling(o1);
+        }
+      }
+      else {
+        v96 = 50;
+        reset(f34);
+        set.loop(o1,3);
+        set.cel(o1,1);
+        reposition.to(o1,91,70);
+        stop.cycling(o1);
+        set.view(o3,71);
+        set.loop(o3,0);
+        set.cel(o3,0);
+        fix.loop(o3);
+        stop.cycling(o3);
+        position.v(o3,v54,v55);
+        draw(o3);
+        erase(o10);
+        move.obj(o3,78,66,0,f52);
+        v43 = 18;
+      }
+    }
+  }
+}
+v43--;
+if (v43 == 9) {
+  v41 = 0;
+  stop.update(o2);
+  set.cel(o2,6);
+  force.update(o2);
+}
+if (v43 == 1) {
+  show.pic();
+  print("He who hesitates is lost. You gave that"
+        "guy one chance too many and he seized the"
+        "opportunity, not to mention you. You are"
+        "consumed in two quick bites.");
+  set.loop(o1,2);
+  set.cel(o1,0);
+  reposition.to(o1,102,97);
+  stop.cycling(o1);
+  stop.update(o2);
+  set.cel(o2,0);
+  force.update(o2);
+  v69 = 1;
+}
+if (isset(f34)) {
+  if ((said("jump") ||
+      said("free","grip") ||
+      said("free","grip","rope") ||
+      said("free","rope","grip") ||
+      said("free","rope") ||
+      said("let","climb in") ||
+      said("let","climb in","rope") ||
+      said("jump","ledge") ||
+      controller(c6))) {
+    v96 = 50;
+    set(f42);
+    reset(f34);
+    normal.motion(o10);
+    v37 = 0;
+    set.view(o10,25);
+    set.loop(o10,1);
+    set.cel(o10,0);
+    stop.cycling(o10);
+    set.cel(o3,0);
+    get.posn(o10,v51,v52);
+    if (posn(o10,60,66,68,66)) {
+      position.v(o3,v51,v52);
+      v77 = v51;
+      v78 = v52;
+      v77 -= 4;
+      v78 += 4;
+      reposition.to.v(o10,v77,v78);
+      step.size(o10,v87);
+      v77 -= 24;
+      v78 += 24;
+      move.obj.v(o10,v77,v78,89,f31);
+      v31 = 2;
+    }
+    else {
+      print("Your timing causes you to jump when"
+            "the rope is at its least helpful"
+            "point. Gravity beckons.");
+      normal.motion(o3);
+      stop.motion(o3);
+      set.loop(o3,0);
+      fix.loop(o3);
+      position.v(o3,v51,v52);
+      v51 -= 4;
+      v52 = 70;
+      reposition.to.v(o10,v51,v52);
+      v52 = 158;
+      step.time(o10,v86);
+      v53 = 10;
+      step.size(o10,v53);
+      move.obj.v(o10,v51,v52,89,f31);
+      erase(o0);
+      sound(44,f61);
+      v31 = 3;
+    }
+    draw(o3);
+    move.obj(o3,78,66,0,f52);
+  }
+}
+if (isset(f31)) {
+  reset(f31);
+  if (v31 == 6) {
+    erase(o0);
+    v36 = 18;
+    v96 = 1;
+  }
+  if ((v31 == 4 ||
+      v31 == 7)) {
+    erase(o0);
+    show.pic();
+    v36 = 18;
+    v96 = 1;
+  }
+  if (v31 == 2) {
+    set.view(o0,0);
+    position(o0,41,98);
+    start.motion(o0);
+    set.loop(o0,1);
+    draw(o0);
+    release.loop(o0);
+    erase(o10);
+    show.pic();
+    v96 = 0;
+    release.priority(o0);
+    set(f37);
+    v3 += 5;
+  }
+  if (v31 == 3) {
+    erase(o10);
+    show.pic();
+    v36 = 18;
+    v96 = 1;
+  }
+}
+v36--;
+if (v36 == 1) {
+  stop.sound();
+  shake.screen(2);
+  if (v31 == 7) {
+    print("You release your grip on the rope. %m11");
+  }
+  if (v31 == 4) {
+    print("You reach the end of the rope. %m11");
+  }
+  if (v31 == 3) {
+    print("Due to the unyielding nature of solid"
+          "ground, especially when struck from 50"
+          "meters, you now bear the dimensions of"
+          "a manhole cover.");
+  }
+  if (v31 == 6) {
+    print("You carelessly step from the ledge to"
+          "the bottom of the fissure. As should be"
+          "expected from such a stupid stunt, you"
+          "die.");
+  }
+  if (v38 == 3) {
+    print("It looks like that stump wasn't a good"
+          "thing to tie on to.");
+  }
+  v67 = 1;
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","area"))) {
+    if (isset(f37)) {
+      print.at("%m12 %m14 %m15",13,3,35);
+    }
+    else {
+      print.at("%m12 %m13 %m15",13,3,35);
+    }
+  }
+  if ((said("check out","animal") ||
+      said("check out","alien"))) {
+    print("He's a hearty sized fellow. You would"
+          "guess him to be quite an energy"
+          "guzzler. His stare suggests serious"
+          "caloric lust.");
+  }
+  if (said("check out","area")) {
+    print("There is a cave entrance on the west"
+          "ledge. %m22");
+  }
+  if (said("look in","area")) {
+    print("You can see nothing but darkness in"
+          "there.");
+  }
+  if ((said("check out","down") ||
+      said("check out","canyon"))) {
+    print("You see nothing reassuring down there.");
+  }
+  if (!isset(f37)) {
+    if (said("check out","deck")) {
+      print("You see nothing reassuring down there.");
+    }
+  }
+  if (!has("rope")) {
+    if (said("check out","rope")) {
+      print("It hasn't changed lately. It's still"
+            "long and thin.");
+    }
+  }
+  if ((said("ask","animal") ||
+      said("ask","alien"))) {
+    print("The only response from it is a stomach"
+          "growl.");
+  }
+  if ((said("attack","animal") ||
+      said("attack","alien"))) {
+    print("How do you intend to do that?");
+  }
+  if (said("check out","ledge")) {
+    print("It just kinda sticks out.");
+  }
+  if ((said("check out","wall") ||
+      said("check out","cliff") ||
+      said("check out","above","wall") ||
+      said("check out","above","cliff"))) {
+    print("The towering cliff walls are sheer and"
+          "unclimbable.");
+  }
+  if ((said("cast","cube","animal") ||
+      said("cast","anyword","athletic supporter") ||
+      said("sling","athletic supporter","animal") ||
+      said("sling","anyword","animal","athletic supporter"))) {
+    print("That won't do any good here.");
+  }
+  if ((said("climb","boulder") ||
+      said("climb","wall") ||
+      said("climb","cliff") ||
+      said("climb","above","cliff") ||
+      said("climb","above","wall") ||
+      said("climb","above","boulder","wall") ||
+      said("climb","down","boulder") ||
+      said("climb","down","cliff") ||
+      said("climb","down","wall") ||
+      said("climb","down","boulder","wall"))) {
+    print("The rocks and cliffs are too sheer to"
+          "attempt a climb. Give up.");
+  }
+  if ((said("climb","boulder") ||
+      said("board","boulder") ||
+      said("acquire","boulder") ||
+      said("move","boulder") ||
+      said("press","boulder") ||
+      said("move","boulder") ||
+      said("sit","boulder"))) {
+    print("You've no time for that. There's"
+          "adventuring to be done.");
+  }
+  if (said("check out","boulder")) {
+    print("It looks hard and useless.");
+  }
+}
+if (v2 == 4) {
+  new.room(25);
+}
+if (v2 == 1) {
+  new.room(16);
+}
+call(106);
+if (isset(f34) &&
+    isset(f65)) {
+  set(f41);
+}
+return();
+
+// Messages
+#message 2 "You need to be further down the rope to cause a good swing."
+#message 3 "F6 to release grip on rope"
+#message 4 "Your timing causes you to jump when the rope is at its least helpful point. Gravity beckons."
+#message 5 "Due to the unyielding nature of solid ground, especially when struck from 50 meters, you now bear the dimensions of a manhole cover."
+#message 6 "You reach the end of the rope. %m11"
+#message 7 "You carelessly step from the ledge to the bottom of the fissure. As should be expected from such a stupid stunt, you die."
+#message 8 "It looks like that stump wasn't a good thing to tie on to."
+#message 9 "He who hesitates is lost. You gave that guy one chance too many and he seized the opportunity, not to mention you. You are consumed in two quick bites."
+#message 10 "You release your grip on the rope. %m11"
+#message 11 "This has a negative effect on your resistance to the urging of gravity."
+#message 12 "You are in a sheer-sided gorge"
+#message 13 "suspended on a rope between the two rock faces."
+#message 14 "standing on a small ledge."
+#message 15 "There is a mammoth member of the local fauna to the right. It looks to be in constant need of nourishment, hence the look being cast you."
+#message 16 "%m12 %m13 %m15"
+#message 17 "%m12 %m14 %m15"
+#message 20 "He's a hearty sized fellow. You would guess him to be quite an energy guzzler. His stare suggests serious caloric lust."
+#message 21 "You can see nothing but darkness in there."
+#message 22 "There is a cave entrance on the west ledge. %m22"
+#message 23 "You see nothing reassuring down there."
+#message 24 "It hasn't changed lately. It's still long and thin."
+#message 25 "The only response from it is a stomach growl."
+#message 26 "You've done that."
+#message 27 "How do you intend to do that?"
+#message 28 "It just kinda sticks out."
+#message 29 "The towering cliff walls are sheer and unclimbable."
+#message 30 "The rocks and cliffs are too sheer to attempt a climb. Give up."
+#message 31 "That won't do any good here."
+#message 32 "It looks hard and useless."
+#message 33 "You've no time for that. There's adventuring to be done."

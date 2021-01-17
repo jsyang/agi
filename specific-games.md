@@ -10,10 +10,8 @@ Missing features
 
 Issues:
 
-- Root monster in room 21 cannot actually finish this maze without diagnoal movement!
+- Root monster in room 21 cannot actually finish this maze without diagonal movement!
   
-- Room 22 rope sprite remains once ego has landed safely on the other side
-
 - Tumbling from room 25 (gem glow dark room) into room 23 does not finish animation!
   - stuck!
 
@@ -22,7 +20,7 @@ Issues:
 
 References:
 
-- https://youtu.be/eVsF_FZ54O0?t=1649
+- https://youtu.be/eVsF_FZ54O0?t=1812
 - http://sarien.net/spacequest2#outsidexos4
 - http://www.sierrahelp.com/Misc/PointLists/SQ2Points.html
 

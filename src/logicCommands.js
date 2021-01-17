@@ -608,18 +608,24 @@ export const commands = {
     },
 
     agi_move_obj: (objNo, x, y, stepSize, flagNo) => {
-        const obj                 = state.gameObjects[objNo];
-        obj.moveToX               = x;
-        obj.moveToY               = y;
-        obj.moveToStep            = stepSize;//stepSize > 0 ? stepSize : obj.moveToStep;
+        const obj      = state.gameObjects[objNo];
+        obj.moveToX    = x;
+        obj.moveToY    = y;
+        obj.moveToStep = obj.stepSize;
+
+        if (stepSize != 0) {
+            obj.moveToStep = stepSize;
+        }
+
         obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.MoveTo;
         obj.flagToSetWhenFinished = flagNo;
     },
 
-    agi_move_obj_v: (objNo, varNo1, varNo2, stepSize, flagNo) => {
+    agi_move_obj_v: (objNo, varNo1, varNo2, vStepSize, flagNo) => {
         // jsyang: very weird, STEPSIZE here gets set to a very large number when this is called
         // docs for AGI command may possibly be wrong
         commands.agi_move_obj(objNo, state.variables[varNo1], state.variables[varNo2], 1, flagNo);
+        // commands.agi_move_obj(objNo, state.variables[varNo1], state.variables[varNo2], state.variables[vStepSize], flagNo);
     },
 
     agi_follow_ego: (objNo, stepSpeed, flagNo) => {
@@ -672,6 +678,7 @@ export const commands = {
     agi_erase: (objNo) => {
         const obj = state.gameObjects[objNo];
         screen.clearView(obj.viewNo, obj.loop, obj.cel, obj.x, obj.y, obj.priority);
+        screen.clearOldObjectView(obj);
         obj.draw = false;
     },
 

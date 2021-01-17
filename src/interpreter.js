@@ -314,32 +314,36 @@ const updateObject = (obj, no) => {
                     if (obj.moveToStep !== 0) {
                         xStep = yStep = obj.moveToStep;
                     }
-                    if (obj.moveToX > obj.x) {
-                        if (obj.moveToY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.DownRight;
-                        } else if (obj.moveToY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.UpRight;
-                        } else {
-                            obj.direction = GAMEOBJECT_DIRECTION.Right;
-                        }
-                    } else if (obj.moveToX < obj.x) {
-                        if (obj.moveToY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
-                        } else if (obj.moveToY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
-                        } else {
-                            obj.direction = GAMEOBJECT_DIRECTION.Left;
-                        }
-                    } else {
-                        if (obj.moveToY > obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.Down;
-                        } else if (obj.moveToY < obj.y) {
-                            obj.direction = GAMEOBJECT_DIRECTION.Up;
-                        }
-                    }
 
                     yStep = Math.min(yStep, Math.abs(obj.y - obj.moveToY));
                     xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
+
+                    if (view.loops.length < 5) {
+                        if (obj.moveToX > obj.x) {
+                            if (obj.moveToY > obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.DownRight;
+                            } else if (obj.moveToY < obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.UpRight;
+                            } else {
+                                obj.direction = GAMEOBJECT_DIRECTION.Right;
+                            }
+                        } else if (obj.moveToX < obj.x) {
+                            if (obj.moveToY > obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
+                            } else if (obj.moveToY < obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
+                            } else {
+                                obj.direction = GAMEOBJECT_DIRECTION.Left;
+                            }
+                        } else {
+                            if (obj.moveToY > obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.Down;
+                            } else if (obj.moveToY < obj.y) {
+                                obj.direction = GAMEOBJECT_DIRECTION.Up;
+                            }
+                        }
+                    }
+
                     break;
                 case GAMEOBJECT_MOVE_FLAGS.ChaseEgo:
                     const egoX = state.gameObjects[0].x;
@@ -477,15 +481,28 @@ const updateObject = (obj, no) => {
 
             if (!obj.fixedLoop) {
                 if (view.loops.length > 1 && view.loops.length < 4) {
-                    if (
+                    // http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/CyclingObjects.html
+
+                    if (obj.direction === GAMEOBJECT_DIRECTION.Up && view.loops[2] && view.loops[3]) {
+                        obj.loop = 3;
+                    } else if (
                         obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
                         obj.direction === GAMEOBJECT_DIRECTION.Right ||
-                        obj.direction === GAMEOBJECT_DIRECTION.DownRight ||
+                        obj.direction === GAMEOBJECT_DIRECTION.DownRight
+                    ) {
+                        obj.loop = 0;
+                    } else if (obj.direction === GAMEOBJECT_DIRECTION.Down && view.loops[2] && view.loops[3]) {
+                        obj.loop = 2;
+                    } else if (
                         obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||
                         obj.direction === GAMEOBJECT_DIRECTION.Left ||
                         obj.direction === GAMEOBJECT_DIRECTION.UpLeft
                     ) {
-                        obj.loop = 1;
+                        if (view.loops[1]) {
+                            obj.loop = 1;
+                        } else {
+                            obj.loop = 0;
+                        }
                     }
                 } else if (view.loops.length >= 4) {
                     if (obj.direction === 1) {
