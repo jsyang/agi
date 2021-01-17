@@ -328,16 +328,12 @@ export const commands = {
     },
 
     agi_set_view: (objNo, viewNo) => {
-        // LLL(`agi_set_view(${objNo},${viewNo})`);
-
         const obj = state.gameObjects[objNo];
 
         obj.viewNo = viewNo;
         if (obj.loop >= state.loadedViews[viewNo].loops.length) {
             obj.loop = 0;
         }
-
-        obj.cel = 0;
     },
 
     agi_set_view_v: (objNo, varNo) => {

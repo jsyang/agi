@@ -1,0 +1,303 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  v30 = 25;
+  load.view(0);
+  load.view(72);
+  if (has("glowing gem")) {
+    load.view(101);
+    load.view(102);
+    animate.obj(o1);
+    set.view(o1,101);
+    set.loop(o1,0);
+    fix.loop(o1);
+    set.priority(o1,4);
+    ignore.objs(o1);
+    ignore.blocks(o1);
+    v53 = 24;
+    load.pic(v53);
+  }
+  if (v1 == 24 &&
+      has("glowing gem")) {
+    if (isset(f90)) {
+      v30 = 24;
+    }
+  }
+  draw.pic(v30);
+  if (v1 == 24 &&
+      has("glowing gem")) {
+    if (isset(f90)) {
+      set.view(o0,102);
+      position(o0,11,120);
+      position(o1,5,118);
+      draw(o1);
+      start.cycling(o1);
+    }
+    else {
+      set.view(o0,72);
+    }
+  }
+  if (v1 != 24) {
+    position(o0,153,120);
+  }
+  draw(o0);
+  show.pic();
+  v105 = 114;
+}
+get.posn(o0,v70,v71);
+if (v70 < 133) {
+  set(f30);
+  if (has("glowing gem") &&
+      isset(f90)) {
+    if (v16 != 102) {
+      set.view(o0,102);
+      draw(o1);
+      start.cycling(o1);
+    }
+  }
+  else {
+    if (v16 != 99) {
+      set.view(o0,72);
+    }
+  }
+}
+else {
+  reset(f30);
+  current.view(o0,v53);
+  if (v53 > 0) {
+    set.view(o0,0);
+    if (has("glowing gem") &&
+        isset(f90)) {
+      reset(f90);
+      erase(o1);
+      v30 = 25;
+      draw.pic(v30);
+      show.pic();
+      print("Once back in the light, you put the"
+            "gem away.");
+    }
+  }
+}
+if (v70 < 133 &&
+    has("glowing gem") &&
+    isset(f90)) {
+  if (v6 > 0) {
+    if (v6 > 1 &&
+        v6 < 5) {
+      v70 -= 6;
+      set.loop(o1,0);
+      fix.loop(o1);
+    }
+    if (v6 > 5 &&
+        v6 < 9) {
+      v70 -= 10;
+      set.loop(o1,0);
+      fix.loop(o1);
+    }
+    if (v6 == 1) {
+      v70 -= 8;
+      set.loop(o1,0);
+      fix.loop(o1);
+    }
+    if (v6 == 5) {
+      set.loop(o1,1);
+      fix.loop(o1);
+    }
+    v71 -= 2;
+    if ((v70 != v104 ||
+        v71 != v105)) {
+      reposition.to.v(o1,v70,v105);
+      v104 = v70;
+      v105 = v71;
+    }
+  }
+}
+if (!isset(f33) &&
+    !isset(f90) &&
+    posn(o0,32,118,32,124)) {
+  v96 = 50;
+  set(f33);
+  program.control();
+  print.at("You hear the sound of many small,"
+           "scratchy footsteps moving toward you!",2,3,37);
+  print("Owww!!");
+  erase(o0);
+  print("GNASH!");
+  print("GROWL!");
+  print("CRUNCH!");
+  print("SNAP!");
+  v31 = 18;
+}
+v31--;
+if (v31 == 1) {
+  print("You have just been felled by a killer"
+        "Cave Beaver! You now know the meaning of"
+        "excruciating when used in reference to"
+        "level of pain.");
+  v67 = 1;
+}
+if (posn(o0,16,118,16,124)) {
+  program.control();
+  v53 = 10;
+  step.size(o0,v53);
+  move.obj(o0,16,167,0,f31);
+  erase(o1);
+  reset(f90);
+  set(f32);
+}
+if (isset(f31)) {
+  reset(f31);
+  v53 = 25;
+  draw.pic(v53);
+  show.pic();
+  print("The ground below your feet disappears!"
+        "You tumble down through the darkness.");
+  new.room(23);
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","area"))) {
+    if (isset(f90)) {
+      print.at("The glow of the gem allows you to"
+               "make out the rough walls of the"
+               "cave and not much else. It is"
+               "brighter to the east.",2,3,35);
+    }
+    else {
+      print.at("Being as dark as it is in here,"
+               "there isn't much to see. You do"
+               "see light coming from the east.",2,3,35);
+    }
+  }
+  if (said("call")) {
+    print("That helps nothing.");
+  }
+  if ((said("dig") ||
+      said("dig","entryway") ||
+      said("dig","entryway","deck"))) {
+    print("You're not equipped for such an"
+          "undertaking.");
+  }
+  if ((said("grip","gem","lip") ||
+      said("drop","gem","lip"))) {
+    if (has("glowing gem")) {
+      print("That's not how to do it.");
+    }
+    else {
+      print("You don't have that.");
+    }
+  }
+  if ((said("climb","boulder") ||
+      said("climb","wall") ||
+      said("climb","area","wall") ||
+      said("move","boulder") ||
+      said("check out","boulder") ||
+      said("look under","boulder") ||
+      said("step","boulder"))) {
+    print("That will help you not.");
+  }
+  if (said("feel","wall")) {
+    print("The walls feel rough.");
+  }
+  if (isset(f30)) {
+    if ((said("grip","gem") ||
+        said("empty","gem","pocket") ||
+        said("acquire","gem","pocket") ||
+        said("use","gem") ||
+        said("grip","gem","above") ||
+        said("grip","above","gem") ||
+        said("grip","gem") ||
+        said("empty","gem","pocket") ||
+        said("acquire","gem","pocket") ||
+        said("use","gem") ||
+        said("grip","above","gem"))) {
+      if (has("glowing gem")) {
+        if (!isset(f90)) {
+          v30 = 24;
+          draw.pic(v30);
+          set.view(o0,102);
+          show.pic();
+          get.posn(o0,v51,v52);
+          if (v51 < 10) {
+            v104 = 0;
+          }
+          else {
+            v104 = v51;
+            v104 -= 8;
+          }
+          v105 = v52;
+          v105 -= 2;
+          position.v(o1,v104,v105);
+          draw(o1);
+          start.cycling(o1);
+          set(f90);
+          print.at("You take out the gem and hold"
+                   "it in your palm. The room is"
+                   "illuminated by its glow. You"
+                   "hear a small shriek and the"
+                   "sound of many footsteps moving"
+                   "away from you.",2,3,35);
+          if (!isset(f206)) {
+            set(f206);
+            v3 += 2;
+          }
+        }
+        else {
+          print("You already are.");
+        }
+      }
+      else {
+        print("You don't have that.");
+      }
+    }
+    if ((said("check out","wall") ||
+        said("check out","deck") ||
+        said("check out","ceiling"))) {
+      print("Not much to see except dark cave.");
+    }
+    if (said("drop","gem")) {
+      if (has("glowing gem")) {
+        if (isset(f90)) {
+          print("That's not a good idea now.");
+        }
+        else {
+          print("It already is.");
+        }
+      }
+      else {
+        print("You don't have that.");
+      }
+    }
+    if (said("use","gem")) {
+      print("That's not how to do it.");
+    }
+  }
+}
+if (v2 == 2) {
+  new.room(22);
+}
+return();
+
+// Messages
+#message 1 "That helps nothing."
+#message 2 "You don't have that."
+#message 3 "You already are."
+#message 4 "That's not a good idea now."
+#message 5 "It already is."
+#message 6 "Once back in the light, you put the gem away."
+#message 7 "You take out the gem and hold it in your palm. The room is illuminated by its glow. You hear a small shriek and the sound of many footsteps moving away from you."
+#message 8 "The ground below your feet disappears! You tumble down through the darkness."
+#message 9 "You hear the sound of many small, scratchy footsteps moving toward you!"
+#message 10 "Owww!!"
+#message 11 "GNASH!"
+#message 12 "GROWL!"
+#message 13 "CRUNCH!"
+#message 14 "SNAP!"
+#message 15 "You have just been felled by a killer Cave Beaver! You now know the meaning of excruciating when used in reference to level of pain."
+#message 16 "Being as dark as it is in here, there isn't much to see. You do see light coming from the east."
+#message 17 "The glow of the gem allows you to make out the rough walls of the cave and not much else. It is brighter to the east."
+#message 18 "Not much to see except dark cave."
+#message 19 "That's not how to do it."
+#message 20 "That will help you not."
+#message 21 "You're not equipped for such an undertaking."
+#message 22 "The walls feel rough."
