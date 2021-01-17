@@ -44,4 +44,30 @@ const TEMPLATE = {
     oldDrawY:    0,
 }
 
+export function setObjDirectionViaMoveTo(obj) {
+    if (obj.moveToX > obj.x) {
+        if (obj.moveToY > obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.DownRight;
+        } else if (obj.moveToY < obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.UpRight;
+        } else {
+            obj.direction = GAMEOBJECT_DIRECTION.Right;
+        }
+    } else if (obj.moveToX < obj.x) {
+        if (obj.moveToY > obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
+        } else if (obj.moveToY < obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
+        } else {
+            obj.direction = GAMEOBJECT_DIRECTION.Left;
+        }
+    } else {
+        if (obj.moveToY > obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.Down;
+        } else if (obj.moveToY < obj.y) {
+            obj.direction = GAMEOBJECT_DIRECTION.Up;
+        }
+    }
+}
+
 export default () => ({...TEMPLATE});

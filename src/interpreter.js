@@ -15,6 +15,7 @@ import {randomBetween} from './helpers';
 import {state, resetControllers, restart, updateSound} from './state';
 import playerSaveSystem from './playerSaveSystem';
 import playerCommandSystem from './playerCommandSystem';
+import {setObjDirectionViaMoveTo} from './gameObject';
 
 let canvasContext;
 let audioContext;
@@ -319,29 +320,7 @@ const updateObject = (obj, no) => {
                     xStep = Math.min(xStep, Math.abs(obj.x - obj.moveToX));
 
                     if (view.loops.length < 5) {
-                        if (obj.moveToX > obj.x) {
-                            if (obj.moveToY > obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.DownRight;
-                            } else if (obj.moveToY < obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.UpRight;
-                            } else {
-                                obj.direction = GAMEOBJECT_DIRECTION.Right;
-                            }
-                        } else if (obj.moveToX < obj.x) {
-                            if (obj.moveToY > obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.DownLeft;
-                            } else if (obj.moveToY < obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.UpLeft;
-                            } else {
-                                obj.direction = GAMEOBJECT_DIRECTION.Left;
-                            }
-                        } else {
-                            if (obj.moveToY > obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.Down;
-                            } else if (obj.moveToY < obj.y) {
-                                obj.direction = GAMEOBJECT_DIRECTION.Up;
-                            }
-                        }
+                        setObjDirectionViaMoveTo(obj);
                     }
 
                     break;
@@ -394,8 +373,10 @@ const updateObject = (obj, no) => {
                 newX = obj.x + xStep;
             }
 
-            // Set newX, newY based on blocks
-            [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
+            // Set newX, newY based on blocks, but only if it's not a MoveTo
+            if(obj.movementFlag !== GAMEOBJECT_MOVE_FLAGS.MoveTo) {
+                [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
+            }
 
             obj.x = newX;
             obj.y = newY;
@@ -419,7 +400,7 @@ const updateObject = (obj, no) => {
                         state.variables[VAR.object_touching_edge] = no;
                         state.variables[VAR.object_edge_code]     = 4;
                     }
-                } else if (obj.x + cel.width >= SCREEN_WIDTH_UNITS) {
+                } else if (cel && (obj.x + cel.width >= SCREEN_WIDTH_UNITS)) {
                     if (no === 0) {
                         state.variables[VAR.ego_edge_code] = 2;
                     } else {

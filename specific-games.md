@@ -12,9 +12,6 @@ Issues:
 
 - Root monster in room 21 cannot actually finish this maze without diagonal movement!
   
-- Tumbling from room 25 (gem glow dark room) into room 23 does not finish animation!
-  - stuck!
-
 - Restoring game at room 5 always puts ego near the airlock chamber (instead of where ego should be)
   - This is due to script.save and loading script not being implemented yet
 

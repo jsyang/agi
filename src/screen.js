@@ -119,9 +119,11 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
     // Don't try clearing if the view doesn't exist
     const view = state.loadedViews[viewNo];
     if (!view) return;
-    let cel = view.loops[loopNo];
+    const loop = view.loops[loopNo];
+    if (!loop) return;
+
+    let cel = loop.cels[celNo];
     if (!cel) return;
-    cel = cel.cels[celNo];
 
     // If the view has more loops then we have to ignore the original mirror option and use
     // basic mirroring.
@@ -180,6 +182,8 @@ export function clearView(viewNo, loopNo, celNo, x, y, priority) {
 export function bltView(viewNo, loopNo, celNo, x, y, priority) {
     const view = state.loadedViews[viewNo];
     let cel    = view.loops[loopNo].cels[celNo];
+
+    if (!cel) return;
 
     // If the view has more loops then we have to ignore the original mirror option and use
     // basic mirroring.

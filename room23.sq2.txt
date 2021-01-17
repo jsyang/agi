@@ -1,0 +1,456 @@
+if (isset(f5)) {
+  set.horizon(10);
+  load.pic(v0);
+  load.view(82);
+  load.view(83);
+  load.view(107);
+  load.view(108);
+  load.view(111);
+  load.view(50);
+  load.view(84);
+  draw.pic(v0);
+  if (v1 != 29) {
+    animate.obj(o10);
+    set.view(o10,82);
+    position(o10,5,120);
+    step.size(o10,v87);
+    draw(o10);
+    move.obj(o10,39,136,0,f30);
+    v30 = 1;
+  }
+  animate.obj(o1);
+  set.view(o1,107);
+  set.cel(o1,0);
+  set.priority(o1,4);
+  ignore.blocks(o1);
+  ignore.objs(o1);
+  position(o1,62,53);
+  animate.obj(o2);
+  set.view(o2,107);
+  set.cel(o2,0);
+  set.priority(o2,4);
+  ignore.blocks(o2);
+  ignore.objs(o2);
+  position(o2,116,39);
+  animate.obj(o3);
+  set.view(o3,111);
+  ignore.blocks(o3);
+  ignore.objs(o3);
+  position(o3,33,121);
+  if (!has("glowing gem")) {
+    draw(o3);
+  }
+  if (v1 != 29) {
+    v53 = 5;
+    step.size(o1,v53);
+    step.size(o2,v53);
+  }
+  if (v1 == 29) {
+    get.posn(o0,v51,v52);
+    if (v51 > 122) {
+      v51 = 121;
+      position.v(o0,v51,v52);
+    }
+  }
+  if (v1 == 29) {
+    draw(o0);
+  }
+  show.pic();
+}
+if (v69 > 0) {
+  if (v69 == 1) {
+    print("That was a rather spectacular entrance."
+          "All systems seem to be intact, though.");
+    v34 = 9;
+    v35 = 15;
+  }
+  if (v69 == 2) {
+    print("The dwellers mumble something.");
+    print("The translator responds with \"Follow"
+          "us, beanpole!\" They hurry away.");
+    start.cycling(o1);
+    start.cycling(o2);
+    move.obj(o1,121,166,0,f31);
+    move.obj(o2,121,167,0,f32);
+    v32 = 9;
+    v33 = 9;
+  }
+  v69 = 0;
+}
+if (isset(f87)) {
+  v38--;
+  if (v38 == 1) {
+    v31 = 2;
+  }
+}
+if (isset(f34)) {
+  current.cel(o1,v53);
+  current.cel(o2,v66);
+  if (v32 == 1 &&
+      v53 == 4) {
+    set.priority(o1,5);
+  }
+  if (v33 == 1 &&
+      v66 == 4) {
+    set.priority(o2,5);
+    reset(f34);
+  }
+}
+if (!isset(f80) &&
+    v32 < 2 &&
+    posn(o0,79,126,119,151)) {
+  start.motion(o0);
+  get.posn(o0,v51,v52);
+  position.v(o10,v51,v52);
+  set.view(o10,0);
+  set.loop(o10,3);
+  draw(o10);
+  erase(o0);
+  stop.motion(o10);
+  stop.cycling(o10);
+  reposition.to(o1,59,50);
+  set.view(o1,108);
+  set.loop(o1,0);
+  set.cel(o1,0);
+  start.cycling(o1);
+  v34 = 27;
+  v32 = 2;
+  reposition.to(o2,116,39);
+  set.view(o2,108);
+  set.loop(o2,2);
+  set.cel(o2,1);
+  start.cycling(o2);
+  v35 = 30;
+  v33 = 2;
+}
+v37--;
+if (v37 == 1) {
+  if (v36 == 2) {
+    print.at("Yow! These guys seem to dislike you"
+             "intensely. Using slings and very"
+             "hard and sharp rocks, they have"
+             "reduced you to a battered corpse.",8,3,35);
+    v67 = 1;
+  }
+}
+if (isset(f33)) {
+  reset(f33);
+  if (v36 == 2) {
+    v37 = 18;
+  }
+  if (v36 == 1) {
+    set.loop(o10,1);
+    set.cel(o10,0);
+    end.of.loop(o10,f33);
+    v36 = 2;
+    set.view(o1,50);
+    set.view(o2,50);
+    set.loop(o1,2);
+    set.loop(o2,2);
+    set.cel(o1,0);
+    set.cel(o2,4);
+    stop.cycling(o1);
+    stop.cycling(o2);
+  }
+}
+if (v30 == 1) {
+  get.posn(o10,v51,v52);
+  if (v51 == 31) {
+    draw(o3);
+    drop("glowing gem");
+  }
+}
+v34--;
+if (v34 == 1) {
+  if (v32 == 2) {
+    stop.cycling(o1);
+    set.loop(o1,1);
+    set.cel(o1,1);
+    set.view(o10,84);
+    set.loop(o10,0);
+    set.cel(o10,0);
+    end.of.loop(o10,f33);
+    cycle.time(o10,v87);
+    v36 = 1;
+  }
+  else {
+    draw(o1);
+    end.of.loop(o1,f31);
+    v32 = 1;
+    set(f34);
+    set(f35);
+  }
+}
+v35--;
+if (v35 == 1) {
+  if (v33 == 2) {
+    stop.cycling(o2);
+    set.loop(o2,3);
+    set.cel(o2,1);
+  }
+  else {
+    draw(o2);
+    end.of.loop(o2,f32);
+    v33 = 1;
+  }
+}
+if (isset(f31)) {
+  reset(f31);
+  if (v32 == 9) {
+    erase(o1);
+    v32 = 0;
+    reset(f35);
+  }
+  if (v32 == 7) {
+    stop.cycling(o1);
+    set.loop(o1,1);
+    set.cel(o1,2);
+    v32 = 8;
+    v69 = 2;
+  }
+  if (v32 == 6) {
+    move.obj(o1,121,140,0,f31);
+    v32 = 7;
+  }
+  if (v32 == 5) {
+    set.view(o1,50);
+    step.size(o1,v87);
+    reposition.to(o1,61,118);
+    move.obj(o1,99,118,0,f31);
+    v32 = 6;
+  }
+  if (v32 == 1) {
+    if (isset(f80)) {
+      stop.cycling(o1);
+      move.obj(o1,62,118,0,f31);
+      start.cycling(o1);
+      release.priority(o1);
+      v32 = 5;
+    }
+    else {
+      set.cel(o1,7);
+      stop.cycling(o1);
+    }
+  }
+}
+if (isset(f32)) {
+  reset(f32);
+  if (v33 == 9) {
+    erase(o2);
+    v33 = 0;
+  }
+  if (v33 == 6) {
+    stop.cycling(o2);
+    set.loop(o2,1);
+    set.cel(o2,2);
+    v33 = 8;
+  }
+  if (v33 == 5) {
+    set.view(o2,50);
+    step.size(o2,v87);
+    reposition.to(o2,115,118);
+    move.obj(o2,115,130,0,f32);
+    v33 = 6;
+  }
+  if (v33 == 1) {
+    if (isset(f80)) {
+      stop.cycling(o2);
+      move.obj(o2,116,119,0,f32);
+      start.cycling(o2);
+      release.priority(o2);
+      v33 = 5;
+    }
+    else {
+      stop.cycling(o2);
+      set.cel(o2,7);
+    }
+  }
+}
+if (isset(f30)) {
+  reset(f30);
+  if (v30 == 2) {
+    v31 = 15;
+  }
+  if (v30 == 1) {
+    if (has("spore")) {
+      print("While tumbling to the base of the"
+            "canyon, the spore you were carrying"
+            "is crushed releasing the disabling"
+            "powder. You are paralyzed.");
+      v38 = 60;
+      drop("spore");
+      get("empty spore");
+      set.loop(o10,1);
+      set.cel(o10,0);
+      end.of.loop(o10,f52);
+      v96 = 8;
+    }
+    else {
+      set.cel(o10,0);
+      stop.cycling(o10);
+      v31 = 7;
+    }
+  }
+}
+v31--;
+if (v31 == 1) {
+  if (v30 == 3) {
+    get.posn(o10,v51,v52);
+    v51 += 2;
+    position.v(o0,v51,v52);
+    set.view(o0,0);
+    draw(o0);
+    erase(o10);
+    v69 = 1;
+  }
+  if (v30 == 2) {
+    set.loop(o10,1);
+    start.cycling(o10);
+    v31 = 36;
+    v30 = 3;
+  }
+  if (v30 == 1) {
+    set.view(o10,83);
+    set.cel(o10,0);
+    end.of.loop(o10,f30);
+    v30 = 2;
+    v96 = 0;
+  }
+}
+if (v96 <= 0) {
+  if ((said("check out") ||
+      said("check out","canyon") ||
+      said("check out","area"))) {
+    if (isset(f35)) {
+      print.at("%m13 There are two more of those"
+               "pink guys here. You wonder what"
+               "they are up to.",2,3,35);
+    }
+    else {
+      print.at("You are at the bottom of the steep"
+               "gorge almost totally surrounded by"
+               "impassable rock. There is an"
+               "opening to the south-east. The"
+               "walls extend up a great distance.",2,3,35);
+    }
+  }
+  if (isset(f35)) {
+    if ((said("check out","ape") ||
+        said("check out","alien") ||
+        said("check out","animal"))) {
+      print("These guys are quite fleshy and pink"
+            "looking.");
+    }
+    if ((said("ask","alien") ||
+        said("ask","animal") ||
+        said("ask","ape"))) {
+      print("They don't respond.");
+    }
+  }
+  if ((said("check out","deck") ||
+      said("check out","down"))) {
+    if (!has("glowing gem")) {
+      if (posn(o0,2,89,60,167)) {
+        print("You see a glowing gem.");
+      }
+      else {
+        print("You notice nothing special here.");
+      }
+    }
+    else {
+      print("You notice nothing special here.");
+    }
+  }
+  if (said("check out","boulder")) {
+    print("It kind of looks like a boulder dam...."
+          "get it? Boulder Dam!? Sorry, bad joke.");
+  }
+  if (!has("glowing gem")) {
+    if (said("check out","gem")) {
+      print("You notice the glowing gem lying near"
+            "the cave opening.");
+    }
+    if (said("acquire","boulder")) {
+      print("These rocks can't be gotten. We're"
+            "talking hernia material here.");
+    }
+  }
+  if ((said("climb","boulder") ||
+      said("climb") ||
+      said("climb","wall") ||
+      said("climb","cliff") ||
+      said("climb","above","cliff") ||
+      said("climb","above","wall") ||
+      said("climb","above","boulder","wall") ||
+      said("climb","above","boulder"))) {
+    print("The rocks and cliffs are too tall and"
+          "steep for you to climb. Give up.");
+  }
+  if ((said("check out","wall") ||
+      said("check out","cliff") ||
+      said("check out","above","wall") ||
+      said("check out","above","cliff"))) {
+    print("The towering cliff walls are sheer and"
+          "unclimbable.");
+  }
+  if (said("acquire","gem")) {
+    if (!has("glowing gem")) {
+      if (posn(o0,23,114,38,126)) {
+        get("glowing gem");
+        v3 += 1;
+        erase(o3);
+        print("Got it.");
+      }
+      else {
+        print("You're not near it.");
+      }
+    }
+    else {
+      print("These rocks can't be gotten. We're"
+            "talking hernia material here.");
+    }
+  }
+}
+else {
+  if (v96 == 8 &&
+      isset(f2) &&
+      !isset(f4)) {
+    set(f4);
+    print("You are paralyzed. Until that changes,"
+          "you can do nothing but displace air.");
+  }
+}
+if (v2 == 3) {
+  new.room(29);
+}
+if (v2 == 4) {
+  v51 = 2;
+  v52 = 1;
+  reposition(o0,v51,v52);
+  start.motion(o0);
+  print("The cave becomes much too steep to"
+        "continue further.");
+}
+return();
+
+// Messages
+#message 1 "That was a rather spectacular entrance. All systems seem to be intact, though."
+#message 2 "The cave becomes much too steep to continue further."
+#message 3 "Got it."
+#message 4 "You're not near it."
+#message 5 "These rocks can't be gotten. We're talking hernia material here."
+#message 6 "You notice nothing special here."
+#message 7 "You see a glowing gem."
+#message 8 "Yow! These guys seem to dislike you intensely. Using slings and very hard and sharp rocks, they have reduced you to a battered corpse."
+#message 9 "The dwellers mumble something."
+#message 10 "The translator responds with \"Follow us, beanpole!\" They hurry away."
+#message 11 "While tumbling to the base of the canyon, the spore you were carrying is crushed releasing the disabling powder. You are paralyzed."
+#message 12 "You are paralyzed. Until that changes, you can do nothing but displace air."
+#message 13 "You are at the bottom of the steep gorge almost totally surrounded by impassable rock. There is an opening to the south-east. The walls extend up a great distance."
+#message 14 "%m13 There are two more of those pink guys here. You wonder what they are up to."
+#message 15 "You notice the glowing gem lying near the cave opening."
+#message 16 "It kind of looks like a boulder dam.... get it? Boulder Dam!? Sorry, bad joke."
+#message 17 "These guys are quite fleshy and pink looking."
+#message 18 "The rocks and cliffs are too tall and steep for you to climb. Give up."
+#message 19 "They don't respond."
+#message 20 "The towering cliff walls are sheer and unclimbable."

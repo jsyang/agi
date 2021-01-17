@@ -1,7 +1,7 @@
 import {randomBetween} from './helpers';
 import screen from './screen';
 import Logic from './logic';
-import GameObject from './gameObject';
+import GameObject, {setObjDirectionViaMoveTo} from './gameObject';
 import {Pic} from './bitmap';
 import {readAgiResource, wordGroups} from './resources';
 import Sound from './sound';
@@ -311,6 +311,9 @@ export const commands = {
             if (obj.draw) {
                 commands.agi_erase(j);
             }
+
+            obj.stepSize        = 1;
+            obj.stepTime        = 1;
             obj.update          = false;
             obj.ignoreHorizon   = false;
             obj.ignoreBlocks    = false;
@@ -333,6 +336,10 @@ export const commands = {
         obj.viewNo = viewNo;
         if (obj.loop >= state.loadedViews[viewNo].loops.length) {
             obj.loop = 0;
+        }
+
+        if (obj.cel >= state.loadedViews[viewNo].loops[obj.loop].cels.length) {
+            obj.cel = 0;
         }
     },
 
@@ -615,6 +622,8 @@ export const commands = {
 
         obj.movementFlag          = GAMEOBJECT_MOVE_FLAGS.MoveTo;
         obj.flagToSetWhenFinished = flagNo;
+
+        setObjDirectionViaMoveTo(obj);
     },
 
     agi_move_obj_v: (objNo, varNo1, varNo2, vStepSize, flagNo) => {
