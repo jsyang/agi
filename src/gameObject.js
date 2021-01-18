@@ -21,6 +21,7 @@ const TEMPLATE = {
     ignoreObjs:            false,
     stepSize:              1,
     stepTime:              0,
+    stepTimeUntilNextStep: 0,
 
     moveToX:    0,
     moveToY:    0,

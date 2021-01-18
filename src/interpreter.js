@@ -295,15 +295,18 @@ const getNewXYForObjectAccountForBlocks = (obj, no, newX, newY) => {
 }
 
 const updateObject = (obj, no) => {
-    let hasChangedDirection = false;
-
-    const view = state.loadedViews[obj.viewNo];
-    const cel  = view.loops[obj.loop].cels[obj.cel];
-
     if (obj.update) {
+        let hasChangedDirection = false;
+
+        const view = state.loadedViews[obj.viewNo];
+
+        // View has to be loaded before we attempt to update
+        if (!view) return;
+
+        const cel = view.loops[obj.loop].cels[obj.cel];
+
         obj.oldX = obj.x;
         obj.oldY = obj.y;
-
 
         let xStep = obj.stepSize;
         let yStep = obj.stepSize;
@@ -377,8 +380,13 @@ const updateObject = (obj, no) => {
             [newX, newY] = getNewXYForObjectAccountForBlocks(obj, no, newX, newY);
         }
 
-        obj.x = newX;
-        obj.y = newY;
+        if (obj.stepTimeUntilNextStep > 0) {
+            obj.stepTimeUntilNextStep--;
+        } else {
+            obj.x                     = newX;
+            obj.y                     = newY;
+            obj.stepTimeUntilNextStep = obj.stepTime;
+        }
 
         // Enforce horizon
         if (!obj.ignoreHorizon && obj.y < state.horizon) {
@@ -435,17 +443,17 @@ const updateObject = (obj, no) => {
                 // http://agi.sierrahelp.com/AGIStudioHelp/ObjectsViews/CyclingObjects.html
 
                 if (obj.direction === GAMEOBJECT_DIRECTION.Up && view.loops[2] && view.loops[3]) {
-                    obj.loop = 3;
+                    obj.loop            = 3;
                     hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (
                     obj.direction === GAMEOBJECT_DIRECTION.UpRight ||
                     obj.direction === GAMEOBJECT_DIRECTION.Right ||
                     obj.direction === GAMEOBJECT_DIRECTION.DownRight
                 ) {
-                    obj.loop = 0;
+                    obj.loop            = 0;
                     hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (obj.direction === GAMEOBJECT_DIRECTION.Down && view.loops[2] && view.loops[3]) {
-                    obj.loop = 2;
+                    obj.loop            = 2;
                     hasChangedDirection = obj.loop !== obj.oldLoop;
                 } else if (
                     obj.direction === GAMEOBJECT_DIRECTION.DownLeft ||

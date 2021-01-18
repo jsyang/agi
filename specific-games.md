@@ -44,6 +44,10 @@ Issues:
 
 ## Sierra Demo Pack 5
 
+Issues:
+
+- SQ1 demo loops indefinitely even when running normally
+
 References:
 
 - https://archive.org/details/SierraAgiDemoPack5

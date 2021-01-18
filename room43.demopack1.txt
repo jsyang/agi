@@ -1,0 +1,139 @@
+if (isset(f33)) {
+  set.horizon(10);
+  animate.obj(o1);
+  set.view(o1,140);
+  set.cel(o1,0);
+  position(o1,14,167);
+  set.priority(o1,15);
+  draw(o1);
+  stop.cycling(o1);
+  v221 = 27;
+  v226 = 1;
+  move.obj(o1,14,150,0,f223);
+  v30 = 5;
+  step.time(o1,v30);
+  animate.obj(o2);
+  set.view(o2,149);
+  set.cel(o2,1);
+  position(o2,23,131);
+  show.pic();
+  if (v26 == 2 &&
+      v20 == 0) {
+    clear.lines(2,3,0);
+    display(2,2,"In deep space, a vessel drifts\n "
+            "silently.");
+  }
+  else {
+    clear.lines(22,24,15);
+    set.text.attribute(0,15);
+    display(22,2,"In deep space, a vessel drifts\n"
+            " silently.");
+  }
+  v234 = 40;
+}
+v234--;
+if (v234 == 1) {
+  if (v26 == 2 &&
+      v20 == 0) {
+    clear.lines(2,4,0);
+    display(2,3,"Unbeknownst to you, the dreaded\n"
+            "  Sariens, those bad boys of the\n  "
+            "universe, plan your destruction.");
+  }
+  else {
+    clear.lines(22,24,15);
+    display(22,3,"Unbeknownst to you, the"
+            "dreaded\n   Sariens, those bad boys"
+            "of the\n   universe, plan your"
+            "destruction.");
+  }
+}
+get.posn(o1,v31,v32);
+if (v226 == 4) {
+  v31 += 9;
+  v32 -= 20;
+  reposition.to.v(o2,v31,v32);
+}
+if (v32 == 154) {
+  v31 += 9;
+  v32 -= 20;
+  position.v(o2,v31,v32);
+  draw(o2);
+  v30 = 6;
+  cycle.time(o2,v30);
+  v221 = 20;
+  v226 = 4;
+}
+v221--;
+if (v221 == 1) {
+  if (v226 == 4) {
+    erase(o2);
+    v233 = 70;
+  }
+  if (v226 == 2) {
+    set.cel(o1,1);
+    stop.cycling(o1);
+    v226 = 3;
+  }
+  if (v226 == 1) {
+    start.cycling(o1);
+    v226 = 2;
+    v221 = 18;
+  }
+}
+if (isset(f223)) {
+  reset(f223);
+  v226 = 5;
+}
+if (isset(f232)) {
+  reset(f232);
+  if (v231 == 4) {
+    erase(o0);
+    v232 = 27;
+  }
+  if (v231 == 3) {
+    v231 = 4;
+    move.obj(o0,141,158,0,f232);
+  }
+  if (v231 == 2) {
+    v231 = 3;
+    move.obj(o0,63,158,0,f232);
+  }
+  if (v231 == 1) {
+    v231 = 2;
+    move.obj(o0,43,138,0,f232);
+  }
+  if (v230 == 5) {
+    move.obj(o0,55,131,0,f232);
+    accept.input();
+    new.room(45);
+  }
+  if (v230 == 4) {
+    v230 = 5;
+    move.obj(o0,55,131,0,f232);
+  }
+  if (v230 == 3) {
+    v230 = 4;
+    move.obj(o0,48,138,0,f232);
+  }
+  if (v230 == 2) {
+    v230 = 3;
+    move.obj(o0,40,130,0,f232);
+  }
+  if (v230 == 1) {
+    v230 = 2;
+    move.obj(o0,36,130,0,f232);
+  }
+}
+v232--;
+if (v232 == 1) {
+}
+v233--;
+if (v233 > 0) {
+  v35 = 60;
+}
+return();
+
+// Messages
+#message 1 "In deep space, a vessel drifts\n  silently."
+#message 2 "Unbeknownst to you, the dreaded\n   Sariens, those bad boys of the\n   universe, plan your destruction."
